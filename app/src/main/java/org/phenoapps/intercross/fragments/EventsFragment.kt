@@ -8,6 +8,9 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -86,6 +89,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     private var mWishlistProgress: List<WishlistView> = ArrayList()
 
     private var mFocused: View? = null
+    private lateinit var sortBySpinner: Spinner
+    private lateinit var sortOrderTextView: TextView
+    private var currentSortField = "Cross"
+    private var isAscending = true
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -176,6 +183,31 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         setupUI()
 
+
+
+        val sortOptions = arrayOf("Male", "Female", "Cross", "Parent", "Date")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        sortBySpinner.adapter = adapter
+
+        sortBySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                currentSortField = sortOptions[position]
+                sortEvents()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        sortOrderTextView.setOnClickListener {
+            isAscending = !isAscending
+            sortOrderTextView.text = if (isAscending) "Ascending" else "Descending"
+            sortEvents()
+        }
+
+        // Initial sort
+        sortEvents()
+
     }
 
     override fun onResume() {
@@ -203,38 +235,12 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
             }
         })
+        viewModel.events.observe(viewLifecycleOwner, { events ->
+            events?.let {
+                sortEvents()
 
-        viewModel.events.observe(viewLifecycleOwner, {
-
-            it?.let {
-
-                mEvents = it
-
-                mEventsEmpty = it.isEmpty()
-
-                mBinding.editTextCross.addTextChangedListener {
-
-                    val value = mBinding.editTextCross.text.toString()
-
-                    if (value.isNotBlank()) {
-
-                        val codes = mEvents.map { event -> event.eventDbId } + mParents.map { parent -> parent.codeId }.distinct()
-
-                        if (mBinding.editTextCross.text.toString() in codes) {
-
-                            if (mBinding.crossTextHolder.error == null) mBinding.crossTextHolder.error = error
-
-                        } else mBinding.crossTextHolder.error = null
-
-                    } else {
-
-                        mBinding.crossTextHolder.error = null
-
-                    }
-                }
-
-                (mBinding.recyclerView.adapter as? EventsAdapter)?.submitList(it)
             }
+
         })
 
         settingsModel.settings.observe(viewLifecycleOwner, {
@@ -793,6 +799,22 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
             FileUtil(requireContext()).ringNotification(false)
 
+        }
+    }
+
+    private fun sortEvents() {
+        viewModel.events.value?.let { events ->
+            val sortedEvents = when (currentSortField) {
+                "Male" -> events.sortedBy { it.maleObsUnitDbId }
+                "Female" -> events.sortedBy { it.femaleObsUnitDbId }
+                "Cross" -> events.sortedBy { it.eventDbId }
+                "Parent" -> events.sortedBy { it.person }
+                "Date" -> events.sortedBy { it.timestamp }
+                else -> events
+            }
+
+            val finalSortedEvents = if (isAscending) sortedEvents else sortedEvents.reversed()
+            (mBinding.recyclerView.adapter as? EventsAdapter)?.submitList(finalSortedEvents)
         }
     }
 

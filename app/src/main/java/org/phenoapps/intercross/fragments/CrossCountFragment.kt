@@ -31,7 +31,6 @@ import org.phenoapps.intercross.databinding.FragmentCrossCountBinding
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.KeyUtil
 import java.lang.IndexOutOfBoundsException
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -39,6 +38,10 @@ import kotlin.collections.ArrayList
  * Users can navigate to and from cross block and wishlist fragments.
  */
 class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.layout.fragment_cross_count), ITableViewListener {
+
+    companion object {
+        const val SORT_DELAY_MS = 500L
+    }
 
     private val eventsModel: EventListViewModel by viewModels {
         EventsListViewModelFactory(EventsRepository.getInstance(db.eventsDao()))
@@ -62,12 +65,6 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
 
     //variable to avoid 'Inconsistency detected' TableView exception that is caused if sorting is spammed.
     private var mIsSorting = false
-
-    private enum class SortOption{
-        DATE,ID,MALE,FEMALE
-    }
-    private var currentSortOption = SortOption.DATE
-    private var isAscending = true
 
     /**
      * Polymorphism setup to allow adapter to work with two different types of objects.
@@ -171,25 +168,12 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
         val maleText = getString(R.string.male)
         val femaleText = getString(R.string.female)
         val countText = getString(R.string.crosses)
-        val dateText = getString(R.string.date)
-        val personText = getString(R.string.person)
-
-        val sortedEntries = when (currentSortOption) {
-            SortOption.DATE -> entries.sortedBy { it.date }
-            SortOption.ID -> entries.sortedBy { it.m }
-            SortOption.MALE -> entries.sortedBy { it.m }
-            SortOption.FEMALE -> entries.sortedBy { it.f }
-        }.let { if (isAscending) it else it.reversed() }
 
         val data = arrayListOf<List<CellData>>()
-        sortedEntries.forEach {
-            data.add(listOf(
-                CellData(it.m),
+        entries.forEach {
+            data.add(listOf(CellData(it.m),
                 CellData(it.f),
-                CellData(it.count),
-                CellData(it.person),
-                CellData(it.date)
-            ))
+                CellData(it.count)))
         }
 
         with(mBinding.fragmentCrossCountTableView) {
@@ -200,19 +184,15 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
             setAdapter(TableViewAdapter())
 
             (adapter as? TableViewAdapter)?.setAllItems(
-                listOf(
-                    CellData(maleText),
+                listOf(CellData(maleText),
                     CellData(femaleText),
-                    CellData(countText),
-                    CellData(personText),
-                    CellData(dateText)
-                ),
+                    CellData(countText)),
                 listOf(),
                 data
             )
 
             //sort table by count
-            //sortColumn(2, SortState.DESCENDING)
+            sortColumn(2, SortState.DESCENDING)
         }
     }
 
@@ -451,21 +431,17 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
 
             R.id.action_cross_count_delete_all -> {
                 context?.let { ctx ->
-                    Dialogs.onOk(
-                        AlertDialog.Builder(ctx),
+                    Dialogs.onOk(AlertDialog.Builder(ctx),
                         getString(R.string.menu_cross_count_delete_all_title),
                         getString(android.R.string.cancel),
                         getString(android.R.string.ok),
-                        getString(R.string.dialog_cross_count_delete_all_message)
-                    ) {
+                        getString(R.string.dialog_cross_count_delete_all_message)) {
 
-                        Dialogs.onOk(
-                            AlertDialog.Builder(ctx),
+                        Dialogs.onOk(AlertDialog.Builder(ctx),
                             getString(R.string.menu_cross_count_delete_all_title),
                             getString(android.R.string.cancel),
                             getString(android.R.string.ok),
-                            getString(R.string.dialog_cross_count_delete_all_message_2)
-                        ) {
+                            getString(R.string.dialog_cross_count_delete_all_message_2)) {
 
                             eventsModel.deleteAll()
 
@@ -474,14 +450,12 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
                     }
                 }
             }
-
             R.id.action_cross_count_expand_columns -> {
                 when (mExpandedColumns) {
                     false -> {
                         item.setIcon(R.drawable.ic_expand_less_black_24dp)
                         item.title = getString(R.string.menu_cross_count_expand_less_title)
                     }
-
                     else -> {
                         item.setIcon(R.drawable.ic_expand_more_black_24dp)
                         item.title = getString(R.string.menu_cross_count_expand_more_title)
@@ -491,34 +465,6 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
                 mExpandedColumns = !mExpandedColumns
 
                 loadCounts()
-            }
-
-            R.id.action_sort_date -> {
-                currentSortOption = SortOption.DATE
-                isAscending = !isAscending
-                loadCounts()
-                true
-            }
-
-            R.id.action_sort_id -> {
-                currentSortOption = SortOption.ID
-                isAscending = !isAscending
-                loadCounts()
-                true
-            }
-
-            R.id.action_sort_male -> {
-                currentSortOption = SortOption.MALE
-                isAscending = !isAscending
-                loadCounts()
-                true
-            }
-
-            R.id.action_sort_female -> {
-                currentSortOption = SortOption.FEMALE
-                isAscending = !isAscending
-                loadCounts()
-                true
             }
         }
 
@@ -601,7 +547,7 @@ class CrossCountFragment : IntercrossBaseFragment<FragmentCrossCountBinding>(R.l
 
             Handler(Looper.getMainLooper()).postDelayed({
                 mIsSorting = false
-            }, 10000)
+            }, SORT_DELAY_MS)
         }
     }
 

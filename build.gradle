@@ -15,7 +15,7 @@ buildscript {
 
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:11.2.3"
 
-        classpath 'com.android.tools.build:gradle:8.6.0-rc01'
+        classpath 'com.android.tools.build:gradle:8.5.0'
 
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21'
 
@@ -43,4 +43,3 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-

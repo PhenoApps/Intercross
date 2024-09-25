@@ -5,7 +5,7 @@
         android:id="@+id/action_cross_count_expand_columns"
         android:icon="@drawable/ic_expand_more_black_24dp"
         android:title="@string/menu_cross_count_expand_more"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_import"
         android:icon="@drawable/ic_nv_import_white"
@@ -16,24 +16,4 @@
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/menu_cross_count_delete_all_title"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/action_sort"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Sort"
-        app:showAsAction="ifRoom">
-        <menu>
-            <item
-                android:id="@+id/action_sort_date"
-                android:title="Sort by Date" />
-            <item
-                android:id="@+id/action_sort_id"
-                android:title="Sort by ID" />
-            <item
-                android:id="@+id/action_sort_male"
-                android:title="Sort by Male Parent" />
-            <item
-                android:id="@+id/action_sort_female"
-                android:title="Sort by Female Parent" />
-        </menu>
-    </item>
 </menu>

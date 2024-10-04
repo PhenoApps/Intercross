@@ -440,8 +440,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     fun launchImport() {
 
         //if (mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null) != null) {
-            //show a dialog asking user to import from local file or brapi
-            //TODO
+        //show a dialog asking user to import from local file or brapi
+        //TODO
 //            AlertDialog.Builder(this)
 //                .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
 //                    when (which) {
@@ -457,7 +457,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 //                }
 //                .show()
         //} else {
-            importedFileContent?.launch("*/*")
+        importedFileContent?.launch("*/*")
         //}
     }
 
@@ -499,7 +499,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     fun navigateToLastSummaryFragment() {
 
         val lastSummaryFragment = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                .getString("last_visited_summary", "summary")
+            .getString("last_visited_summary", "summary")
 
         /***
          * Prioritize navigation to summary fragment, otherwise pick the last chosen view using preferences
@@ -511,19 +511,19 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
                 else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
+                    getString(R.string.summary_and_wishlist_empty))
             }
             "crossblock" -> {
                 if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossblock())
                 else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
+                    getString(R.string.summary_and_wishlist_empty))
             }
             "wishlist" -> {
                 if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
                 else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
+                    getString(R.string.summary_and_wishlist_empty))
             }
         }
     }

@@ -432,4 +432,11 @@
     <string name="metadata_list_label">Metadata List</string>
     <string name="metadata_form_label">Metadata Form</string>
 
+    <string name="delete_crosses">Delete Crosses</string>
+    <string name="delete_crosses_message">Would you like to delete all current crosses?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="crosses_deleted">All crosses have been deleted</string>
+
 </resources>

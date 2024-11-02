@@ -20,6 +20,7 @@ import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.BuildConfig
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.EventsRepository
@@ -100,19 +101,12 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     private val exportCrossesFile = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-
-        //check if uri is null or maybe throws an exception
-
         uri?.let { nonNullUri ->
-
             try {
-
                 FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, mParents, mGroups, mMetadata, mMetaValues)
-
+                showDeleteDialog()
             } catch (e: Exception) {
-
                 e.printStackTrace()
-
             }
         }
     }
@@ -122,11 +116,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
      * which can be changed where this is launched.
      */
     val exportDatabase = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-
         uri?.let { x ->
-
             FileUtil(this).exportDatabase(x)
-
+            showDeleteDialog()
         }
     }
 
@@ -136,13 +128,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
      * Finally, the app is recreated to use the new database.
      */
     val importDatabase = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-
         uri?.let { x ->
-
             FileUtil(this).importDatabase(x)
-
             finish()
-
             startActivity(intent)
         }
     }
@@ -152,18 +140,12 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
      *
      */
     private val importedFileContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-
         //TODO documentation says uri can't be null, but it can...might want to check this for a bug
         uri?.let {
-
             try {
-
                 importFromUri(it)
-
             } catch (e: Exception) {
-
                 e.printStackTrace()
-
                 Toast.makeText(this, R.string.error_importing_file, Toast.LENGTH_SHORT).show()
             }
         }
@@ -172,76 +154,43 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     private val checkPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted -> }
 
     private fun importFromUri(uri: Uri) {
-
         val tables = FileUtil(this).parseInputFile(uri)
-
         CoroutineScope(Dispatchers.IO).launch {
-
             if (tables.size == 5) {
-
                 val crosses = tables[0].filterIsInstance<Event>()
-
                 val polycrosses = crosses.filter { it.type == CrossType.POLY }
-
                 val nonPolys = crosses - polycrosses
-
                 polycrosses.forEach { poly ->
-
                     val maleGroup = poly.maleObsUnitDbId
-
                     if (maleGroup.isNotBlank()
                         && "::" in maleGroup
                         && "{" in maleGroup
                         && "}" in maleGroup) {
-
                         val tokens = maleGroup.split("::")
-
                         val groupId = tokens[0]
-
                         val groupName = tokens[1]
-
                         var males = tokens[2]
-
                         males = males.replace("{", "").replace("}", "")
-
                         males.split(";").forEach {
-
                             val pid = parentsList.insertForId(Parent(it, 1))
-
                             groupList.insert(PollenGroup(groupId, groupName, pid))
                         }
-
                         eventsModel.insert(poly.apply {
-
                             maleObsUnitDbId = groupId
-
                         })
                     }
-
                 }
-
                 nonPolys.forEach { cross ->
-
                     parentsList.insert(Parent(cross.maleObsUnitDbId, 1), Parent(cross.femaleObsUnitDbId, 0))
-
                 }
-
                 eventsModel.insert(*nonPolys.toTypedArray())
-
             }
-
             if (tables[1].isNotEmpty()) {
-
                 parentsList.insert(*tables[1].filterIsInstance<Parent>().toTypedArray())
-
             }
-
             if (tables[2].isNotEmpty()) {
-
                 wishModel.insert(*tables[2].filterIsInstance<Wishlist>().toTypedArray())
-
             }
-
         }
     }
 
@@ -266,23 +215,17 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     private lateinit var mNavController: NavController
 
     private fun writeStream(file: File, resourceId: Int) {
-
         if (!file.isFile) {
-
             val stream = resources.openRawResource(resourceId)
-
             file.writeBytes(stream.readBytes())
-
             stream.close()
         }
-
     }
 
     /**
      * Function that creates example files for parents/zpl/wishlist tables in the app's cache directory.
      */
     private fun setupDirs() {
-
         //create separate subdirectory foreach type of import
         val wishlists = File(this@MainActivity.externalCacheDir, "Wishlist")
         val parents = File(this@MainActivity.externalCacheDir, "Parents")
@@ -303,33 +246,22 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
         //blocking code can be run with Dispatchers.IO
         CoroutineScope(Dispatchers.IO).launch {
-
             writeStream(exampleCrosses, R.raw.crosses_example)
-
             writeStream(exampleWish, R.raw.wishlist_example)
-
             writeStream(exampleParents, R.raw.parents_example)
-
             writeStream(exampleZpl, R.raw.example)
-
             if ("demo" in BuildConfig.BUILD_TYPE) {
-
                 writeStream(exampleWishLarge, R.raw.large_wishlist)
-
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         setupDirs()
-
         mBinding = DataBindingUtil.setContentView(this@MainActivity,
             R.layout.activity_main
         )
-
         supportActionBar.apply {
             title = ""
             this?.let {
@@ -338,15 +270,10 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 setHomeButtonEnabled(true)
             }
         }
-
         mSnackbar = SnackbarQueue()
-
         mNavController = Navigation.findNavController(this@MainActivity, R.id.nav_fragment)
-
         mDatabase = IntercrossDatabase.getInstance(this)
-
         startObservers()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checkPermissions.launch(arrayOf(
                 android.Manifest.permission.BLUETOOTH_CONNECT,
@@ -362,7 +289,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 android.Manifest.permission.INTERNET
             ))
         }
-
         mBinding.mainTb.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -370,87 +296,81 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
     fun setBackButtonToolbar() {
         setSupportActionBar(mBinding.mainTb)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.hide()
     }
 
     private fun startObservers() {
-
         eventsModel.events.observe(this) {
-
             it?.let {
-
                 mEvents = it
-
             }
         }
-
         parentsList.parents.observe(this) {
-
             it?.let {
-
                 mParents = it
             }
         }
-
         wishModel.wishlist.observe(this) {
-
             it?.let {
-
                 mWishlist = it.filter { it.wishType == "cross" }
-
             }
         }
-
         groupList.groups.observe(this) {
-
             it?.let {
-
                 mGroups = it
-
             }
         }
-
         metadataViewModel.metadata.observe(this) {
-
             mMetadata = it
         }
-
         metaValuesViewModel.metaValues.observe(this) {
-
             mMetaValues = it
         }
     }
 
     private fun showExportDialog() {
-
         val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
 
         with(AlertDialog.Builder(this@MainActivity)) {
-
             setSingleChoiceItems(arrayOf("CSV", "Database"), 0) { dialog, which ->
-
                 when (which) {
-
-                    0 -> exportCrossesFile?.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
-
-                    1 -> exportDatabase?.launch("intercross.zip")
-
+                    0 -> {
+                        exportCrossesFile?.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
+                    }
+                    1 -> {
+                        exportDatabase?.launch("intercross.zip")
+                    }
                 }
-
                 dialog.dismiss()
             }
-
             setTitle(R.string.export)
-
             show()
         }
     }
 
-    fun launchImport() {
+    private fun showDeleteDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_crosses)
+            .setMessage(R.string.delete_crosses_message)
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                // Delete all crosses using coroutines
+                CoroutineScope(Dispatchers.IO).launch {
+                    eventsModel.deleteAllAndWait()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@MainActivity, R.string.crosses_deleted, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
 
+    fun launchImport() {
         //if (mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null) != null) {
             //show a dialog asking user to import from local file or brapi
             //TODO
@@ -474,7 +394,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     fun showExportDialog(onDismiss: () -> Unit) {
-
         //TODO
         //val tokenCheck = mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null)
         val importCheck = mPref.getString(mKeyUtil.brapiHasBeenImported, null)
@@ -509,7 +428,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     fun navigateToLastSummaryFragment() {
-
         val lastSummaryFragment = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                 .getString("last_visited_summary", "summary")
 
@@ -518,7 +436,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
          * The key "last_visited_summary" is updated at the start of each respective fragment.
          */
         when (lastSummaryFragment) {
-
             "summary" -> {
                 if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
                 else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
@@ -541,13 +458,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     override fun onBackPressed() {
-
         mNavController.currentDestination?.let { it ->
-
             when (it.id) {
-
                 R.id.pattern_fragment -> {
-
                     supportFragmentManager.primaryNavigationFragment?.let {
                         (it.childFragmentManager.fragments[0] as PatternFragment).onBackButtonPressed()
                         //(supportFragmentManager.primaryNavigationFragment as PatternFragment).onBackButtonPressed()
@@ -555,18 +468,12 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 }
                 //go back to the last fragment instead of opening the navigation drawer
                 R.id.events_fragment -> {
-
                     if (doubleBackToExitPressedOnce) {
-
                         super.onBackPressed()
-
                         return
                     }
-
                     this.doubleBackToExitPressedOnce = true
-
                     Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
-
                     Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
                 }
                 else -> super.onBackPressed()
@@ -585,9 +492,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
 
     override fun onSearchResultClicked(result: SearchPreferenceResult) {
-
         result.closeSearchPage(this)
-
         mNavController.navigate(
             when (result.key) {
                 in mKeyUtil.profileKeySet -> R.id.profile_preference_fragment

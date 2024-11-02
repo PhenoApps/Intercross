@@ -28,6 +28,12 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
         }
     }
 
+    suspend fun deleteAllAndWait() {
+
+        eventRepo.drop()
+
+    }
+
     fun getRowid(e: Event): Long = eventRepo.getRowid(e)
 
     fun insert(item: Event): Long = eventRepo.insert(item)

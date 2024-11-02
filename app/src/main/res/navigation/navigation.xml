@@ -368,4 +368,30 @@
     <action android:id="@+id/global_action_to_brapi_export"
         app:destination="@+id/brapi_export_fragment"
         app:popUpTo="@id/events_fragment"/>
+
+    <fragment
+        android:id="@+id/metadata_list_fragment"
+        android:name="org.phenoapps.intercross.fragments.metadata.MetadataListFragment"
+        android:label="@string/metadata_list_label"
+        tools:layout="@layout/fragment_metadata_list">
+        
+        <action
+            android:id="@+id/action_from_metadata_list_to_form"
+            app:destination="@id/metadata_form_fragment">
+            <argument
+                android:name="property"
+                app:argType="string"
+                android:defaultValue=""/>
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/metadata_form_fragment"
+        android:name="org.phenoapps.intercross.fragments.metadata.MetadataFormFragment"
+        android:label="@string/metadata_form_label">
+        <argument
+            android:name="property"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
 </navigation>

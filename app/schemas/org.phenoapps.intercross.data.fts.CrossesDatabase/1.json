@@ -1,0 +1,135 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "a60049c90f043de7fafbe2e9db810ef2",
+    "entities": [
+      {
+        "tableName": "crosses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowid` INTEGER NOT NULL, `crossId` TEXT NOT NULL, `femaleId` TEXT NOT NULL, `maleId` TEXT NOT NULL, `femaleName` TEXT, `maleName` TEXT, `date` TEXT NOT NULL, PRIMARY KEY(`rowid`))",
+        "fields": [
+          {
+            "fieldPath": "rowid",
+            "columnName": "rowid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "crossId",
+            "columnName": "crossId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleId",
+            "columnName": "femaleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleId",
+            "columnName": "maleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleName",
+            "columnName": "femaleName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "maleName",
+            "columnName": "maleName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rowid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "simple",
+          "tokenizerArgs": [],
+          "contentTable": "crosses",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_crosses_fts_BEFORE_UPDATE BEFORE UPDATE ON `crosses` BEGIN DELETE FROM `crosses_fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_crosses_fts_BEFORE_DELETE BEFORE DELETE ON `crosses` BEGIN DELETE FROM `crosses_fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_crosses_fts_AFTER_UPDATE AFTER UPDATE ON `crosses` BEGIN INSERT INTO `crosses_fts`(`docid`, `crossId`, `femaleId`, `maleId`, `femaleName`, `maleName`, `date`) VALUES (NEW.`rowid`, NEW.`crossId`, NEW.`femaleId`, NEW.`maleId`, NEW.`femaleName`, NEW.`maleName`, NEW.`date`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_crosses_fts_AFTER_INSERT AFTER INSERT ON `crosses` BEGIN INSERT INTO `crosses_fts`(`docid`, `crossId`, `femaleId`, `maleId`, `femaleName`, `maleName`, `date`) VALUES (NEW.`rowid`, NEW.`crossId`, NEW.`femaleId`, NEW.`maleId`, NEW.`femaleName`, NEW.`maleName`, NEW.`date`); END"
+        ],
+        "tableName": "crosses_fts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`crossId` TEXT NOT NULL, `femaleId` TEXT NOT NULL, `maleId` TEXT NOT NULL, `femaleName` TEXT, `maleName` TEXT, `date` TEXT NOT NULL, content=`crosses`)",
+        "fields": [
+          {
+            "fieldPath": "crossId",
+            "columnName": "crossId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleId",
+            "columnName": "femaleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleId",
+            "columnName": "maleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleName",
+            "columnName": "femaleName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "maleName",
+            "columnName": "maleName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": []
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a60049c90f043de7fafbe2e9db810ef2')"
+    ]
+  }
+}

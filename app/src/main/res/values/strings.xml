@@ -429,4 +429,7 @@
     <string name="error_no_bluetooth_permission">Bluetooth permission is required to print.</string>
     <string name="search_fragment_label">Search</string>
 
+    <string name="metadata_list_label">Metadata List</string>
+    <string name="metadata_form_label">Metadata Form</string>
+
 </resources>

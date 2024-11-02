@@ -1,0 +1,446 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "18afa6b45a176cad3fab2279c1636ed3",
+    "entities": [
+      {
+        "tableName": "events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codeId` TEXT NOT NULL, `mom` TEXT NOT NULL, `dad` TEXT NOT NULL, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `person` TEXT NOT NULL, `experiment` TEXT NOT NULL, `type` INTEGER NOT NULL, `sex` INTEGER NOT NULL, `eid` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "eventDbId",
+            "columnName": "codeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleObsUnitDbId",
+            "columnName": "mom",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleObsUnitDbId",
+            "columnName": "dad",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "readableName",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "person",
+            "columnName": "person",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "experiment",
+            "columnName": "experiment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sex",
+            "columnName": "sex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "eid",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "eid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_events_codeId",
+            "unique": true,
+            "columnNames": [
+              "codeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_events_codeId` ON `${TABLE_NAME}` (`codeId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "parents",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codeId` TEXT NOT NULL, `sex` INTEGER NOT NULL, `selected` INTEGER NOT NULL, `pid` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isPoly` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "codeId",
+            "columnName": "codeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sex",
+            "columnName": "sex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "pid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPoly",
+            "columnName": "isPoly",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "pid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_parents_codeId",
+            "unique": true,
+            "columnNames": [
+              "codeId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_parents_codeId` ON `${TABLE_NAME}` (`codeId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "wishlist",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`femaleDbId` TEXT NOT NULL, `maleDbId` TEXT NOT NULL, `femaleName` TEXT NOT NULL, `maleName` TEXT NOT NULL, `wishType` TEXT NOT NULL, `wishMin` INTEGER NOT NULL, `wishMax` INTEGER, `wid` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "femaleDbId",
+            "columnName": "femaleDbId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleDbId",
+            "columnName": "maleDbId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "femaleName",
+            "columnName": "femaleName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleName",
+            "columnName": "maleName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wishType",
+            "columnName": "wishType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wishMin",
+            "columnName": "wishMin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wishMax",
+            "columnName": "wishMax",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "wid",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "wid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`isPattern` INTEGER NOT NULL, `isUUID` INTEGER NOT NULL, `startFrom` INTEGER NOT NULL, `isAutoIncrement` INTEGER NOT NULL, `pad` INTEGER NOT NULL, `number` INTEGER NOT NULL, `prefix` TEXT NOT NULL, `suffix` TEXT NOT NULL, `allowBlank` INTEGER NOT NULL, `order` INTEGER NOT NULL, `collectData` INTEGER NOT NULL, `sid` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "isPattern",
+            "columnName": "isPattern",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUUID",
+            "columnName": "isUUID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startFrom",
+            "columnName": "startFrom",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAutoIncrement",
+            "columnName": "isAutoIncrement",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pad",
+            "columnName": "pad",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prefix",
+            "columnName": "prefix",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suffix",
+            "columnName": "suffix",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "allowBlank",
+            "columnName": "allowBlank",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectData",
+            "columnName": "collectData",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "sid",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "sid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pollen_groups",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codeId` TEXT NOT NULL, `name` TEXT NOT NULL, `maleId` INTEGER, `gid` INTEGER PRIMARY KEY AUTOINCREMENT, `selected` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "codeId",
+            "columnName": "codeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maleId",
+            "columnName": "maleId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "gid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "gid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "metadata",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`property` TEXT NOT NULL, `defaultValue` INTEGER, `mid` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "property",
+            "columnName": "property",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultValue",
+            "columnName": "defaultValue",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "mid",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "mid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_metadata_property",
+            "unique": true,
+            "columnNames": [
+              "property"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_metadata_property` ON `${TABLE_NAME}` (`property`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "metaValues",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eid` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `value` INTEGER, `mvId` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "eid",
+            "columnName": "eid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "metaId",
+            "columnName": "metaId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "mvId",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "mvId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_metaValues_eid_metaId",
+            "unique": true,
+            "columnNames": [
+              "eid",
+              "metaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_metaValues_eid_metaId` ON `${TABLE_NAME}` (`eid`, `metaId`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "WishlistView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT DISTINCT femaleDbId as momId, femaleName as momName, maleDbId as dadId, maleName as dadName, wishMin, wishMax, wishType,\n\t(SELECT COUNT(*) \n\tFROM events as child\n\tWHERE (w.femaleDbId = child.mom and ((w.maleDbId = child.dad) or (child.dad = \"blank\" and w.maleDbId = \"-1\")))) as wishProgress\nfrom wishlist as w"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '18afa6b45a176cad3fab2279c1636ed3')"
+    ]
+  }
+}

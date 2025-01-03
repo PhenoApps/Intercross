@@ -1,6 +1,5 @@
 package org.phenoapps.intercross.adapters;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractSorterViewHolder;
@@ -17,12 +15,12 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.jetbrains.annotations.NotNull;
 import org.phenoapps.intercross.R;
-import org.phenoapps.intercross.fragments.CrossCountFragment;
+import org.phenoapps.intercross.fragments.CrossTrackerFragment;
 
 /**
  * https://github.com/evrencoskun/TableView/wiki
  */
-public class TableViewAdapter extends AbstractTableAdapter<CrossCountFragment.CellData, CrossCountFragment.CellData, CrossCountFragment.CellData> {
+public class TableViewAdapter extends AbstractTableAdapter<CrossTrackerFragment.CellData, CrossTrackerFragment.CellData, CrossTrackerFragment.CellData> {
 
     static class CellViewHolder extends AbstractSorterViewHolder {
 
@@ -87,7 +85,7 @@ public class TableViewAdapter extends AbstractTableAdapter<CrossCountFragment.Ce
       * @see #onCreateCellViewHolder(ViewGroup, int);
       */
      @Override
-     public void onBindCellViewHolder(@NotNull AbstractViewHolder holder, CrossCountFragment.CellData cellItemModel, int
+     public void onBindCellViewHolder(@NotNull AbstractViewHolder holder, CrossTrackerFragment.CellData cellItemModel, int
              columnPosition, int rowPosition) {
 
          // Get the holder to update cell item text
@@ -152,7 +150,7 @@ public class TableViewAdapter extends AbstractTableAdapter<CrossCountFragment.Ce
       */
      @Override
      public void onBindColumnHeaderViewHolder(@NotNull AbstractViewHolder holder,
-                                              CrossCountFragment.CellData columnHeaderItemModel,
+                                              CrossTrackerFragment.CellData columnHeaderItemModel,
                                               int position) {
 
          // Get the holder to update cell item text
@@ -208,7 +206,7 @@ public class TableViewAdapter extends AbstractTableAdapter<CrossCountFragment.Ce
       * @see #onCreateRowHeaderViewHolder(ViewGroup, int) ;
       */
      @Override
-     public void onBindRowHeaderViewHolder(@NotNull AbstractViewHolder holder, CrossCountFragment.CellData rowHeaderItemModel, int
+     public void onBindRowHeaderViewHolder(@NotNull AbstractViewHolder holder, CrossTrackerFragment.CellData rowHeaderItemModel, int
              position) {
 
          // Get the holder to update row header item text

@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments.wish_factory
 
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import org.phenoapps.intercross.R
@@ -38,6 +39,8 @@ class ValuesChoiceFragment : IntercrossBaseFragment<FragmentWfChooseWishValuesBi
     }
 
     override fun FragmentWfChooseWishValuesBinding.afterCreateView() {
+
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         mBinding.wfWishValuesSummaryTv.text = getString(R.string.frag_wf_values_summary,
             wishType, femaleName, maleName)

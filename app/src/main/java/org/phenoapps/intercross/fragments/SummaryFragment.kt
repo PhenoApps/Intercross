@@ -1,21 +1,29 @@
 package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
-import org.phenoapps.intercross.adapters.SummaryAdapter
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.WishlistRepository
@@ -65,6 +73,8 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         WishlistViewModelFactory(WishlistRepository.getInstance(db.wishlistDao()))
     }
 
+    private var systemMenu: Menu? = null
+
     private val MAX_LABEL_LENGTH = 16
 
     private lateinit var mEvents: List<Event>
@@ -81,12 +91,17 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         override fun onTabReselected(tab: TabLayout.Tab?) {}
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
+
     override fun FragmentDataSummaryBinding.afterCreateView() {
 
-        setHasOptionsMenu(false)
-
         //initialize pie chart parameters, this is mostly taken from the github examples
-        setupPieChart()
+        setupPieChart(sexSummaryPieChart)
+        setupPieChart(typeSummaryPieChart)
         setupBarChart()
 
         //listen to events and parents once and then displays the data
@@ -98,31 +113,43 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         setupBottomNavBar()
 
-        //val sex = getString(R.string.sex)
-        val type = getString(R.string.type)
-        val meta = getString(R.string.meta)
-
-        //calls the set data on the respective data selected from the tab view
-        dataSummaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.text) {
-                type -> setData(setTypeData())
-                meta -> setData(setMetaData())
-                else -> setData(setSexData())
-            }
-        })
-
-        summaryTabLayout.getTabAt(3)?.select()
+        summaryTabLayout.getTabAt(1)?.select()
 
         setupTabLayout()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.summary_toolbar, menu)
+
+        systemMenu = menu
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun updateToolbarWishlistIcon() {
+        systemMenu?.findItem(R.id.action_to_crossblock)?.isVisible = ::mWishlist.isInitialized && mWishlist.isNotEmpty()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId) {
+            R.id.action_to_crossblock -> {
+                findNavController().navigate(SummaryFragmentDirections.actionToCrossblock())
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
     override fun onResume() {
         super.onResume()
 
-        (activity as MainActivity).supportActionBar?.show()
+        (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragSummaryTb)
 
-        mBinding.summaryTabLayout.getTabAt(3)?.select()
+        updateToolbarWishlistIcon()
+
+        mBinding.summaryTabLayout.getTabAt(2)?.select()
 
         mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
 
@@ -137,26 +164,9 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
 
             when (tab?.position) {
-                2 -> {
-
-                    if (::mWishlist.isInitialized && mWishlist.isNotEmpty()) {
-
-                        Navigation.findNavController(mBinding.root)
-                            .navigate(SummaryFragmentDirections.actionToCrossblock())
-                    } else {
-
-                        Dialogs.notify(AlertDialog.Builder(requireContext()), getString(R.string.wishlist_is_empty))
-                        summaryTabLayout.getTabAt(3)?.select()
-
-                    }
-                }
-
                 0 ->
                     Navigation.findNavController(mBinding.root)
-                        .navigate(SummaryFragmentDirections.actionToCrossCount())
-                1 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(SummaryFragmentDirections.actionToWishlist())
+                        .navigate(SummaryFragmentDirections.actionToCrossTracker())
             }
         })
     }
@@ -185,7 +195,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
                 }
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(SummaryFragmentDirections.globalActionToCrossCount())
+                    findNavController().navigate(SummaryFragmentDirections.globalActionToCrossTracker())
 
                 }
             }
@@ -202,6 +212,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         eventsModel.metadata.observeOnce(viewLifecycleOwner) { metadata ->
 
             mMetadata = metadata
+            setData(setMetaData())
         }
 
         eventsModel.events.observeOnce(viewLifecycleOwner) { data ->
@@ -212,26 +223,23 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
                 mParents = parents
 
-                setData(setSexData())
+                setData(sexSummaryPieChart, setSexData(), ChartType.SEX)
             }
+
+            setData(typeSummaryPieChart, setTypeData(), ChartType.TYPE)
         }
 
-        wishModel.wishlist.observeOnce(viewLifecycleOwner) { wishes ->
+        wishModel.wishlist.observe(viewLifecycleOwner) { wishes ->
 
             mWishlist = wishes.filter { it.wishType == "cross" }
+            updateToolbarWishlistIcon()
         }
     }
 
     //initializes view parameters s.a recycler view and pie chart
-    private fun FragmentDataSummaryBinding.setupPieChart() {
+    private fun setupPieChart(dataSummaryPieChart: PieChart) {
 
-        dataSummaryRecyclerView.layoutManager = LinearLayoutManager(context).apply {
-            orientation = LinearLayoutManager.VERTICAL
-        }
-
-        dataSummaryRecyclerView.adapter = SummaryAdapter()
-
-        dataSummaryPieChart.setUsePercentValues(true)
+        dataSummaryPieChart.setUsePercentValues(false)
         dataSummaryPieChart.description.isEnabled = false
         dataSummaryPieChart.setExtraOffsets(5f, 10f, 5f, 5f)
 
@@ -280,21 +288,21 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
     private fun FragmentDataSummaryBinding.setupBarChart() {
 
-        dataSummaryBarChart.setDrawBarShadow(false)
+        metadataSummaryBarChart.setDrawBarShadow(false)
 
         //dataSummaryBarChart.setDrawValueAboveBar(true)
 
-        dataSummaryBarChart.description.isEnabled = false
+        metadataSummaryBarChart.description.isEnabled = false
 
-        dataSummaryBarChart.setPinchZoom(false)
+        metadataSummaryBarChart.setPinchZoom(false)
 
-        dataSummaryBarChart.legend.isEnabled = false
+        metadataSummaryBarChart.legend.isEnabled = false
 
-        dataSummaryBarChart.setDrawGridBackground(false)
+        metadataSummaryBarChart.setDrawGridBackground(false)
 
-        dataSummaryBarChart.xAxis.textSize = 10f
+        metadataSummaryBarChart.xAxis.textSize = 10f
 
-        dataSummaryBarChart.xAxis.textColor = Color.BLACK
+        metadataSummaryBarChart.xAxis.textColor = Color.BLACK
     }
 
     private fun setSexData(): PieDataSet = PieDataSet(ArrayList<PieEntry>().apply {
@@ -326,7 +334,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         val poly = getString(R.string.cross_type_poly)
 
         if (::mEvents.isInitialized)
-            for (type in CrossType.values()) {
+            for (type in CrossType.entries) {
                 val items = mEvents.count { it.type == type }.toFloat()
                 if (items > 0f) add(
                     PieEntry(
@@ -363,7 +371,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
             toEntrySet() // [(seeds, 1), (flowers, 1), (seeds, 2), ....]
                 .groupBy { it.first }   //[(seeds, [1, 2]), (flowers, [1]), ...]
-                .map { it.key to it.value.sumBy { values -> values.second ?: 0 } } //[(seeds, 3), (flowers, 1), ...]
+                .map { it.key to it.value.sumOf { values -> values.second ?: 0 } } //[(seeds, 3), (flowers, 1), ...]
                 .mapIndexed { index, pair -> BarEntry(
                     index.toFloat(),
                     pair.second.toFloat(),
@@ -373,15 +381,21 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
     },"Meta Data Statistics")
 
     //sets the accumulated data into the piechart and recycler view, along with some misc. parameter setting
-    private fun FragmentDataSummaryBinding.setData(dataset: PieDataSet) {
+    private fun FragmentDataSummaryBinding.setData(dataPieChart: PieChart, dataset: PieDataSet, chartType: ChartType) {
+        if (dataset.entryCount == 0) {
+            when (chartType) {
+                ChartType.SEX -> sexNoDataText.visibility = View.VISIBLE
+                ChartType.TYPE -> typeNoDataText.visibility = View.VISIBLE
+            }
+            dataPieChart.visibility = View.GONE
+            return
+        }
 
         activity?.currentFocus?.clearFocus()
 
-        dataSummaryPieChart.visibility = View.VISIBLE
+        dataPieChart.visibility = View.VISIBLE
 
-        dataSummaryBarChart.visibility = View.INVISIBLE
-
-        dataSummaryPieChart.animateY(1400, Easing.EaseInOutQuad)
+        dataPieChart.animateY(1400, Easing.EaseInOutQuad)
 
         dataset.setDrawIcons(false)
         dataset.sliceSpace = 3f
@@ -399,28 +413,32 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         dataset.colors = colors
         //dataSet.setSelectionShift(0f);
         val data = PieData(dataset)
-        data.setValueFormatter(PercentFormatter())
+        data.setValueFormatter(object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return value.toInt().toString()
+            }
+        })
         data.setValueTextSize(11f)
         data.setValueTextColor(Color.BLACK)
         //data.setValueTypeface(tfLight)
-        dataSummaryPieChart.data = data
+        dataPieChart.data = data
 
         // undo all highlights
-        dataSummaryPieChart.highlightValues(null)
-        dataSummaryPieChart.invalidate()
-
-        (dataSummaryRecyclerView.adapter as? SummaryAdapter)?.submitList(
-            dataset.values?.map { ListEntry(it.label, it.value) }
-        )
+        dataPieChart.highlightValues(null)
+        dataPieChart.invalidate()
     }
 
     private fun FragmentDataSummaryBinding.setData(dataset: BarDataSet) {
+        if (dataset.entryCount == 0) {
+            metadataSummaryCard.children
+            metaNoDataText.visibility = View.VISIBLE
+            metadataSummaryBarChart.visibility = View.GONE
+            return
+        }
 
         activity?.currentFocus?.clearFocus()
 
-        dataSummaryPieChart.visibility = View.INVISIBLE
-
-        dataSummaryBarChart.visibility = View.VISIBLE
+        metadataSummaryBarChart.visibility = View.VISIBLE
 
         val data = BarData(dataset)
 
@@ -435,20 +453,18 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         //dataSummaryBarChart.setDrawValueAboveBar(true)
 
-        dataSummaryBarChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        metadataSummaryBarChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
 
-        dataSummaryBarChart.xAxis.granularity = 1f
+        metadataSummaryBarChart.xAxis.granularity = 1f
 
-        dataSummaryBarChart.data = data
+        metadataSummaryBarChart.data = data
 
         // undo all highlights
-        dataSummaryBarChart.highlightValues(null)
-        dataSummaryBarChart.invalidate()
+        metadataSummaryBarChart.highlightValues(null)
+        metadataSummaryBarChart.invalidate()
+    }
 
-        (dataSummaryRecyclerView.adapter as? SummaryAdapter)?.submitList(
-            dataset.values?.map {
-                ListEntry(it?.data as? String ?: "?", it.y)
-            }
-        )
+    private enum class ChartType {
+        SEX, TYPE
     }
 }

@@ -3,7 +3,6 @@ package org.phenoapps.intercross.fragments.preferences
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -72,7 +71,7 @@ open class BasePreferenceFragment(private val xml: Int) : PreferenceFragmentComp
                 }
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(R.id.global_action_to_cross_count)
+                    findNavController().navigate(R.id.global_action_to_cross_tracker)
                 }
             }
 

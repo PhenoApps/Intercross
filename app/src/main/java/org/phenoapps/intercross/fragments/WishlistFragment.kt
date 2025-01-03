@@ -78,13 +78,15 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
     private var mMetaList: List<Meta> = ArrayList()
     private var mEvents: List<Event> = ArrayList()
 
-    data class WishlistData(override var m: String,
-                            override var f: String,
+    private var systemMenu: Menu? = null
+
+    data class WishlistData(override var male: String,
+                            override var female: String,
                             var progress: String,
                             var minimum: String,
                             var maximum: String,
                             var mid: String,
-                            var fid: String): CrossCountFragment.ListEntry(m, f, progress)
+                            var fid: String): CrossTrackerFragment.ListEntry(male, female, progress)
 
     override fun FragmentWishlistBinding.afterCreateView() {
 
@@ -138,18 +140,18 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
         val maximumText = getString(R.string.maximum)
         val completedText = getString(R.string.completed)
 
-        val data = arrayListOf<List<CrossCountFragment.CellData>>()
+        val data = arrayListOf<List<CrossTrackerFragment.CellData>>()
 
         entries.forEach {
             data.add(listOf(
-                CrossCountFragment.CellData("",
+                CrossTrackerFragment.CellData("",
                     complete = (it.progress.toIntOrNull() ?: 0) >= (it.minimum.toIntOrNull() ?: 0)
                 ),
-                CrossCountFragment.CellData(it.m, it.mid),
-                CrossCountFragment.CellData(it.f, it.fid),
-                CrossCountFragment.CellData(it.progress),
-                CrossCountFragment.CellData(it.minimum),
-                CrossCountFragment.CellData(it.maximum)
+                CrossTrackerFragment.CellData(it.male, it.mid),
+                CrossTrackerFragment.CellData(it.female, it.fid),
+                CrossTrackerFragment.CellData(it.progress),
+                CrossTrackerFragment.CellData(it.minimum),
+                CrossTrackerFragment.CellData(it.maximum)
             ))
         }
 
@@ -162,12 +164,12 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
             (adapter as? TableViewAdapter)?.setAllItems(
                 listOf(
-                    CrossCountFragment.CellData(completedText),
-                    CrossCountFragment.CellData(maleText),
-                    CrossCountFragment.CellData(femaleText),
-                    CrossCountFragment.CellData(progressText),
-                    CrossCountFragment.CellData(minimumText),
-                    CrossCountFragment.CellData(maximumText)
+                    CrossTrackerFragment.CellData(completedText),
+                    CrossTrackerFragment.CellData(maleText),
+                    CrossTrackerFragment.CellData(femaleText),
+                    CrossTrackerFragment.CellData(progressText),
+                    CrossTrackerFragment.CellData(minimumText),
+                    CrossTrackerFragment.CellData(maximumText)
                 ),
                 listOf(),
                 data
@@ -192,8 +194,9 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
 
                 wishModel.deleteAll()
+                updateToolbarWishlistIcon()
 
-                findNavController().navigate(WishlistFragmentDirections.globalActionToCrossCount())
+                findNavController().navigate(WishlistFragmentDirections.globalActionToCrossTracker())
             }
         }
     }
@@ -253,6 +256,8 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
                 wishlistEmpty = crosses.isEmpty()
 
+                updateToolbarWishlistIcon()
+
                 setupTable(data)
 
             }
@@ -306,6 +311,8 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
                 wishlistEmpty = crosses.isEmpty()
 
+                updateToolbarWishlistIcon()
+
                 setupTable(data)
             }
         }
@@ -325,7 +332,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
         summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
 
             when (tab?.position) {
-                3 -> {
+                2 -> {
 
                     if (mEvents.isNotEmpty()) {
 
@@ -341,21 +348,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
                 0 ->
                     Navigation.findNavController(mBinding.root)
-                        .navigate(WishlistFragmentDirections.actionToCrossCount())
-
-                2 -> {
-
-                    if (!wishlistEmpty) {
-
-                        Navigation.findNavController(mBinding.root)
-                            .navigate(WishlistFragmentDirections.actionToCrossblock())
-                    } else {
-
-                        Dialogs.notify(AlertDialog.Builder(requireContext()), getString(R.string.wishlist_is_empty))
-                        summaryTabLayout.getTabAt(1)?.select()
-
-                    }
-                }
+                        .navigate(WishlistFragmentDirections.actionToCrossTracker())
             }
         })
     }
@@ -381,7 +374,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
                 }
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(WishlistFragmentDirections.globalActionToCrossCount())
+                    findNavController().navigate(WishlistFragmentDirections.globalActionToCrossTracker())
 
                 }
             }
@@ -402,6 +395,8 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
         (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragWishlistTb)
 
+        updateToolbarWishlistIcon()
+
         mBinding.summaryTabLayout.getTabAt(1)?.select()
 
         mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
@@ -416,7 +411,13 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
         inflater.inflate(R.menu.wishlist_toolbar, menu)
 
+        systemMenu = menu
+
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun updateToolbarWishlistIcon() {
+        systemMenu?.findItem(R.id.action_to_crossblock)?.isVisible = !wishlistEmpty
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -431,7 +432,9 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
                 findNavController().navigate(WishlistFragmentDirections
                     .actionFromWishlistToWishFactory())
             }
-
+            R.id.action_to_crossblock -> {
+                findNavController().navigate(WishlistFragmentDirections.actionToCrossblock())
+            }
             R.id.action_import -> {
 
                 (activity as MainActivity).launchImport()
@@ -479,8 +482,8 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
             try {
 
-                val male = (r[1] as? CrossCountFragment.CellData)?.uuid
-                val female = (r[2] as? CrossCountFragment.CellData)?.uuid
+                val male = (r[1] as? CrossTrackerFragment.CellData)?.uuid
+                val female = (r[2] as? CrossTrackerFragment.CellData)?.uuid
 
                 male?.let { maleId ->
                     female?.let { femaleId ->

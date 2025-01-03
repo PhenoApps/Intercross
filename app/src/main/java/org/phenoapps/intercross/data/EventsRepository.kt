@@ -13,6 +13,8 @@ class EventsRepository
 
     fun getParentCount() = eventsDao.getParentCount()
 
+    fun getAllParents() = eventsDao.getAllParents()
+
     fun getMetadata() = eventsDao.getMetadata()
 
     fun getMetadata(eid: Long) = eventsDao.getMetadata(eid)

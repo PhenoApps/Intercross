@@ -14,7 +14,6 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import org.jetbrains.annotations.NotNull;
 import org.phenoapps.intercross.R;
 import org.phenoapps.intercross.fragments.CrossBlockFragment;
-import org.phenoapps.intercross.fragments.CrossCountFragment;
 
 /**
  * https://github.com/evrencoskun/TableView/wiki

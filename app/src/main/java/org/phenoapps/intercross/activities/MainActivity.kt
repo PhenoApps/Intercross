@@ -628,20 +628,20 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         when (lastSummaryFragment) {
 
             "summary" -> {
-                if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
+                if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
             }
             "crossblock" -> {
                 if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossblock())
-                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
+                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
             }
             "wishlist" -> {
                 if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
-                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossCountFragment())
+                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
             }

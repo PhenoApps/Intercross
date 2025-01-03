@@ -455,7 +455,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                 }
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(EventsFragmentDirections.actionToCrossCountFragment())
+                    findNavController().navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
 
                 }
             }

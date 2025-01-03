@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cross_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/cross_count"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_background"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:minWidth="40dp"
+                android:minHeight="40dp"
+                android:paddingHorizontal="4dp"
+                tools:text="@string/cross_tracker_item_count"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/female_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/cross_tracker_item_female"/>
+
+                <TextView
+                    android:id="@+id/male_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/cross_tracker_item_male"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/chips_flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:constraint_referenced_ids="person_chip,date_chip,wish_progress_chip"
+            app:flow_horizontalGap="8dp"
+            app:flow_verticalGap="4dp"
+            app:flow_wrapMode="chain"
+            app:flow_horizontalStyle="packed"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0"
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/person_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:chipIcon="@drawable/ic_setting_person"
+            app:chipIconSize="24dp"
+            tools:text="@string/cross_tracker_item_person"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/date_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:chipIcon="@drawable/ic_calendar"
+            app:chipIconSize="24dp"
+            tools:text="@string/cross_tracker_item_date"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/wish_progress_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:chipIcon="@drawable/ic_wishlist_add"
+            app:chipIconSize="24dp"
+            tools:text="@string/cross_tracker_item_progress"/>
+
+        <LinearLayout
+            android:id="@+id/wish_progress_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/chips_flow">
+
+            <ImageView
+                android:id="@+id/wish_progress_status"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_wishes_incomplete"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/wish_progress_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:trackCornerRadius="8dp"
+                app:trackThickness="8dp"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

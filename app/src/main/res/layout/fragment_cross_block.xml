@@ -7,52 +7,6 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/frag_cross_block_tb"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_width="match_parent"
-            android:background="?attr/colorPrimary"
-            android:gravity="center_vertical|start"
-            app:menu="@menu/crossblock_toolbar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/summary_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/frag_cross_block_tb"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_tag_black_24dp"/>
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_checklist_black_24dp"/>
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_crossblock" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_summarize_black_24dp"/>
-        </com.google.android.material.tabs.TabLayout>
-
         <com.evrencoskun.tableview.TableView
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -61,7 +15,7 @@
             app:allow_click_inside_cell="true"
             app:allow_click_inside_column_header="true"
             app:allow_click_inside_row_header="true"
-            app:layout_constraintTop_toBottomOf="@id/summary_tab_layout"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/legend_blank"/>
@@ -75,9 +29,35 @@
             android:background="@color/progressBlank"
             android:text="@string/no_crosses_made"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
-            app:layout_constraintEnd_toStartOf="@id/legend_yellow"
+            app:layout_constraintEnd_toStartOf="@id/legend_red"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view" />
+
+        <TextView
+            android:id="@+id/legend_red"
+            style="@style/LegendText"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:background="@color/progressLessThanOneThird"
+            android:text="@string/wishlist_less_than_one_third"
+            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintEnd_toStartOf="@id/legend_orange"
+            app:layout_constraintStart_toEndOf="@id/legend_blank"
+            app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
+
+        <TextView
+            android:id="@+id/legend_orange"
+            style="@style/LegendText"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:background="@color/progressLessThanTwoThird"
+            android:text="@string/wishlist_less_than_two_third"
+            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintEnd_toStartOf="@id/legend_yellow"
+            app:layout_constraintStart_toEndOf="@id/legend_red"
+            app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
 
         <TextView
             android:id="@+id/legend_yellow"
@@ -85,12 +65,11 @@
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_margin="8dp"
-            android:layout_toEndOf="@id/legend_blank"
-            android:background="@color/progressMid"
-            android:text="@string/wishlist_min_legend_label"
+            android:background="@color/progressMoreThanTwoThird"
+            android:text="@string/wishlist_more_than_two_third"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintEnd_toStartOf="@id/legend_green"
-            app:layout_constraintStart_toEndOf="@id/legend_blank"
+            app:layout_constraintStart_toEndOf="@id/legend_orange"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
 
         <TextView
@@ -99,23 +78,20 @@
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_margin="8dp"
-            android:layout_toEndOf="@id/legend_yellow"
-            android:background="@color/progressStart"
+            android:background="@color/progressMin"
             android:text="@string/wishlist_achieved_legend_label"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
-            app:layout_constraintEnd_toStartOf="@id/legend_red"
+            app:layout_constraintEnd_toStartOf="@id/legend_dark_green"
             app:layout_constraintStart_toEndOf="@id/legend_yellow"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
 
         <TextView
-            android:id="@+id/legend_red"
+            android:id="@+id/legend_dark_green"
             style="@style/LegendText"
             android:layout_width="0dp"
             android:layout_height="64dp"
-            android:layout_alignParentEnd="true"
             android:layout_margin="8dp"
-            android:layout_toEndOf="@id/legend_green"
-            android:background="@color/progressEnd"
+            android:background="@color/progressMax"
             android:text="@string/wishlist_maximum_met_legend_label"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -133,8 +109,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
-
-
-
-
-

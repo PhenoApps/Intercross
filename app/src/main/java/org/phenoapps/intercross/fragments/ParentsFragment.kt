@@ -41,6 +41,7 @@ import org.phenoapps.intercross.databinding.FragmentParentsBinding
 import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
+import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import pub.devrel.easypermissions.AfterPermissionGranted
@@ -496,7 +497,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(ParentsFragmentDirections.globalActionToCrossCount())
+                    findNavController().navigate(ParentsFragmentDirections.globalActionToCrossTracker())
                 }
             }
 
@@ -552,7 +553,10 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
             R.id.action_import -> {
 
-                showImportDialog()
+                context?.let {
+                    ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
+                        .showImportDialog(this)
+                }
                 // (activity as? MainActivity)?.launchImport()
 
             }
@@ -573,88 +577,5 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showImportDialog() {
-        var importArray: Array<String?> = arrayOf(
-            getString(R.string.import_source_local),
-            // getString(R.string.import_source_cloud),
-        )
-
-        if (mPref.getBoolean(mKeyUtil.brapiEnabled, false)) {
-            val displayName = mPref.getString(
-                mKeyUtil.brapiDisplayName,
-                getString(R.string.brapi_edit_display_name_default)
-            ) ?: getString(R.string.brapi_edit_display_name_default)
-
-            importArray = importArray.copyOf(importArray.size + 1).apply {
-                this[1] = displayName
-            }
-        }
-
-        val icons = IntArray(importArray.size).apply {
-            this[0] = R.drawable.ic_file_generic
-            // this[1] = R.drawable.ic_file_cloud
-            if (importArray.size > 1) {
-                this[1] = R.drawable.ic_adv_brapi
-            }
-        }
-
-        val onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                when (position) {
-                    0 -> loadLocalPermission()
-                    // 1 -> loadCloud()
-                    // 2 ->loadBrAPI()
-                }
-            }
-
-        // TODO: remove this array size checking when BrAPI is added in the app
-        if (importArray.size == 1) loadLocalPermission()
-        else activity?.let {
-            val dialog = ListAddDialog(it, getString(R.string.import_file), importArray, icons, onItemClickListener)
-            dialog.show(it.supportFragmentManager, "ListAddDialog")
-        }
-    }
-
-    @AfterPermissionGranted(1)
-    private fun loadLocalPermission() {
-        context?.let {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                val perms = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                if (EasyPermissions.hasPermissions(it, *perms)) {
-                    loadLocal()
-                } else {
-                    EasyPermissions.requestPermissions(
-                        this,
-                        getString(R.string.permission_rationale_storage_import),
-                        PERMISSIONS_REQUEST_STORAGE,
-                        *perms
-                    )
-                }
-            } else loadLocal()
-        }
-    }
-
-    private fun loadLocal() {
-        try {
-            context?.let { ctx ->
-                val importDir = getDirectory(ctx, R.string.dir_parents_import)
-                if (importDir != null && importDir.exists()) {
-                    FileExploreDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putString("dialogTitle", ctx.getString(R.string.dialog_import_parents_title))
-                            putString("path", importDir.uri.toString())
-                            putStringArray("include", arrayOf("csv", "xls", "xlsx"))
-                        }
-                        setOnFileSelectedListener { uri ->
-                            (activity as MainActivity).importFromUri(uri)
-                        }
-                    }.show(parentFragmentManager, "FileExploreDialogFragment")
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 }

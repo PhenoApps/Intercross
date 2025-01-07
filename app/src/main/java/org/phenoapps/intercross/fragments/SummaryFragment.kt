@@ -2,28 +2,22 @@ package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.WishlistRepository
@@ -39,7 +33,6 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentDataSummaryBinding
-import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.observeOnce
 import java.util.*
 
@@ -109,13 +102,9 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         //but that could only happen if someone used the database inspector
         startObservers()
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        bottomNavBar.selectedItemId = R.id.action_nav_summary
 
         setupBottomNavBar()
-
-        summaryTabLayout.getTabAt(1)?.select()
-
-        setupTabLayout()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -149,26 +138,12 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         updateToolbarWishlistIcon()
 
-        mBinding.summaryTabLayout.getTabAt(2)?.select()
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
+        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_summary
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = true
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = true
-
-    }
-
-    private fun FragmentDataSummaryBinding.setupTabLayout() {
-
-        summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.position) {
-                0 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(SummaryFragmentDirections.actionToCrossTracker())
-            }
-        })
     }
 
     //used to load label/value pair data into the adapter's view holder
@@ -193,7 +168,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
                     findNavController().navigate(SummaryFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(SummaryFragmentDirections.globalActionToCrossTracker())
 

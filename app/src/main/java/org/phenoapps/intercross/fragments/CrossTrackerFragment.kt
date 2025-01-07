@@ -179,13 +179,13 @@ class CrossTrackerFragment :
             layoutManager = LinearLayoutManager(context)
         }
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
         setupBottomNavBar()
 
-        summaryTabLayout.getTabAt(0)?.select()
+        // summaryTabLayout.getTabAt(0)?.select()
 
-        setupTabLayout()
+        // setupTabLayout()
 
         eventsModel.events.observe(viewLifecycleOwner) {
             mEvents = it
@@ -468,17 +468,17 @@ class CrossTrackerFragment :
         }
     }
 
-    private fun FragmentCrossTrackerBinding.setupTabLayout() {
-
-        summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.position) {
-                1 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(CrossTrackerFragmentDirections.actionToSummary())
-            }
-        })
-    }
+    // private fun FragmentCrossTrackerBinding.setupTabLayout() {
+    //
+    //     summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
+    //
+    //         when (tab?.position) {
+    //             1 ->
+    //                 Navigation.findNavController(mBinding.root)
+    //                     .navigate(CrossTrackerFragmentDirections.actionToSummary())
+    //         }
+    //     })
+    // }
 
     override fun onResume() {
         super.onResume()
@@ -487,7 +487,7 @@ class CrossTrackerFragment :
 
         updateToolbarWishlistIcon()
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
     }
 
@@ -578,6 +578,11 @@ class CrossTrackerFragment :
                 R.id.action_nav_preferences -> {
 
                     findNavController().navigate(CrossTrackerFragmentDirections.globalActionToPreferencesFragment())
+                }
+                R.id.action_nav_summary -> {
+
+                    findNavController().navigate(CrossTrackerFragmentDirections.actionToSummary())
+
                 }
                 R.id.action_nav_parents -> {
 

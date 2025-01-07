@@ -65,7 +65,8 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
 
         setHasOptionsMenu(true)
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        setBottomNavBarSelection()
+        // bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
         setupBottomNavBar()
 
@@ -170,12 +171,34 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
     override fun onResume() {
         super.onResume()
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
+        setBottomNavBarSelection()
+    }
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
-
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = true
-
+    private fun setBottomNavBarSelection() {
+        // set bottom nav selected item based on previous fragment
+        val previousFragment = findNavController().previousBackStackEntry?.destination?.id
+        when (previousFragment) {
+            R.id.summary_fragment -> {
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
+                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_summary
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = true
+            }
+            R.id.cross_tracker_fragment -> {
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = false
+                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = true
+            }
+            R.id.events_fragment -> {
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_home).isEnabled = false
+                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_home
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_home).isEnabled = true
+            }
+            else -> { // default
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = false
+                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
+                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = true
+            }
+        }
     }
 
     //a quick wrapper function for tab selection
@@ -206,9 +229,14 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
                     findNavController().navigate(CrossBlockFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(CrossBlockFragmentDirections.globalActionToCrossTracker())
+
+                }
+                R.id.action_nav_summary -> {
+
+                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToSummary())
 
                 }
             }

@@ -602,4 +602,11 @@
     <!--  SearchFragment  -->
     <string name="search_fragment_title">Search</string>
 
+    <!--  BottomNavBar  -->
+    <string name="bottom_nv_home">Home</string>
+    <string name="bottom_nv_crosses">Crosses</string>
+    <string name="bottom_nv_summary">Graphs</string>
+    <string name="bottom_nv_parents">Parents</string>
+    <string name="bottom_nv_settings">Settings</string>
+
 </resources>

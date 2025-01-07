@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -450,7 +449,12 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                     findNavController().navigate(EventsFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_summary -> {
+
+                    findNavController().navigate(EventsFragmentDirections.actionToSummary())
+
+                }
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
 

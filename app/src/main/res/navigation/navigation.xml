@@ -204,6 +204,11 @@
                 app:argType="integer"
                 android:defaultValue="0"/>
         </action>
+
+        <action android:id="@+id/action_to_summary"
+            app:destination="@id/summary_fragment"
+            app:popUpTo="@id/parents_fragment">
+        </action>
     </fragment>
 
     <fragment
@@ -366,6 +371,11 @@
     <action android:id="@+id/global_action_to_cross_tracker"
         app:destination="@id/cross_tracker_fragment"
         app:popUpTo="@id/cross_tracker_fragment"
+        app:launchSingleTop="true"/>
+
+    <action android:id="@+id/global_action_to_summary"
+        app:destination="@id/summary_fragment"
+        app:popUpTo="@id/summary_fragment"
         app:launchSingleTop="true"/>
 
     <action android:id="@+id/global_action_to_wishlist_import"

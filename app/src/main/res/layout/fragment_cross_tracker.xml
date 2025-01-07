@@ -26,28 +26,6 @@
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/summary_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/frag_cross_tracker_tb"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_tag_black_24dp"/>
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_summarize_graph"/>
-        </com.google.android.material.tabs.TabLayout>
-
-        <!-- Add ChipGroup for filters -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/filter_chip_group"
             android:layout_width="wrap_content"
@@ -56,7 +34,7 @@
             android:layout_marginTop="8dp"
             app:singleSelection="true"
             app:selectionRequired="true"
-            app:layout_constraintTop_toBottomOf="@id/summary_tab_layout"
+            app:layout_constraintTop_toBottomOf="@id/frag_cross_tracker_tb"
             app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.chip.Chip

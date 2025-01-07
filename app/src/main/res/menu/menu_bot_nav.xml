@@ -8,10 +8,12 @@
         android:id="@+id/action_nav_cross_count"
         android:icon="@drawable/ic_nv_summary"
         android:title="@string/crosses"/>
+        android:icon="@drawable/ic_nv_crosses"
     <item
         android:id="@+id/action_nav_parents"
         android:icon="@drawable/ic_nv_parents"
         android:title="@string/parents" />
+        android:icon="@drawable/ic_nv_parents_tab"
     <item
         android:id="@+id/action_nav_preferences"
         android:icon="@drawable/ic_nv_settings"

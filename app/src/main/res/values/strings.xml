@@ -599,4 +599,7 @@
     <string name="dialog_wish_progress_title">Wish Progress</string>
     <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
 
+    <!--  SearchFragment  -->
+    <string name="search_fragment_title">Search</string>
+
 </resources>

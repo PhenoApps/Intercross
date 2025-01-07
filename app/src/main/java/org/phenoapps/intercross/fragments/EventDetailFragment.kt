@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -110,7 +111,8 @@ class EventDetailFragment:
 
     override fun FragmentEventDetailBinding.afterCreateView() {
 
-        (activity as MainActivity).setToolbar()
+        (activity as MainActivity).setBackButtonToolbar()
+        (activity as AppCompatActivity).supportActionBar?.show()
 
         arguments?.getLong("eid")?.let { rowid ->
 

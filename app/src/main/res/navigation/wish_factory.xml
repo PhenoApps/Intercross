@@ -99,7 +99,7 @@
         <action android:id="@+id/action_from_wf_to_wishlist_back"
             app:popUpTo="@id/events_fragment"
             app:launchSingleTop="true"
-            app:destination="@id/wishlist_fragment"/>
+            app:destination="@id/cross_tracker_fragment"/>
     </fragment>
 
     <fragment

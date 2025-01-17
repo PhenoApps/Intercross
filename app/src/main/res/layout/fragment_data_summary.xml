@@ -12,6 +12,7 @@
             android:layout_width="match_parent"
             android:background="?attr/colorPrimary"
             android:gravity="center_vertical|start"
+            app:menu="@menu/summary_toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,47 +37,7 @@
                 android:layout="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_checklist_black_24dp"/>
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_crossblock" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_summarize_black_24dp"/>
-        </com.google.android.material.tabs.TabLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/data_summary_tab_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/summary_tab_layout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sex" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/type" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/meta" />
-
+                android:icon="@drawable/ic_summarize_graph"/>
         </com.google.android.material.tabs.TabLayout>
 
         <ScrollView
@@ -87,45 +48,128 @@
             android:fillViewport="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/data_summary_tab_layout"
+            app:layout_constraintTop_toBottomOf="@id/summary_tab_layout"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/data_summary_recycler_view"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/sex_summary_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    tools:itemCount="2"
-                    tools:listitem="@layout/list_item_summary" />
-
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/data_summary_pie_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="256dp"
                     android:layout_margin="8dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/cell"
-                    android:layout_below="@id/data_summary_recycler_view"/>
+                    app:cardElevation="4dp">
 
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/data_summary_bar_chart"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/graph_sex_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:padding="16dp"/>
+
+                        <TextView
+                            android:id="@+id/sex_no_data_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"
+                            android:visibility="gone"
+                            android:text="@string/graph_no_data_available"  />
+
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/sex_summary_pie_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="256dp"
+                            android:layout_margin="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/type_summary_card"
+                    android:layout_below="@id/sex_summary_card"
                     android:layout_width="match_parent"
-                    android:layout_height="256dp"
-                    android:layout_below="@id/data_summary_recycler_view"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/cell"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/graph_type_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:padding="16dp"/>
+
+                        <TextView
+                            android:id="@+id/type_no_data_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"
+                            android:visibility="gone"
+                            android:text="@string/graph_no_data_available"  />
+
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/type_summary_pie_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="256dp"
+                            android:layout_margin="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/metadata_summary_card"
+                    android:layout_below="@id/type_summary_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/graph_meta_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:padding="16dp"/>
+
+                        <TextView
+                            android:id="@+id/meta_no_data_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"
+                            android:visibility="gone"
+                            android:text="@string/graph_no_data_available"  />
+
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/metadata_summary_bar_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="256dp"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:background="@drawable/cell"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </RelativeLayout>
         </ScrollView>

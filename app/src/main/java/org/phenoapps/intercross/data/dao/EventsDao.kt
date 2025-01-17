@@ -36,6 +36,16 @@ interface EventsDao : BaseDao<Event> {
     fun getParentCount(): LiveData<List<ParentCount>>
 
     @Query("""
+    SELECT DISTINCT x.mom, female.name as "momReadable", x.dad, male.name as "dadReadable", 
+        x.person as "person", x.date as "date",
+        COUNT(*) as count
+    FROM events as x, parents as male, parents as female
+    WHERE x.dad = male.codeId and x.mom = female.codeId
+    GROUP BY x.mom, "momReadable", x.dad, "dadReadable", x.person, x.date
+""")
+    fun getAllParents(): LiveData<List<ParentCount>>
+
+    @Query("""
         SELECT m.codeId as momCode, m.name as momReadableName, d.codeId as dadCode, d.name as dadReadableName
         FROM parents as m, parents as d, events as e
         WHERE e.eid = :eid and e.mom = m.codeId and e.dad = d.codeId

@@ -34,6 +34,8 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
 
     val parents = eventRepo.getParentCount()
 
+    val allParents = eventRepo.getAllParents()
+
     val events = eventRepo.selectAll()
 
     val metadata = eventRepo.getMetadata()

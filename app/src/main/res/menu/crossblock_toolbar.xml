@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_parents_toolbar_initiate_wf"
-        android:icon="@drawable/ic_add_black_24dp"
+        android:icon="@drawable/ic_wishlist_add_white"
         android:title="@string/toolbar_parents_add_wish"
         app:showAsAction="ifRoom"/>
 </menu>

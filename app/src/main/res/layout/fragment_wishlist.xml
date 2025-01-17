@@ -45,13 +45,7 @@
                 android:layout="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:icon="@drawable/ic_crossblock" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_summarize_black_24dp"/>
+                android:icon="@drawable/ic_summarize_graph"/>
         </com.google.android.material.tabs.TabLayout>
 
         <com.evrencoskun.tableview.TableView

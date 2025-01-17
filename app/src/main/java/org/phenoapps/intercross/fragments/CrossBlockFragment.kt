@@ -4,9 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +24,7 @@ import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossBlockBinding
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.WishProgressColorUtil
 
 
 class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.layout.fragment_cross_block),
@@ -57,6 +56,12 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
     }
 
     override fun FragmentCrossBlockBinding.afterCreateView() {
+
+        (activity as MainActivity).setBackButtonToolbar()
+        (activity as MainActivity).supportActionBar?.apply {
+            title = getString(R.string.crossblock)
+            show()
+        }
 
         setHasOptionsMenu(true)
 
@@ -99,10 +104,6 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
                 }
             }
         }
-
-        summaryTabLayout.getTabAt(2)?.select()
-
-        setupTabLayout()
     }
 
     /**
@@ -123,11 +124,10 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
                 if (wish == null) {
                     row.add(CellData())
                 } else {
-                    val color = if (wish.wishProgress == 0) Color.GRAY
-                                else if (wish.wishProgress < wish.wishMin) Color.RED
-                                else if (wish.wishProgress >= wish.wishMin && wish.wishProgress < wish.wishMax) Color.YELLOW
-                                else Color.GREEN
-                    row.add(CellData(fid = wish.momId, mid = wish.dadId, progressColor = color))
+                    context?.let {
+                        val color = WishProgressColorUtil().getProgressColor(it, wish.wishProgress, wish.wishMin, wish.wishMax)
+                        row.add(CellData(fid = wish.momId, mid = wish.dadId, progressColor = color))
+                    }
                 }
             }
             data.add(row)
@@ -170,10 +170,6 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
     override fun onResume() {
         super.onResume()
 
-        (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragCrossBlockTb)
-
-        mBinding.summaryTabLayout.getTabAt(2)?.select()
-
         mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
 
         mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
@@ -189,35 +185,6 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
         }
         override fun onTabUnselected(tab: TabLayout.Tab?) {}
         override fun onTabReselected(tab: TabLayout.Tab?) {}
-    }
-
-    private fun FragmentCrossBlockBinding.setupTabLayout() {
-
-        summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.position) {
-                3 -> {
-
-                    if (mEvents.isNotEmpty()) {
-
-                        Navigation.findNavController(mBinding.root)
-                            .navigate(CrossBlockFragmentDirections.actionToSummary())
-                    } else {
-
-                        Dialogs.notify(AlertDialog.Builder(requireContext()), getString(R.string.crosses_empty))
-                        summaryTabLayout.getTabAt(2)?.select()
-
-                    }
-                }
-
-                0 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(CrossBlockFragmentDirections.actionToCrossCount())
-                1 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(CrossBlockFragmentDirections.actionToWishlist())
-            }
-        })
     }
 
     private fun FragmentCrossBlockBinding.setupBottomNavBar() {
@@ -241,7 +208,7 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
                 }
                 R.id.action_nav_cross_count -> {
 
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToCrossCount())
+                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToCrossTracker())
 
                 }
             }

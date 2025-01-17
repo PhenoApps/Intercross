@@ -190,7 +190,9 @@
     <string name="summary_label">Summary</string>
     <string name="cross_block_label">Cross Block</string>
     <string name="no_crosses_made">None</string>
-    <string name="wishlist_min_legend_label">Less than minimum</string>
+    <string name="wishlist_less_than_one_third">&lt;=33%</string>
+    <string name="wishlist_less_than_two_third">&lt;=66%</string>
+    <string name="wishlist_more_than_two_third">&gt;=66%</string>
     <string name="wishlist_achieved_legend_label">Minimum</string>
     <string name="wishlist_maximum_met_legend_label">Maximum</string>
     <string name="delete_all_wishlist_title">Delete entire wishlist?</string>
@@ -221,6 +223,11 @@
     <string name="brapi_oidc_url_desc">The location of the OIDC Discovery JSON document</string>
     <string name="brapi_oidc_url_default">https://test-server.brapi.org/.well-known/openid-configuration</string>
     <string name="main_barcode_text">Scan a barcode</string>
+
+    <string name="graph_sex_title">Sex</string>
+    <string name="graph_type_title">Type</string>
+    <string name="graph_meta_title">Metadata</string>
+    <string name="graph_no_data_available">No data available</string>
 
     <string name="meta">Meta</string>
     <string name="type">Type</string>
@@ -273,6 +280,7 @@
     <string name="wf_must_choose_at_least_one_parent">You must choose at least one parent.</string>
     <string name="wf_no_male_chosen_assuming_self_cross">No male chosen, assuming self cross.</string>
     <string name="literal_cross">cross</string>
+    <string name="frag_wf_toolbar_title">New Wishlist Item</string>
     <string name="frag_wf_male_choice_summary">Please choose a male to pair with %s</string>
     <string name="frag_wf_choose_type_summary">Please choose a wish type for %s and %s pair.</string>
     <string name="frag_wf_values_summary">Please choose a minimum and maximum number of %s for %s and %s pair.</string>
@@ -284,7 +292,10 @@
     <string name="maximum_wish_met">Maximum wish met for %s.</string>
     <string name="frag_wf_a_female_must_be_chosen">A female must be chosen.</string>
     <string name="menu_cross_count_delete_all_title">Delete All</string>
-    <string name="dialog_cross_count_delete_all_message">This will irreversably delete all crosses.</string>
+    <string name="dialog_cross_count_delete_all_message">This will irreversibly delete all (%s) crosses.</string>
+    <string name="dialog_cross_count_delete_both">planned and unplanned</string>
+    <string name="dialog_cross_count_delete_planned">planned</string>
+    <string name="dialog_cross_count_delete_unplanned">unplanned</string>
     <string name="dialog_cross_count_delete_all_message_2">Are you sure?</string>
     <string name="menu_cross_count_expand_more">Expand Columns</string>
     <string name="menu_cross_count_expand_less_title">Expand Less</string>
@@ -520,6 +531,7 @@
     <string name="profile_require_user">Require User to Collect</string>
     <string name="profile_verification_interval">Verification Interval</string>
     <string name="profile_person_title">Set Person</string>
+    <string name="dialog_ok">Ok</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_export">Export</string>
@@ -553,6 +565,7 @@
 
     <!-- Import  -->
     <string name="dialog_import_parents_title">Import Parents</string>
+    <string name="dialog_import_wishlist_title">Import Wishlist</string>
     <string name="dialog_import_loading_sample">Importing Sample Data…</string>
     <string name="load_sample_success_toast">Sample data was imported</string>
     <string name="load_sample_failed_toast">Sample data could not be imported</string>
@@ -579,5 +592,22 @@
     <string name="app_intro_load_sample_parents_summary">Import a sample parents data.</string>
     <string name="app_intro_load_sample_wishlist_title">Wishlist</string>
     <string name="app_intro_load_sample_wishlist_summary">Import a sample wishlist data including parents.</string>
+
+    <!-- CrossesTrackerFragment -->
+    <string name="crosses_all_filter">All</string>
+    <string name="crosses_unplanned_filter">Unplanned</string>
+    <string name="crosses_planned_filter">Planned</string>
+    <string name="no_crosses_text">No data available.</string>
+    <string name="cross_tracker_item_count">123</string>
+    <string name="cross_tracker_item_female">female parent</string>
+    <string name="cross_tracker_item_male">male parent</string>
+    <string name="cross_tracker_item_person">Person</string>
+    <string name="cross_tracker_item_date">2024-12-20</string>
+    <string name="cross_tracker_item_progress">5/5</string>
+    <string name="dialog_crosses_by_persons">Crosses by Persons</string>
+    <string name="dialog_crosses_by_person_known_message">%d crosses collected by unknown persons</string>
+    <string name="dialog_crosses_by_dates">Crosses by Dates</string>
+    <string name="dialog_wish_progress_title">Wish Progress</string>
+    <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
 
 </resources>

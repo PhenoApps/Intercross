@@ -77,7 +77,10 @@ class FemaleChoiceFragment : IntercrossBaseFragment<FragmentWfChooseFemaleBindin
     override fun onResume() {
         super.onResume()
         (activity as MainActivity).setBackButtonToolbar()
-        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title = getString(R.string.frag_wf_toolbar_title)
+            show()
+        }
     }
 
     override fun onItemClicked(pair: Pair<String, String>) {

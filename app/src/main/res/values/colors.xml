@@ -10,5 +10,10 @@
     <color name="progressStart">#90FFFF00</color>
     <color name="progressMid">#90FF0000</color>
     <color name="progressEnd">#9000FF00</color>
+    <color name="progressMax">#2E7D32</color>
+    <color name="progressMin">#8BC34A</color>
+    <color name="progressMoreThanTwoThird">#FFEB3B</color>
+    <color name="progressLessThanTwoThird">#FF9800</color>
+    <color name="progressLessThanOneThird">#F44336</color>
 
 </resources>

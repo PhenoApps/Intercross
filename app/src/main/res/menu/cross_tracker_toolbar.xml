@@ -2,24 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_parents_toolbar_initiate_wf"
-        android:icon="@drawable/ic_add_black_24dp"
-        android:title="@string/toolbar_parents_add_wish"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/action_import"
         android:icon="@drawable/ic_nv_import_white"
         android:title="@string/import_file"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/action_parents_toolbar_initiate_wf"
+        android:icon="@drawable/ic_wishlist_add_white"
+        android:title="@string/toolbar_parents_add_wish"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/action_to_crossblock"
         android:icon="@drawable/ic_crossblock"
-        android:title="@string/dialog_save"
-        app:showAsAction="always"
-        android:visible="false"/>
+        android:title="@string/crossblock"
+        app:showAsAction="always"/>
     <item
-        android:id="@+id/action_wishlist_delete_all"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:id="@+id/action_cross_count_delete_all"
+        android:icon="@drawable/ic_menu_delete"
         android:title="@string/menu_cross_count_delete_all_title"
         app:showAsAction="always"/>
 </menu>

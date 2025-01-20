@@ -136,6 +136,10 @@ class EventDetailFragment:
                 this@EventDetailFragment)
 
             refreshObservers()
+
+            printButton.setOnClickListener {
+                startPrintProcess()
+            }
         }
     }
 
@@ -311,41 +315,6 @@ class EventDetailFragment:
                     // update visibility of metadata section
                     mBinding.metaDataVisibility = getMetaDataVisibility(requireContext())
                 }
-                R.id.action_print -> {
-
-                    context?.let { ctx ->
-
-                        var permit = true
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                                && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                                permit = true
-                            } else {
-                                requestBluetoothPermissions.launch(arrayOf(
-                                    android.Manifest.permission.BLUETOOTH_SCAN,
-                                    android.Manifest.permission.BLUETOOTH_CONNECT
-                                ))
-                            }
-                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
-                                && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
-                                permit = true
-                            } else {
-                                requestBluetoothPermissions.launch(arrayOf(
-                                    android.Manifest.permission.BLUETOOTH,
-                                    android.Manifest.permission.BLUETOOTH_ADMIN
-                                ))
-                            }
-                        }
-
-                        if (permit) {
-
-                            BluetoothUtil().print(requireContext(), arrayOf(mEvent))
-
-                        }
-                    }
-
-                }
                 R.id.action_delete -> {
 
                     Dialogs.onOk(AlertDialog.Builder(requireContext()),
@@ -415,6 +384,40 @@ class EventDetailFragment:
                 Dialogs.notify(AlertDialog.Builder(ctx), getString(R.string.maximum_wish_met, property))
             } else if (propertyWishes.any { wish -> wish.wishMin in 1..value }) {
                 Dialogs.notify(AlertDialog.Builder(ctx), getString(R.string.minimum_wish_met, property))
+            }
+        }
+    }
+
+    private fun startPrintProcess() {
+        context?.let { ctx ->
+
+            var permit = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH_SCAN,
+                        android.Manifest.permission.BLUETOOTH_CONNECT
+                    ))
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_ADMIN
+                    ))
+                }
+            }
+
+            if (permit) {
+
+                BluetoothUtil().print(requireContext(), arrayOf(mEvent))
+
             }
         }
     }

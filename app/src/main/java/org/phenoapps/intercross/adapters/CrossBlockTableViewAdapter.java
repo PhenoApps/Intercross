@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
@@ -150,6 +151,10 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
 
          if (columnHeaderItemModel != null) {
              columnHeaderViewHolder.textView.setText(columnHeaderItemModel.getText());
+
+             columnHeaderViewHolder.itemView.setOnClickListener(v -> {
+                 Toast.makeText(v.getContext(), columnHeaderItemModel.getText(), Toast.LENGTH_SHORT).show();
+             });
          }
 
          // If your TableView should have auto resize for cells & columns.
@@ -207,6 +212,10 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
 
          if (rowHeaderItemModel != null) {
              rowHeaderViewHolder.textView.setText(rowHeaderItemModel.getText());
+
+             rowHeaderViewHolder.itemView.setOnClickListener(v -> {
+                 Toast.makeText(v.getContext(), rowHeaderItemModel.getText(), Toast.LENGTH_SHORT).show();
+             });
          }
 
          rowHeaderViewHolder.linearLayout.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;

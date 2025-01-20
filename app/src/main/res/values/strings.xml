@@ -598,6 +598,9 @@
     <string name="dialog_crosses_by_dates">Crosses by Dates</string>
     <string name="dialog_wish_progress_title">Wish Progress</string>
     <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
+    <string name="crosses_toolbar_hide_completed">Hide completed wishlist items</string>
+    <string name="crosses_toolbar_show_completed">Show completed wishlist items</string>
+
 
     <!--  SearchFragment  -->
     <string name="search_fragment_title">Search</string>

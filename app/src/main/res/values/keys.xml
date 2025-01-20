@@ -78,4 +78,7 @@
 
     <!-- About preference keys -->
     <string name="key_pref_about">&package;ABOUT</string>
+
+    <!--  CrossTracker  -->
+    <string name="key_show_completed_wishlist_items">&package;SHOW_COMPLETED</string>
 </resources>

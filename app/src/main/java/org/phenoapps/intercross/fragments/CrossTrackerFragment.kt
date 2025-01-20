@@ -8,7 +8,6 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -429,7 +428,19 @@ class CrossTrackerFragment :
         filteredData: List<ListEntry>,
         commutativeCrossingEnabled: Boolean
     ): List<ListEntry> {
-        return filteredData.groupBy { cross ->
+        val showCompleted = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+
+        // filter out completed wishlist items if needed
+        val dataToGroup = if (!showCompleted) {
+            filteredData.filter { entry ->
+                when (entry) {
+                    is PlannedCrossData -> entry.progress.toInt() < entry.wishMin.toInt()
+                    else -> true // keep all unplanned crosses
+                }
+            }
+        } else filteredData
+
+        return dataToGroup.groupBy { cross ->
             if (commutativeCrossingEnabled) {
                 if (cross.male < cross.female) "${cross.male}${cross.female}".hashCode()
                 else "${cross.female}${cross.male}".hashCode()
@@ -504,6 +515,12 @@ class CrossTrackerFragment :
 
         systemMenu = menu
 
+        systemMenu?.findItem(R.id.action_toggle_completed_wishlist_visibility)?.let { menuItem ->
+            // set icon based on preference
+            val currentValue = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+            setToggleVisibilityIcon(menuItem, currentValue)
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -513,6 +530,13 @@ class CrossTrackerFragment :
 
     private fun updateNoDataTextVisibility(data: List<ListEntry>) {
         mBinding.noDataText.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun setToggleVisibilityIcon(menuItem: MenuItem, newValue: Boolean) {
+        mPref.edit().putBoolean(mKeyUtil.showCompletedWishlistItems, newValue).apply()
+
+        menuItem.setIcon(if (newValue) R.drawable.ic_show_wishlist_completed else R.drawable.ic_hide_wishlist_completed)
+        menuItem.setTitle(if (newValue) R.string.crosses_toolbar_hide_completed else R.string.crosses_toolbar_show_completed)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -526,6 +550,18 @@ class CrossTrackerFragment :
                 }
 
                 findNavController().navigate(R.id.cross_tracker_fragment)
+            }
+            R.id.action_toggle_completed_wishlist_visibility -> {
+                val currentValue = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+                val newValue = !currentValue
+
+                setToggleVisibilityIcon(item, newValue)
+
+                val commutativeCrossingEnabled = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+
+                crossAdapter.submitList(groupCrosses(filterResults(), commutativeCrossingEnabled)) {
+                    mBinding.crossesRecyclerView.scrollToPosition(0)
+                }
             }
             R.id.action_parents_toolbar_initiate_wf -> {
                 findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToWishFactory())

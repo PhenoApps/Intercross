@@ -438,7 +438,8 @@ class CrossTrackerFragment :
                     is PlannedCrossData -> firstCross.copy(
                         count = totalCount,
                         persons = persons,
-                        dates = dates
+                        dates = dates,
+                        progress = entry.value.sumOf { it.count.toInt() }.toString()
                     )
                     else -> firstCross // this will never be executed
                 }

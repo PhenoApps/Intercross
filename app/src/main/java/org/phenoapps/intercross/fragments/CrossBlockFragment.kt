@@ -22,13 +22,16 @@ import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossBlockBinding
+import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import org.phenoapps.intercross.util.WishProgressColorUtil
 
 
 class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.layout.fragment_cross_block),
-    ITableViewListener {
+    ITableViewListener,
+    EventClickListener {
 
     private val eventsModel: EventListViewModel by viewModels {
         EventsListViewModelFactory(EventsRepository.getInstance(db.eventsDao()))
@@ -54,6 +57,21 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
     private val mKeyUtil by lazy {
         KeyUtil(context)
     }
+    private val mShowChildrenDialogUtil by lazy {
+        ShowChildrenDialogUtil(
+            this,
+            context,
+            { male, female ->
+                findNavController()
+                    .navigate(CrossBlockFragmentDirections
+                        .actionFromCrossblockToEventsList(male, female))
+            },
+            eventsModel,
+            this,
+            mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+        )
+    }
+
 
     override fun FragmentCrossBlockBinding.afterCreateView() {
 
@@ -252,36 +270,6 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
         setHasOptionsMenu(true)
     }
 
-    private fun showChildren(mid: String, fid: String) {
-        val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
-
-        context?.let { ctx ->
-
-            val children = mEvents.filter { event ->
-                if (isCommutativeCrossing) {
-                    (event.maleObsUnitDbId == mid && event.femaleObsUnitDbId == fid) ||
-                            (event.maleObsUnitDbId == fid && event.femaleObsUnitDbId == mid)
-                } else {
-                    event.femaleObsUnitDbId == fid && event.maleObsUnitDbId == mid
-                }
-            }
-
-            Dialogs.listAndBuildCross(AlertDialog.Builder(ctx),
-                getString(R.string.click_item_to_open_child),
-                getString(R.string.no_child_exists),
-                mid, fid, children, { id ->
-
-                    findNavController()
-                        .navigate(CrossBlockFragmentDirections
-                            .actionToEventDetail(id))
-                }) { male, female ->
-
-                findNavController()
-                    .navigate(CrossBlockFragmentDirections
-                        .actionFromCrossblockToEventsList(male, female))
-            }
-        }
-    }
     override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
         mBinding.fragmentCrossblockTableView.adapter?.getCellItem(column, row)?.let { r ->
 
@@ -291,10 +279,17 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
 
             mid?.let { maleId ->
                 fid?.let { femaleId ->
-                    showChildren(maleId, femaleId)
+                    mShowChildrenDialogUtil.showChildren(mEvents, maleId, femaleId)
                 }
             }
         }
+    }
+
+    override fun onEventClick(eventId: Long) {
+        mShowChildrenDialogUtil.dismiss()
+        findNavController()
+            .navigate(CrossBlockFragmentDirections
+                .actionToEventDetail(eventId))
     }
 
     override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {}

@@ -462,6 +462,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     fun setBackButtonToolbar() {
         setSupportActionBar(mBinding.mainTb)
 
+        supportActionBar?.title = null
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.hide()

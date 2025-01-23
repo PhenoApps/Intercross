@@ -17,7 +17,7 @@ Check the [user manual](https://intercross.phenoapps.org) and the [wiki](https:/
 Visit our [translation page](https://crowdin.com/project/intercross) to help translate Field Book to your language. To submit code or new features, please review our [contribution guidelines](https://github.com/PhenoApps/Field-Book/wiki/Contributing) before opening a [pull request](https://github.com/PhenoApps/Intercross/pulls).
 
 ## ⬇️ Updates
-Intercross is available on [Google Play version](https://play.google.com/store/apps/details?id=org.phenoapps.intercross). The most Up-to-date version can also be downloaded our [GitHub releases](https://github.com/PhenoApps/Field-Book/releases/latest).
+Intercross is available on [Google Play version](https://play.google.com/store/apps/details?id=org.phenoapps.intercross). The most Up-to-date version can also be downloaded our [GitHub releases](https://github.com/PhenoApps/Intercross/releases/latest).
 
 ## 💰 Funding 
 Development of Field Book is possible because of the support received from the following organizations:

@@ -235,14 +235,12 @@ class CrossTrackerFragment :
         val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
 
         val events = eventsModel.events.value ?: return
-        val relevantEvents = if (isCommutativeCrossing) {
-            events.filter { event ->
+        val relevantEvents = events.filter { event ->
+            if (isCommutativeCrossing) {
                 (event.maleObsUnitDbId == male && event.femaleObsUnitDbId == female) ||
                         (event.maleObsUnitDbId == female && event.femaleObsUnitDbId == male)
-            }
-        } else {
-            events.filter { event ->
-                event.maleObsUnitDbId == male && event.femaleObsUnitDbId == female
+            } else {
+                event.femaleObsUnitDbId == female && event.maleObsUnitDbId == male
             }
         }
 

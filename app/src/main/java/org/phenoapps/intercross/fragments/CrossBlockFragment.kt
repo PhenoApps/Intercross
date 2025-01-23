@@ -253,11 +253,17 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
     }
 
     private fun showChildren(mid: String, fid: String) {
+        val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
 
         context?.let { ctx ->
 
             val children = mEvents.filter { event ->
-                event.femaleObsUnitDbId == fid && event.maleObsUnitDbId == mid
+                if (isCommutativeCrossing) {
+                    (event.maleObsUnitDbId == mid && event.femaleObsUnitDbId == fid) ||
+                            (event.maleObsUnitDbId == fid && event.femaleObsUnitDbId == mid)
+                } else {
+                    event.femaleObsUnitDbId == fid && event.maleObsUnitDbId == mid
+                }
             }
 
             Dialogs.listAndBuildCross(AlertDialog.Builder(ctx),

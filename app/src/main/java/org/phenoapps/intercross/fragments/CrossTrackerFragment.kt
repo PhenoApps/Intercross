@@ -11,11 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.sort.ISortableModel
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.adapters.CrossTrackerAdapter
-import org.phenoapps.intercross.adapters.EventsAdapter
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.WishlistRepository
 import org.phenoapps.intercross.data.dao.EventsDao
@@ -32,6 +30,7 @@ import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import kotlin.collections.ArrayList
 
 /**
@@ -57,7 +56,6 @@ class CrossTrackerFragment :
 
     private var mWishlistEmpty = true
     private var mEvents: List<Event> = ArrayList()
-    private var childrenDialog: AlertDialog? = null
 
     private val mPref by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -65,6 +63,21 @@ class CrossTrackerFragment :
 
     private val mKeyUtil by lazy {
         KeyUtil(context)
+    }
+
+    private val mShowChildrenDialogUtil by lazy {
+        ShowChildrenDialogUtil(
+            this,
+            context,
+            { male, female ->
+                findNavController()
+                    .navigate(CrossTrackerFragmentDirections
+                        .actionFromCrossTrackerToEventsList(male, female))
+            },
+            eventsModel,
+            this,
+            mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+        )
     }
 
     private var systemMenu: Menu? = null
@@ -228,47 +241,6 @@ class CrossTrackerFragment :
             mWishlistEmpty = wishes.none { it.wishType == "cross" }
             updateToolbarWishlistIcon()
         }
-    }
-
-    private fun showChildren(male: String, female: String) {
-
-        val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
-
-        val events = eventsModel.events.value ?: return
-        val relevantEvents = events.filter { event ->
-            if (isCommutativeCrossing) {
-                (event.maleObsUnitDbId == male && event.femaleObsUnitDbId == female) ||
-                        (event.maleObsUnitDbId == female && event.femaleObsUnitDbId == male)
-            } else {
-                event.femaleObsUnitDbId == female && event.maleObsUnitDbId == male
-            }
-        }
-
-        showChildrenDialog(male, female, relevantEvents)
-    }
-
-    private fun showChildrenDialog(male: String, female: String, data: List<Event>) {
-
-        childrenDialog = AlertDialog.Builder(requireContext())
-            .setTitle(if (data.isNotEmpty()) getString(R.string.click_item_to_open_child) else getString(R.string.no_child_exists))
-            .setNegativeButton(R.string.cancel) { _, _ -> }
-            .setNeutralButton(R.string.make_cross_option) { _, _ ->
-                findNavController()
-                    .navigate(CrossTrackerFragmentDirections
-                        .actionFromCrossTrackerToEventsList(male, female))
-            }
-            .create()
-
-        val dialogView = layoutInflater.inflate(R.layout.dialog_cross_children, null)
-        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.children_rv)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        val eventsAdapter = EventsAdapter(this@CrossTrackerFragment, eventsModel, this@CrossTrackerFragment)
-        recyclerView.adapter = eventsAdapter
-        eventsAdapter.submitList(data)
-
-        childrenDialog?.setView(dialogView)
-        childrenDialog?.show()
     }
 
     private fun loadData() {
@@ -605,7 +577,7 @@ class CrossTrackerFragment :
     }
 
     override fun onCrossClicked(male: String, female: String) {
-        showChildren(male, female)
+        mShowChildrenDialogUtil.showChildren(mEvents, male, female)
     }
 
     override fun onPersonChipClicked(persons: List<PersonCount>, crossCount: Int) {
@@ -654,7 +626,7 @@ class CrossTrackerFragment :
     }
 
     override fun onEventClick(eventId: Long) {
-        childrenDialog?.dismiss()
+        mShowChildrenDialogUtil.dismiss()
         findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEventDetail(eventId))
     }
 }

@@ -38,6 +38,7 @@ import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.*
 import org.phenoapps.intercross.data.viewmodels.factory.*
 import org.phenoapps.intercross.databinding.FragmentEventsBinding
+import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.*
 import java.util.*
 import javax.inject.Inject
@@ -45,7 +46,8 @@ import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
-    CoroutineScope by MainScope() {
+    CoroutineScope by MainScope(),
+    EventClickListener {
 
     @Inject
     lateinit var verifyPersonHelper: VerifyPersonHelper
@@ -170,7 +172,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             } else mBinding.firstText.setText(female)
         }
 
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel)
+        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -471,7 +473,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     private fun FragmentEventsBinding.setupRecyclerView() {
 
         //setup recycler adapter
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel)
+        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
 
         val undoString = getString(R.string.undo)
 
@@ -891,5 +893,9 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         val langParams = experimentDialog?.window?.attributes
         langParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
         experimentDialog?.window?.attributes = langParams
+    }
+
+    override fun onEventClick(eventId: Long) {
+        findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
     }
 }

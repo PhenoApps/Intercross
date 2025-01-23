@@ -176,7 +176,7 @@
     <string name="count">Count</string>
     <string name="wish">Wish</string>
     <string name="no_child_exists">No child exists.</string>
-    <string name="click_item_for_child_details">Click item for child details.</string>
+    <string name="click_item_to_open_child">Click item to open child cross page.</string>
     <string name="about_title">About</string>
     <string name="barcode_scan_label">Barcode Scan</string>
     <string name="events_fragment_label">Events</string>

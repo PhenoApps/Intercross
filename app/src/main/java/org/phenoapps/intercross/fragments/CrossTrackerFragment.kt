@@ -11,10 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.sort.ISortableModel
-import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.adapters.CrossTrackerAdapter
+import org.phenoapps.intercross.adapters.EventsAdapter
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.WishlistRepository
 import org.phenoapps.intercross.data.dao.EventsDao
@@ -26,6 +27,7 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossTrackerBinding
 import org.phenoapps.intercross.interfaces.CrossController
+import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
@@ -38,7 +40,8 @@ import kotlin.collections.ArrayList
  */
 class CrossTrackerFragment :
     IntercrossBaseFragment<FragmentCrossTrackerBinding>(R.layout.fragment_cross_tracker),
-    CrossController {
+    CrossController,
+    EventClickListener {
 
     companion object {
         const val SORT_DELAY_MS = 500L
@@ -54,6 +57,7 @@ class CrossTrackerFragment :
 
     private var mWishlistEmpty = true
     private var mEvents: List<Event> = ArrayList()
+    private var childrenDialog: AlertDialog? = null
 
     private val mPref by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -230,78 +234,43 @@ class CrossTrackerFragment :
 
         val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
 
-        if (isCommutativeCrossing) showCommutativeChildren(male, female)
-        else showNonCommutativeChildren(male, female)
+        val events = eventsModel.events.value ?: return
+        val relevantEvents = if (isCommutativeCrossing) {
+            events.filter { event ->
+                (event.maleObsUnitDbId == male && event.femaleObsUnitDbId == female) ||
+                        (event.maleObsUnitDbId == female && event.femaleObsUnitDbId == male)
+            }
+        } else {
+            events.filter { event ->
+                event.maleObsUnitDbId == male && event.femaleObsUnitDbId == female
+            }
+        }
+
+        showChildrenDialog(male, female, relevantEvents)
     }
 
-    private fun showChildren(male: String, female: String, data: List<Event>) {
+    private fun showChildrenDialog(male: String, female: String, data: List<Event>) {
 
-        context?.let { ctx ->
-            Dialogs.listAndBuildCross(
-                AlertDialog.Builder(ctx),
-                getString(R.string.click_item_for_child_details),
-                getString(R.string.no_child_exists),
-                male, female, data, { id ->
-
-                    findNavController()
-                        .navigate(CrossTrackerFragmentDirections
-                            .globalActionToEventDetail(id))
-                }) { male, female ->
-
+        childrenDialog = AlertDialog.Builder(requireContext())
+            .setTitle(if (data.isNotEmpty()) getString(R.string.click_item_to_open_child) else getString(R.string.no_child_exists))
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNeutralButton(R.string.make_cross_option) { _, _ ->
                 findNavController()
                     .navigate(CrossTrackerFragmentDirections
                         .actionFromCrossTrackerToEventsList(male, female))
             }
-        }
-    }
+            .create()
 
-    //a quick wrapper function for tab selection
-    private fun tabSelected(onSelect: (TabLayout.Tab?) -> Unit) = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            onSelect(tab)
-        }
-        override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        override fun onTabReselected(tab: TabLayout.Tab?) {}
-    }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_cross_children, null)
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.children_rv)
+        recyclerView.layoutManager = LinearLayoutManager(context)
 
-    private fun showCommutativeChildren(male: String, female: String) {
+        val eventsAdapter = EventsAdapter(this@CrossTrackerFragment, eventsModel, this@CrossTrackerFragment)
+        recyclerView.adapter = eventsAdapter
+        eventsAdapter.submitList(data)
 
-        eventsModel.parents.observe(viewLifecycleOwner) {
-
-            it?.let {
-
-                eventsModel.events.observe(viewLifecycleOwner) { data ->
-
-                    data?.let { events ->
-
-                        showChildren(male, female, events.filter { e ->
-                            (e.maleObsUnitDbId == male && e.femaleObsUnitDbId == female)
-                                    || (e.maleObsUnitDbId == female && e.femaleObsUnitDbId == male)
-                        })
-                    }
-                }
-            }
-        }
-    }
-
-    private fun showNonCommutativeChildren(male: String, female: String) {
-
-        eventsModel.parents.observe(viewLifecycleOwner) {
-
-            it?.let {
-
-                eventsModel.events.observe(viewLifecycleOwner) { data ->
-
-                    data?.let { events ->
-
-                        showChildren(male, female, events.filter { e ->
-                            e.maleObsUnitDbId == male
-                                    && e.femaleObsUnitDbId == female
-                        })
-                    }
-                }
-            }
-        }
+        childrenDialog?.setView(dialogView)
+        childrenDialog?.show()
     }
 
     private fun loadData() {
@@ -683,5 +652,10 @@ class CrossTrackerFragment :
                 .setPositiveButton(getString(R.string.dialog_ok)) { d, _ -> d.dismiss() }
                 .show()
         }
+    }
+
+    override fun onEventClick(eventId: Long) {
+        childrenDialog?.dismiss()
+        findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEventDetail(eventId))
     }
 }

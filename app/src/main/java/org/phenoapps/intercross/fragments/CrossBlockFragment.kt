@@ -3,7 +3,6 @@ package org.phenoapps.intercross.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -23,7 +22,6 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossBlockBinding
 import org.phenoapps.intercross.interfaces.EventClickListener
-import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import org.phenoapps.intercross.util.WishProgressColorUtil

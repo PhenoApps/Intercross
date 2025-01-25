@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/sex_summary_card"
+                    android:id="@+id/crosses_over_time_summary_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -49,12 +49,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/graph_sex_title"
+                            android:text="@string/graph_cross_over_time_title"
                             android:textAppearance="?attr/textAppearanceHeadline6"
                             android:padding="16dp"/>
 
                         <TextView
-                            android:id="@+id/sex_no_data_text"
+                            android:id="@+id/crosses_no_data_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingHorizontal="16dp"
@@ -62,17 +62,17 @@
                             android:visibility="gone"
                             android:text="@string/graph_no_data_available"  />
 
-                        <com.github.mikephil.charting.charts.PieChart
-                            android:id="@+id/sex_summary_pie_chart"
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/crosses_over_time_chart"
                             android:layout_width="match_parent"
                             android:layout_height="256dp"
-                            android:layout_margin="8dp"/>
+                            android:layout_margin="8dp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/type_summary_card"
-                    android:layout_below="@id/sex_summary_card"
+                    android:layout_below="@id/crosses_over_time_summary_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"

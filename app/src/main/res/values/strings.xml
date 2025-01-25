@@ -224,7 +224,7 @@
     <string name="brapi_oidc_url_default">https://test-server.brapi.org/.well-known/openid-configuration</string>
     <string name="main_barcode_text">Scan a barcode</string>
 
-    <string name="graph_sex_title">Sex</string>
+    <string name="graph_cross_over_time_title">Crosses over time</string>
     <string name="graph_type_title">Type</string>
     <string name="graph_meta_title">Metadata</string>
     <string name="graph_no_data_available">No data available</string>

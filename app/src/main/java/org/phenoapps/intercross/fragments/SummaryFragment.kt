@@ -6,12 +6,15 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
@@ -33,6 +36,7 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentDataSummaryBinding
+import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.observeOnce
 import java.util.*
 
@@ -93,8 +97,8 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
     override fun FragmentDataSummaryBinding.afterCreateView() {
 
         //initialize pie chart parameters, this is mostly taken from the github examples
-        setupPieChart(sexSummaryPieChart)
         setupPieChart(typeSummaryPieChart)
+        setupLineChart(crossesOverTimeChart)
         setupBarChart()
 
         //listen to events and parents once and then displays the data
@@ -194,14 +198,10 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
             mEvents = data
 
-            parentsModel.parents.observeOnce(viewLifecycleOwner) { parents ->
+            val (dataset, xAxisLabels) = setCrossesOverTimeData()
+            setData(crossesOverTimeChart, crossesNoDataText, dataset, xAxisLabels)
 
-                mParents = parents
-
-                setData(sexSummaryPieChart, setSexData(), ChartType.SEX)
-            }
-
-            setData(typeSummaryPieChart, setTypeData(), ChartType.TYPE)
+            setData(typeSummaryPieChart, typeNoDataText, setTypeData())
         }
 
         wishModel.wishlist.observe(viewLifecycleOwner) { wishes ->
@@ -355,19 +355,90 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         }
     },"Meta Data Statistics")
 
-    //sets the accumulated data into the piechart and recycler view, along with some misc. parameter setting
-    private fun FragmentDataSummaryBinding.setData(dataPieChart: PieChart, dataset: PieDataSet, chartType: ChartType) {
-        if (dataset.entryCount == 0) {
-            when (chartType) {
-                ChartType.SEX -> sexNoDataText.visibility = View.VISIBLE
-                ChartType.TYPE -> typeNoDataText.visibility = View.VISIBLE
+    private fun setupLineChart(lineChart: LineChart) {
+        lineChart.apply {
+            description.isEnabled = false
+            setTouchEnabled(true)
+            isDragEnabled = true
+            setScaleEnabled(true)
+
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setAvoidFirstLastClipping(true)
             }
+            axisRight.isEnabled = false
+
+            legend.isEnabled = false
+        }
+    }
+
+    private fun setCrossesOverTimeData(): Pair<LineDataSet, List<String>> {
+        val entries = ArrayList<Entry>()
+        var xAxisLabels = listOf<String>()
+
+        if (::mEvents.isInitialized && mEvents.isNotEmpty()) {
+
+            val sortedEvents = mEvents.sortedBy { it.timestamp }
+
+            // group by dates
+            val groupedDates = sortedEvents.groupBy { DateUtil().getFormattedDate(it.timestamp) }
+            val dateCounts = groupedDates.mapValues { it.value.size }
+            val uniqueDates = dateCounts.keys.sorted()
+
+            var cumulative = 0
+            val labels = mutableListOf<String>()
+            uniqueDates.forEachIndexed { index, dateString ->
+                cumulative += dateCounts[dateString] ?: 0
+                entries.add(Entry(index.toFloat(), cumulative.toFloat()))
+                labels.add(dateString)
+            }
+
+            xAxisLabels = labels
+        }
+
+        val dataSet = LineDataSet(entries, "Cumulative Crosses").apply {
+            color = ColorTemplate.VORDIPLOM_COLORS[0]
+            lineWidth = 2f
+            setDrawCircles(false)
+            setDrawValues(false)
+            mode = LineDataSet.Mode.LINEAR
+            cubicIntensity = 0.2f
+        }
+
+        return dataSet to xAxisLabels
+    }
+
+    private fun FragmentDataSummaryBinding.setData(lineChart: LineChart, chartNoDataText: TextView, dataset: LineDataSet, xAxisLabels: List<String>) {
+
+        if (dataset.entryCount == 0) {
+            chartNoDataText.visibility = View.VISIBLE
+            lineChart.visibility = View.GONE
+            return
+        }
+
+        chartNoDataText.visibility = View.GONE
+        lineChart.visibility = View.VISIBLE
+
+        val lineData = LineData(dataset)
+        lineChart.data = lineData
+
+        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(xAxisLabels)
+
+        lineChart.invalidate()
+    }
+
+    //sets the accumulated data into the piechart and recycler view, along with some misc. parameter setting
+    private fun FragmentDataSummaryBinding.setData(dataPieChart: PieChart, chartNoDataText: TextView, dataset: PieDataSet) {
+        if (dataset.entryCount == 0) {
+            chartNoDataText.visibility = View.VISIBLE
             dataPieChart.visibility = View.GONE
             return
         }
 
         activity?.currentFocus?.clearFocus()
 
+        chartNoDataText.visibility = View.GONE
         dataPieChart.visibility = View.VISIBLE
 
         dataPieChart.animateY(1400, Easing.EaseInOutQuad)
@@ -437,9 +508,5 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         // undo all highlights
         metadataSummaryBarChart.highlightValues(null)
         metadataSummaryBarChart.invalidate()
-    }
-
-    private enum class ChartType {
-        SEX, TYPE
     }
 }

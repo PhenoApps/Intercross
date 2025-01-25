@@ -28,6 +28,7 @@ class AppIntroActivity :  AppIntro() {
         )
 
         // gallery slide
+        /*
        addSlide(
            GallerySlideFragment.newInstance(
                context.getString(R.string.app_intro_intro_title_slide2),
@@ -35,6 +36,7 @@ class AppIntroActivity :  AppIntro() {
                R.color.colorPrimaryDark
            )
        )
+        */
 
         // required setup
         addSlide(

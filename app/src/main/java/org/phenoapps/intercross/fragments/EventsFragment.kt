@@ -33,6 +33,8 @@ import org.phenoapps.intercross.data.*
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.Meta
+import org.phenoapps.intercross.data.models.MetadataValues
+import org.phenoapps.intercross.data.models.PollenGroup
 import org.phenoapps.intercross.data.models.Settings
 import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.*
@@ -213,9 +215,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                         true
                     }
                     R.id.action_export -> {
-                        (activity as MainActivity).showExportDialog {
-                            
-                        }
+                        // (activity as MainActivity).showExportDialog {
+                        //
+                        // }
+                        showCrossesExport()
                         true
                     }
                     else -> false
@@ -895,6 +898,26 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         experimentDialog?.window?.attributes = langParams
     }
 
+    private fun showCrossesExport() {
+        val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
+        val fileName = "${defaultFileNamePrefix}_${DateUtil().getTime()}"
+
+        val inflater = (activity as MainActivity).layoutInflater
+        val layout = inflater.inflate(R.layout.dialog_export, null)
+        val fileNameET = layout.findViewById<EditText>(R.id.file_name)
+
+        fileNameET.setText(fileName)
+
+        val builder = AlertDialog.Builder(activity as MainActivity)
+            .setTitle(R.string.dialog_export_title)
+            .setView(layout)
+            .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
+            .setPositiveButton(getString(R.string.dialog_export)) { _, _ ->
+                (activity as MainActivity).startExport(fileNameET.text.toString())
+            }
+        builder.create().show()
+    }
+    
     override fun onEventClick(eventId: Long) {
         findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
     }

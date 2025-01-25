@@ -63,6 +63,7 @@ import org.phenoapps.intercross.fragments.PatternFragment
 import org.phenoapps.intercross.fragments.preferences.PreferencesFragment
 import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.Dialogs
+import org.phenoapps.intercross.util.ExportUtil
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.SnackbarQueue
@@ -80,6 +81,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
     @Inject
     lateinit var verifyPersonHelper: VerifyPersonHelper
+
+    @Inject
+    lateinit var exportUtil: ExportUtil
 
     private var doubleBackToExitPressedOnce = false
 
@@ -572,6 +576,10 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         //} else {
         importedFileContent.launch("*/*")
         //}
+    }
+
+    fun startExport(fileName: String) {
+        exportUtil.exportCrosses(eventsModel, mEvents, mParents, mGroups, mMetadata, mMetaValues, fileName)
     }
 
     fun showExportDialog(onDismiss: () -> Unit) {

@@ -13,6 +13,7 @@
         android:singleLine="true"
         android:maxLines="1"
         android:ellipsize="end"
+        android:scrollbars="none"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:gravity="start"/>
 </LinearLayout>

@@ -445,6 +445,9 @@
     <string name="error_no_bluetooth_permission">Bluetooth permission is required to print.</string>
     <string name="search_fragment_label">Search</string>
 
+    <!-- Dialogs -->
+    <string name="dialog_file_name_hint">File Name</string>
+
     <!-- Experiment -->
     <string name="dialog_experiment_title">Set Experiment</string>
     <string name="dialog_experiment_hint">Experiment name</string>
@@ -531,10 +534,12 @@
     <string name="dialog_ok">Ok</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_export">Export</string>
     <string name="dialog_confirm">Are you sure you want to reset your profile?</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="profile_person_not_set">Not set</string>
+    <string name="dialog_export_message">"Exporting data..."</string>
 
     <string name="profile_name_first">First name</string>
     <string name="profile_name_last">Last name</string>
@@ -544,6 +549,12 @@
     <string name="storage_definer_summary">Please select or create a folder that Intercross can use to store app data.</string>
     <string name="define_button_text">Choose Folder</string>
 
+    <!--  Export  -->
+    <string name="export_success">Export Successful</string>
+    <string name="export_failed">Export failed: %s</string>
+    <string name="export_no_data">No data to export</string>
+    <string name="export_dialog_delete_crosses_title">Delete Crosses</string>
+    <string name="export_dialog_delete_crosses_message">Do you want to delete all the crosses?</string>
 
     <string name="brapi_edit_display_name_default">BrAPI Test Server</string>
     <string name="activity_file_explorer_up_directory_name">Up</string>
@@ -562,7 +573,7 @@
     <!-- AppIntroActivity -->
     <string name="app_intro_activity_label">App Intro</string>
     <string name="app_intro_intro_title_slide1">Welcome to Intercross!</string>
-    <string name="app_intro_intro_summary_slide1">Intercross tracks parental and cross IDs as crosses are made, who makes each cross, and where each cross is made. Cross labels can be printed to Zebra label printers and lists of crosses can be exported to local files. Intercross is part of the broader PhenoApps initiative, an effort to modernize plant breeding and genetics data collection and organization via by developing new strategies and tools for data capture.</string>
+    <string name="app_intro_intro_summary_slide1">Intercross is used to track crosses in plant breeding and genetics research programs. The app tracks parents, cross IDs, and metadata as crosses are created. Cross labels can be printed to Bluetooth Zebra label printers and lists of crosses can be exported. Intercross is part of the PhenoApps project which aims to modernize plant breeding data collection in plant breeding through optimized data captured tools.</string>
     <string name="app_intro_intro_title_slide2">Features</string>
     <string name="app_intro_intro_summary_slide2">Feature description goes here.\n\n Description 2.</string>
     <string name="app_intro_required_setup_title">Required Setup</string>

@@ -17,7 +17,7 @@ Check the [user manual](https://intercross.phenoapps.org) and the [wiki](https:/
 Visit our [translation page](https://crowdin.com/project/intercross) to help translate Field Book to your language. To submit code or new features, please review our [contribution guidelines](https://github.com/PhenoApps/Field-Book/wiki/Contributing) before opening a [pull request](https://github.com/PhenoApps/Intercross/pulls).
 
 ## ⬇️ Updates
-Intercross is available on [Google Play version](https://play.google.com/store/apps/details?id=org.phenoapps.intercross). The most Up-to-date version can also be downloaded our [GitHub releases](https://github.com/PhenoApps/Field-Book/releases/latest).
+Intercross is available on [Google Play version](https://play.google.com/store/apps/details?id=org.phenoapps.intercross). The most Up-to-date version can also be downloaded our [GitHub releases](https://github.com/PhenoApps/Intercross/releases/latest).
 
 ## 💰 Funding 
 Development of Field Book is possible because of the support received from the following organizations:
@@ -37,6 +37,7 @@ Development of Field Book is possible because of the support received from the f
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/trife"><img src="https://avatars.githubusercontent.com/u/1869534?v=4?s=100" width="100px;" alt="Trevor Rife"/><br /><sub><b>Trevor Rife</b></sub></a><br /><a href="#projectManagement-trife" title="Project Management">📆</a> <a href="#design-trife" title="Design">🎨</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/chaneylc"><img src="https://avatars.githubusercontent.com/u/5421632?v=4?s=100" width="100px;" alt="Chaney Courtney"/><br /><sub><b>Chaney Courtney</b></sub></a><br /><a href="https://github.com/PhenoApps/Intercross/commits?author=chaneylc" title="Code">💻</a> <a href="https://github.com/PhenoApps/Intercross/commits?author=chaneylc" title="Tests">⚠️</a> <a href="https://github.com/PhenoApps/Intercross/commits?author=chaneylc" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/romil2807"><img src="https://avatars.githubusercontent.com/u/59645533?v=4?s=100" width="100px;" alt="Romil Shah"/><br /><sub><b>Romil Shah</b></sub></a><br /><a href="https://github.com/PhenoApps/Intercross/commits?author=romil2807" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kamathprasad9"><img src="https://avatars.githubusercontent.com/u/54414375?v=4?s=100" width="100px;" alt="Prasad Kamath"/><br /><sub><b>Prasad Kamath</b></sub></a><br /><a href="https://github.com/PhenoApps/Intercross/commits?author=kamathprasad9" title="Code">💻</a> <a href="#design-kamathprasad9" title="Design">🎨</a> <a href="https://github.com/PhenoApps/Intercross/commits?author=kamathprasad9" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

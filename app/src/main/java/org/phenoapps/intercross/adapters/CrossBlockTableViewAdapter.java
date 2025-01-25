@@ -47,6 +47,19 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
         }
     }
 
+    static class ColumnHeaderViewHolder extends AbstractViewHolder {
+
+        final TextView textView;
+        final LinearLayout linearLayout;
+
+        public ColumnHeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            linearLayout = itemView.findViewById(R.id.list_item_table_cell_container);
+            textView = itemView.findViewById(R.id.list_item_table_cell_tv);
+        }
+    }
+
      /**
       * This is where you create your custom Cell ViewHolder. This method is called when Cell
       * RecyclerView of the TableView needs a new RecyclerView.ViewHolder of the given type to
@@ -120,10 +133,10 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
  
          // Get Column Header xml Layout
          View layout = LayoutInflater.from(parent.getContext())
-                 .inflate(R.layout.list_item_table_cell, parent, false);
+                 .inflate(R.layout.list_item_table_column_header, parent, false);
  
          // Create a ColumnHeader ViewHolder
-         return new CellViewHolder(layout);
+         return new ColumnHeaderViewHolder(layout);
      }
  
      /**
@@ -147,7 +160,7 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
                                               int position) {
 
          // Get the holder to update cell item text
-         CellViewHolder columnHeaderViewHolder = (CellViewHolder) holder;
+         ColumnHeaderViewHolder columnHeaderViewHolder = (ColumnHeaderViewHolder) holder;
 
          if (columnHeaderItemModel != null) {
              columnHeaderViewHolder.textView.setText(columnHeaderItemModel.getText());

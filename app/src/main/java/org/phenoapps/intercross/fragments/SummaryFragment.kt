@@ -360,13 +360,18 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
             description.isEnabled = false
             setTouchEnabled(true)
             isDragEnabled = true
-            setScaleEnabled(true)
+            setScaleEnabled(false)
 
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 granularity = 1f
                 setAvoidFirstLastClipping(true)
             }
+
+            axisLeft.apply {
+                granularity = 1f
+            }
+
             axisRight.isEnabled = false
 
             legend.isEnabled = false
@@ -400,7 +405,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         val dataSet = LineDataSet(entries, "Cumulative Crosses").apply {
             color = ColorTemplate.VORDIPLOM_COLORS[0]
             lineWidth = 2f
-            setDrawCircles(false)
+            setDrawCircles(true)
             setDrawValues(false)
             mode = LineDataSet.Mode.LINEAR
             cubicIntensity = 0.2f

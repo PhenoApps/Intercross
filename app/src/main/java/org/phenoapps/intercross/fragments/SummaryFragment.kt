@@ -2,12 +2,11 @@ package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,7 +17,6 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.EventsRepository
@@ -77,6 +75,8 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
     private lateinit var mWishlist: List<Wishlist>
     private lateinit var mMetadata: List<EventsDao.CrossMetadata>
 
+    private lateinit var graphColors: Array<Int>
+
     //a quick wrapper function for tab selection
     private fun tabSelected(onSelect: (TabLayout.Tab?) -> Unit) = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -88,6 +88,14 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        graphColors = arrayOf(
+            ContextCompat.getColor(requireContext(), R.color.colorAccentTransparent),
+            ContextCompat.getColor(requireContext(), R.color.colorAccent),
+            ContextCompat.getColor(requireContext(), R.color.progressBlank),
+            ContextCompat.getColor(requireContext(), R.color.progressStart),
+            ContextCompat.getColor(requireContext(), R.color.progressLessThanTwoThird),
+        )
 
         setHasOptionsMenu(true)
     }
@@ -384,12 +392,16 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         }
 
         val dataSet = LineDataSet(entries, "Cumulative Crosses").apply {
-            color = ColorTemplate.VORDIPLOM_COLORS[0]
+            color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
             lineWidth = 2f
-            setDrawCircles(true)
-            setDrawValues(false)
+            setCircleColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
+            setDrawCircleHole(false)
             mode = LineDataSet.Mode.LINEAR
-            cubicIntensity = 0.2f
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
+                }
+            }
         }
 
         return dataSet to xAxisLabels
@@ -434,15 +446,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         //dataset.iconsOffset = MPPointF(0f, 40f)
         dataset.selectionShift = 5f
 
-        // add a lot of colors
-        val colors = ArrayList<Int>()
-        for (c in ColorTemplate.VORDIPLOM_COLORS) colors.add(c)
-        for (c in ColorTemplate.JOYFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.LIBERTY_COLORS) colors.add(c)
-        for (c in ColorTemplate.PASTEL_COLORS) colors.add(c)
-        colors.add(ColorTemplate.getHoloBlue())
-        dataset.colors = colors
+        dataset.colors = graphColors.toMutableList()
         //dataSet.setSelectionShift(0f);
         val data = PieData(dataset)
         data.setValueFormatter(object : ValueFormatter() {
@@ -472,6 +476,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         metadataSummaryBarChart.visibility = View.VISIBLE
 
+        dataset.colors = graphColors.toMutableList()
         val data = BarData(dataset)
 
         data.setValueTextColor(Color.TRANSPARENT)

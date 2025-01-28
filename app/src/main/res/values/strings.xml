@@ -307,7 +307,7 @@
     <string name="completed"></string>
     <string name="wishlist_complete_content_description">Wishlist complete</string>
     <string name="frag_parents_parents_not_deleted_reason">Some parents could not be deleted because they are parents to a cross.</string>
-    <string name="frag_parents_new_parent_btn">Button to add a new parent.</string>
+    <string name="frag_parents_create_parents_btn">Button to create parents.</string>
     <string name="frag_parents_new_parent_title">New Parent</string>
     <string name="frag_parents_selected_text">%s parents are selected</string>
     <string name="menu_parents_delete_title">Delete selected parents.</string>
@@ -579,6 +579,10 @@
 
     <string name="dialog_new_wishlist_title">New Wishlist</string>
     <string name="add_wishlist_item">Add a wishlist item</string>
+
+    <string name="dialog_new_parent_title">New Parent</string>
+    <string name="add_new_male_parent">Create a new male parent</string>
+    <string name="add_new_female_parent">Create a new female parent</string>
 
     <!-- AppIntroActivity -->
     <string name="app_intro_activity_label">App Intro</string>

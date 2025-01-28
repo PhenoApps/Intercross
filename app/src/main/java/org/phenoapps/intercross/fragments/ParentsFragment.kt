@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,6 +36,7 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.PollenGroupListViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentParentsBinding
+import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
@@ -232,19 +234,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         }
 
-        /*
-        Go to Pollen Manager fragment for male group data-entry
-         */
         fragParentsNewParentBtn.setOnClickListener {
 
-            when (tabLayout.getTabAt(0)?.isSelected) {
-
-                true -> Navigation.findNavController(mBinding.root)
-                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(0))
-
-                else -> Navigation.findNavController(mBinding.root)
-                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(1))
-            }
+            showAddParentsDialog()
 
         }
 
@@ -548,16 +540,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         when (item.itemId) {
 
-            R.id.action_import -> {
-
-                context?.let {
-                    ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
-                        .showImportDialog(this)
-                }
-                // (activity as? MainActivity)?.launchImport()
-
-            }
-
             R.id.action_parents_delete -> {
                 mBinding.deleteParents()
             }
@@ -574,5 +556,50 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showAddParentsDialog() {
+        val importArray: Array<String?> = arrayOf(
+            context?.getString(R.string.dialog_import_parents_title),
+            context?.getString(R.string.add_new_female_parent),
+            context?.getString(R.string.add_new_male_parent),
+        )
+
+        val icons = IntArray(importArray.size).apply {
+            this[0] = R.drawable.ic_file_generic
+            this[1] = R.drawable.ic_female_parent
+            this[2] = R.drawable.ic_male_parent
+        }
+
+        val onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                when (position) {
+                    0 -> { // import parents
+                        context?.let {
+                            ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
+                                .showImportDialog(this)
+                        }
+                    }
+                    // create a new female parent
+                    1 -> Navigation.findNavController(mBinding.root)
+                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(0))
+                    // create a new male parent
+                    2 -> {
+                        /*
+                            Go to Pollen Manager fragment for male group data-entry
+                        */
+                        Navigation.findNavController(mBinding.root)
+                            .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(1))
+                    }
+
+                }
+            }
+
+        activity?.let { fragmentActivity ->
+            val dialog = context?.getString(R.string.dialog_new_parent_title)?.let {
+                    dialogTitle -> ListAddDialog(fragmentActivity, dialogTitle, importArray, icons, onItemClickListener)
+            }
+            dialog?.show(fragmentActivity.supportFragmentManager, "ListAddDialog")
+        }
     }
 }

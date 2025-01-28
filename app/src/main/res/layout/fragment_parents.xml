@@ -101,7 +101,7 @@
             android:layout_height="64dp"
             android:layout_margin="16dp"
             android:background="@drawable/capture_button_background"
-            android:contentDescription="@string/frag_parents_new_parent_btn"
+            android:contentDescription="@string/frag_parents_create_parents_btn"
             android:cropToPadding="false"
             android:elevation="5dp"
             android:scaleType="fitCenter"

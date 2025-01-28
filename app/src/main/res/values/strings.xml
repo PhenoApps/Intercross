@@ -118,6 +118,7 @@
     <string name="cancel">Cancel</string>
     <string name="qr_code_for_parent">QR Code for parent</string>
     <string name="button_to_scan_next_text">Button to scan next text entry.</string>
+    <string name="button_to_create_wishlist">Button to create a new wishlist.</string>
     <string name="barcode_preview_image">Barcode preview image.</string>
     <string name="zxing_scan_mode_single">Single Mode</string>
     <string name="zxing_status_single">Single</string>
@@ -287,7 +288,6 @@
     <string name="frag_wf_values_min_must_not_be_null">Minimum must be greater than zero.</string>
     <string name="frag_wf_values_max_must_not_be_null">Maximum value must be greater than the minimum.</string>
     <string name="frag_wf_summary_summary">Is it OK to create a wish for a minimum of %d and maximum of %d %s of %s and %s pair?</string>
-    <string name="toolbar_parents_add_wish">Add a wishlist item</string>
     <string name="minimum_wish_met">Minimum wish for %s met.</string>
     <string name="maximum_wish_met">Maximum wish met for %s.</string>
     <string name="frag_wf_a_female_must_be_chosen">A female must be chosen.</string>
@@ -576,6 +576,9 @@
     <string name="dialog_import_loading_sample">Importing Sample Data…</string>
     <string name="load_sample_success_toast">Sample data was imported</string>
     <string name="load_sample_failed_toast">Sample data could not be imported</string>
+
+    <string name="dialog_new_wishlist_title">New Wishlist</string>
+    <string name="add_wishlist_item">Add a wishlist item</string>
 
     <!-- AppIntroActivity -->
     <string name="app_intro_activity_label">App Intro</string>

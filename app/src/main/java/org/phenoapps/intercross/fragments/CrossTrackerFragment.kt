@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
@@ -24,6 +25,7 @@ import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossTrackerBinding
+import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.interfaces.CrossController
 import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.DateUtil
@@ -208,9 +210,10 @@ class CrossTrackerFragment :
         }
 
 
-        fragmentCrossTrackerSearchButton.setOnClickListener {
-            findNavController().navigate(CrossTrackerFragmentDirections
-                .actionFromCrossTrackerToSearch())
+        fragmentCrossTrackerAddButton.setOnClickListener {
+            showAddWishlistDialog()
+            // findNavController().navigate(CrossTrackerFragmentDirections
+            //     .actionFromCrossTrackerToSearch())
         }
 
         filterChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
@@ -482,15 +485,6 @@ class CrossTrackerFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId) {
-
-            R.id.action_import -> {
-                context?.let {
-                    ImportUtil(it, R.string.dir_wishlist_import, getString(R.string.dialog_import_wishlist_title))
-                        .showImportDialog(this)
-                }
-
-                findNavController().navigate(R.id.cross_tracker_fragment)
-            }
             R.id.action_toggle_completed_wishlist_visibility -> {
                 val currentValue = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
                 val newValue = !currentValue
@@ -502,9 +496,6 @@ class CrossTrackerFragment :
                 crossAdapter.submitList(groupCrosses(filterResults(), commutativeCrossingEnabled)) {
                     mBinding.crossesRecyclerView.scrollToPosition(0)
                 }
-            }
-            R.id.action_parents_toolbar_initiate_wf -> {
-                findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToWishFactory())
             }
             R.id.action_to_crossblock -> {
                 findNavController().navigate(CrossTrackerFragmentDirections.actionToCrossblock())
@@ -628,5 +619,38 @@ class CrossTrackerFragment :
     override fun onEventClick(eventId: Long) {
         mShowChildrenDialogUtil.dismiss()
         findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEventDetail(eventId))
+    }
+
+    private fun showAddWishlistDialog() {
+        val importArray: Array<String?> = arrayOf(
+            context?.getString(R.string.import_source_local),
+            context?.getString(R.string.add_wishlist_item),
+        )
+
+        val icons = IntArray(importArray.size).apply {
+            this[0] = R.drawable.ic_file_generic
+            this[1] = R.drawable.ic_wishlist_add
+        }
+
+        val onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                when (position) {
+                    0 -> { // import wishlist
+                        context?.let {
+                            ImportUtil(it, R.string.dir_wishlist_import, getString(R.string.dialog_import_wishlist_title))
+                                .showImportDialog(this)
+                        }
+                    }
+                    // create new wishlist item
+                    1 -> findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToWishFactory())
+                }
+            }
+
+        activity?.let { fragmentActivity ->
+            val dialog = context?.getString(R.string.dialog_new_wishlist_title)?.let {
+                dialogTitle -> ListAddDialog(fragmentActivity, dialogTitle, importArray, icons, onItemClickListener)
+            }
+            dialog?.show(fragmentActivity.supportFragmentManager, "ListAddDialog")
+        }
     }
 }

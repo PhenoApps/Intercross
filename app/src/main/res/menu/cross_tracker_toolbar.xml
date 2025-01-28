@@ -2,16 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_import"
-        android:icon="@drawable/ic_nv_import_white"
-        android:title="@string/import_file"
-        app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_parents_toolbar_initiate_wf"
-        android:icon="@drawable/ic_wishlist_add_white"
-        android:title="@string/toolbar_parents_add_wish"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/action_toggle_completed_wishlist_visibility"
         android:icon="@drawable/ic_hide_wishlist_completed"
         android:title="@string/crosses_toolbar_hide_completed"

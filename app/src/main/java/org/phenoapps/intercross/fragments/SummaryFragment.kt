@@ -70,8 +70,6 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         WishlistViewModelFactory(WishlistRepository.getInstance(db.wishlistDao()))
     }
 
-    private var systemMenu: Menu? = null
-
     private val MAX_LABEL_LENGTH = 16
 
     private lateinit var mEvents: List<Event>
@@ -111,19 +109,6 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         setupBottomNavBar()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-
-        inflater.inflate(R.menu.summary_toolbar, menu)
-
-        systemMenu = menu
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    private fun updateToolbarWishlistIcon() {
-        systemMenu?.findItem(R.id.action_to_crossblock)?.isVisible = ::mWishlist.isInitialized && mWishlist.isNotEmpty()
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId) {
@@ -139,8 +124,6 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         super.onResume()
 
         (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragSummaryTb)
-
-        updateToolbarWishlistIcon()
 
         mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
 
@@ -206,7 +189,6 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         wishModel.wishlist.observe(viewLifecycleOwner) { wishes ->
 
             mWishlist = wishes.filter { it.wishType == "cross" }
-            updateToolbarWishlistIcon()
         }
     }
 

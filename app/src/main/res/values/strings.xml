@@ -505,11 +505,17 @@
     <string name="prefs_zebra_import_summary">Import a ZPL file.</string>
 
     <!-- Database preferences -->
+    <string name="prefs_database_reset_title">Reset Database</string>
+    <string name="prefs_database_reset_summary">This will delete all data stored in the app.</string>
     <string name="prefs_database_import_title">Import Database</string>
     <string name="prefs_database_import_summary">Import a new database file that has been saved previously.</string>
     <string name="prefs_database_export_title">Export Database</string>
     <string name="prefs_database_export_summary">This will prompt the user to export the local database.</string>
     <string name="pref_database_title">Database</string>
+
+    <string name="database_reset_warning1">All data will be deleted. Are you sure you want to reset the database?</string>
+    <string name="database_reset_warning2">A database reset cannot be reversed. The app will quit after clearing the database. Are you really sure you want to continue?</string>
+    <string name="database_reset_message">Database has been deleted</string>
 
 
     <string name="ok">OK</string>
@@ -540,6 +546,7 @@
     <string name="dialog_no">No</string>
     <string name="profile_person_not_set">Not set</string>
     <string name="dialog_export_message">"Exporting data..."</string>
+    <string name="dialog_warning">Warning</string>
 
     <string name="profile_name_first">First name</string>
     <string name="profile_name_last">Last name</string>

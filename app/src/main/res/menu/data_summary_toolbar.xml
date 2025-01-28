@@ -7,7 +7,7 @@
         android:title="@string/navigate_to_crossblock"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/action_nav_cross_count"
+        android:id="@+id/action_nav_crosses"
         android:icon="@drawable/ic_summary"
         android:title="@string/navigate_to_summary"
         app:showAsAction="ifRoom"/>

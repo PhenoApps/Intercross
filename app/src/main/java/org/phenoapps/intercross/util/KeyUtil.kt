@@ -67,4 +67,6 @@ class KeyUtil(private val ctx: Context?) {
     val dbExportKey by key(R.string.key_pref_db_export)
 
     val aboutRoot by key(R.string.root_about)
+
+    val showCompletedWishlistItems by key(R.string.key_show_completed_wishlist_items)
 }

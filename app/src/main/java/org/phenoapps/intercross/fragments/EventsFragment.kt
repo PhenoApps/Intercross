@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -41,6 +40,7 @@ import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.*
 import org.phenoapps.intercross.data.viewmodels.factory.*
 import org.phenoapps.intercross.databinding.FragmentEventsBinding
+import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.*
 import java.util.*
 import javax.inject.Inject
@@ -48,7 +48,8 @@ import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
-    CoroutineScope by MainScope() {
+    CoroutineScope by MainScope(),
+    EventClickListener {
 
     @Inject
     lateinit var verifyPersonHelper: VerifyPersonHelper
@@ -173,7 +174,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             } else mBinding.firstText.setText(female)
         }
 
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel)
+        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -453,7 +454,12 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                     findNavController().navigate(EventsFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_summary -> {
+
+                    findNavController().navigate(EventsFragmentDirections.actionToSummary())
+
+                }
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
 
@@ -470,7 +476,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     private fun FragmentEventsBinding.setupRecyclerView() {
 
         //setup recycler adapter
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel)
+        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
 
         val undoString = getString(R.string.undo)
 
@@ -910,5 +916,9 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                 (activity as MainActivity).startExport(fileNameET.text.toString())
             }
         builder.create().show()
+    }
+    
+    override fun onEventClick(eventId: Long) {
+        findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
     }
 }

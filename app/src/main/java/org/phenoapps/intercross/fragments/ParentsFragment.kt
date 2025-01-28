@@ -1,13 +1,11 @@
 package org.phenoapps.intercross.fragments
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,7 +19,6 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.ParentsAdapter
 import org.phenoapps.intercross.data.EventsRepository
@@ -38,14 +35,10 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.PollenGroupListViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentParentsBinding
-import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
-import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
 
 class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.fragment_parents),
     CoroutineScope by MainScope() {
@@ -495,9 +488,13 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
                 }
 
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(ParentsFragmentDirections.globalActionToCrossTracker())
+                }
+
+                R.id.action_nav_summary -> {
+                    findNavController().navigate(ParentsFragmentDirections.actionToSummary())
                 }
             }
 

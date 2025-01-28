@@ -3,17 +3,21 @@
     <item
         android:id="@+id/action_nav_home"
         android:icon="@drawable/ic_home"
-        android:title="@string/home" />
+        android:title="@string/bottom_nv_home" />
     <item
-        android:id="@+id/action_nav_cross_count"
-        android:icon="@drawable/ic_nv_summary"
-        android:title="@string/crosses"/>
+        android:id="@+id/action_nav_crosses"
+        android:icon="@drawable/ic_nv_crosses"
+        android:title="@string/bottom_nv_crosses"/>
     <item
         android:id="@+id/action_nav_parents"
-        android:icon="@drawable/ic_nv_parents"
-        android:title="@string/parents" />
+        android:icon="@drawable/ic_nv_parents_tab"
+        android:title="@string/bottom_nv_parents" />
+    <item
+        android:id="@+id/action_nav_summary"
+        android:icon="@drawable/ic_summarize_graph"
+        android:title="@string/bottom_nv_summary"/>
     <item
         android:id="@+id/action_nav_preferences"
         android:icon="@drawable/ic_nv_settings"
-        android:title="@string/settings" />
+        android:title="@string/bottom_nv_settings" />
 </menu>

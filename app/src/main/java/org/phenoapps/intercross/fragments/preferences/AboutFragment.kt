@@ -112,8 +112,11 @@ class AboutFragment : MaterialAboutFragment() {
                 R.id.action_nav_parents -> {
                     findNavController().navigate(R.id.global_action_to_parents)
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
                     findNavController().navigate(R.id.global_action_to_cross_tracker)
+                }
+                R.id.action_nav_summary -> {
+                    findNavController().navigate(R.id.global_action_to_summary)
                 }
             }
             true

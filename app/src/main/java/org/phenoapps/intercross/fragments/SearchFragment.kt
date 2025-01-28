@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import org.phenoapps.intercross.R
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -14,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.SimpleListAdapter
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.fts.CrossesDatabase
@@ -25,7 +25,6 @@ import org.phenoapps.intercross.databinding.FragmentSearchBinding
 import org.phenoapps.intercross.interfaces.OnSimpleItemClicked
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.observeOnce
-import java.util.*
 
 class SearchFragment : IntercrossBaseFragment<FragmentSearchBinding>(R.layout.fragment_search),
     CoroutineScope by MainScope(), OnSimpleItemClicked {
@@ -173,9 +172,10 @@ class SearchFragment : IntercrossBaseFragment<FragmentSearchBinding>(R.layout.fr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as? AppCompatActivity)?.supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            title = "Search"
+        (activity as? MainActivity)?.setBackButtonToolbar()
+        (activity as? MainActivity)?.supportActionBar?.apply {
+            title = getString(R.string.search_fragment_title)
+            show()
         }
     }
 

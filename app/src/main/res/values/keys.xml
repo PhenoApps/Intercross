@@ -73,9 +73,13 @@
 
     <!-- Database preference keys -->
     <string name="key_pref_storage_definer">&package;STORAGE_DEFINER</string>
+    <string name="key_pref_db_reset">&package;DATABASE_RESET</string>
     <string name="key_pref_db_import">&package;DATABASE_IMPORT</string>
     <string name="key_pref_db_export">&package;DATABASE_EXPORT</string>
 
     <!-- About preference keys -->
     <string name="key_pref_about">&package;ABOUT</string>
+
+    <!--  CrossTracker  -->
+    <string name="key_show_completed_wishlist_items">&package;SHOW_COMPLETED</string>
 </resources>

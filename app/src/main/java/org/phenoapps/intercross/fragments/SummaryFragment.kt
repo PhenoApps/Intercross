@@ -188,15 +188,14 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
      */
     private fun FragmentDataSummaryBinding.startObservers() {
 
-        eventsModel.metadata.observeOnce(viewLifecycleOwner) { metadata ->
-
-            mMetadata = metadata
-            setData(setMetaData())
-        }
-
         eventsModel.events.observeOnce(viewLifecycleOwner) { data ->
 
             mEvents = data
+
+            eventsModel.metadata.observeOnce(viewLifecycleOwner) { metadata ->
+                mMetadata = metadata
+                setData(setMetaData())
+            }
 
             val (dataset, xAxisLabels) = setCrossesOverTimeData()
             setData(crossesOverTimeChart, crossesNoDataText, dataset, xAxisLabels)

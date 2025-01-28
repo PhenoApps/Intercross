@@ -623,7 +623,7 @@ class CrossTrackerFragment :
 
     private fun showAddWishlistDialog() {
         val importArray: Array<String?> = arrayOf(
-            context?.getString(R.string.import_source_local),
+            context?.getString(R.string.dialog_import_wishlist_title),
             context?.getString(R.string.add_wishlist_item),
         )
 

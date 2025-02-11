@@ -5,10 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,12 +16,11 @@ import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.DefineStorageActivity
 import org.phenoapps.intercross.data.IntercrossDatabase
-import org.phenoapps.intercross.util.KeyUtil
 
 class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
+    private val mPrefs by lazy {
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
     }
 
     override fun onResume() {
@@ -120,6 +119,8 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
             withContext(Dispatchers.IO) {
                 val db = IntercrossDatabase.getInstance(context)
                 db.clearAllTables()
+
+                mPrefs.edit().clear().apply()
             }
         }
     }

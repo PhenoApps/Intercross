@@ -16,6 +16,7 @@ import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.DefineStorageActivity
 import org.phenoapps.intercross.data.IntercrossDatabase
+import org.phenoapps.intercross.util.DateUtil
 
 class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
 
@@ -67,7 +68,7 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
             this?.let {
                 setOnPreferenceClickListener {
                     activity?.let { act ->
-                        (act as? MainActivity)?.exportDatabase?.launch("intercross.zip")
+                        (act as? MainActivity)?.exportDatabase?.launch("intercross_${DateUtil().getTime()}.zip")
                     }
 
                     true

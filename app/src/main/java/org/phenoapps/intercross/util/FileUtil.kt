@@ -716,7 +716,7 @@ class FileUtil(private val ctx: Context) {
 
                     stream.write(databaseOutput)
 
-                    val prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
+                    val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
 
                     val objectOutputStream = ObjectOutputStream(prefOutput)
 

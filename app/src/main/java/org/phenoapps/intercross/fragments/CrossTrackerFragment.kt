@@ -5,15 +5,14 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.evrencoskun.tableview.sort.ISortableModel
-import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.adapters.CrossTrackerAdapter
 import org.phenoapps.intercross.data.EventsRepository
@@ -26,11 +25,14 @@ import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossTrackerBinding
+import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.interfaces.CrossController
+import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import kotlin.collections.ArrayList
 
 /**
@@ -39,7 +41,8 @@ import kotlin.collections.ArrayList
  */
 class CrossTrackerFragment :
     IntercrossBaseFragment<FragmentCrossTrackerBinding>(R.layout.fragment_cross_tracker),
-    CrossController {
+    CrossController,
+    EventClickListener {
 
     companion object {
         const val SORT_DELAY_MS = 500L
@@ -62,6 +65,21 @@ class CrossTrackerFragment :
 
     private val mKeyUtil by lazy {
         KeyUtil(context)
+    }
+
+    private val mShowChildrenDialogUtil by lazy {
+        ShowChildrenDialogUtil(
+            this,
+            context,
+            { male, female ->
+                findNavController()
+                    .navigate(CrossTrackerFragmentDirections
+                        .actionFromCrossTrackerToEventsList(male, female))
+            },
+            eventsModel,
+            this,
+            mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+        )
     }
 
     private var systemMenu: Menu? = null
@@ -179,22 +197,23 @@ class CrossTrackerFragment :
             layoutManager = LinearLayoutManager(context)
         }
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
         setupBottomNavBar()
 
-        summaryTabLayout.getTabAt(0)?.select()
+        // summaryTabLayout.getTabAt(0)?.select()
 
-        setupTabLayout()
+        // setupTabLayout()
 
         eventsModel.events.observe(viewLifecycleOwner) {
             mEvents = it
         }
 
 
-        fragmentCrossTrackerSearchButton.setOnClickListener {
-            findNavController().navigate(CrossTrackerFragmentDirections
-                .actionFromCrossTrackerToSearch())
+        fragmentCrossTrackerAddButton.setOnClickListener {
+            showAddWishlistDialog()
+            // findNavController().navigate(CrossTrackerFragmentDirections
+            //     .actionFromCrossTrackerToSearch())
         }
 
         filterChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
@@ -224,84 +243,6 @@ class CrossTrackerFragment :
 
             mWishlistEmpty = wishes.none { it.wishType == "cross" }
             updateToolbarWishlistIcon()
-        }
-    }
-
-    private fun showChildren(male: String, female: String) {
-
-        val isCommutativeCrossing = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
-
-        if (isCommutativeCrossing) showCommutativeChildren(male, female)
-        else showNonCommutativeChildren(male, female)
-    }
-
-    private fun showChildren(male: String, female: String, data: List<Event>) {
-
-        context?.let { ctx ->
-            Dialogs.listAndBuildCross(
-                AlertDialog.Builder(ctx),
-                getString(R.string.click_item_for_child_details),
-                getString(R.string.no_child_exists),
-                male, female, data, { id ->
-
-                    findNavController()
-                        .navigate(CrossTrackerFragmentDirections
-                            .globalActionToEventDetail(id))
-                }) { male, female ->
-
-                findNavController()
-                    .navigate(CrossTrackerFragmentDirections
-                        .actionFromCrossTrackerToEventsList(male, female))
-            }
-        }
-    }
-
-    //a quick wrapper function for tab selection
-    private fun tabSelected(onSelect: (TabLayout.Tab?) -> Unit) = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            onSelect(tab)
-        }
-        override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        override fun onTabReselected(tab: TabLayout.Tab?) {}
-    }
-
-    private fun showCommutativeChildren(male: String, female: String) {
-
-        eventsModel.parents.observe(viewLifecycleOwner) {
-
-            it?.let {
-
-                eventsModel.events.observe(viewLifecycleOwner) { data ->
-
-                    data?.let { events ->
-
-                        showChildren(male, female, events.filter { e ->
-                            (e.maleObsUnitDbId == male && e.femaleObsUnitDbId == female)
-                                    || (e.maleObsUnitDbId == female && e.femaleObsUnitDbId == male)
-                        })
-                    }
-                }
-            }
-        }
-    }
-
-    private fun showNonCommutativeChildren(male: String, female: String) {
-
-        eventsModel.parents.observe(viewLifecycleOwner) {
-
-            it?.let {
-
-                eventsModel.events.observe(viewLifecycleOwner) { data ->
-
-                    data?.let { events ->
-
-                        showChildren(male, female, events.filter { e ->
-                            e.maleObsUnitDbId == male
-                                    && e.femaleObsUnitDbId == female
-                        })
-                    }
-                }
-            }
         }
     }
 
@@ -429,7 +370,19 @@ class CrossTrackerFragment :
         filteredData: List<ListEntry>,
         commutativeCrossingEnabled: Boolean
     ): List<ListEntry> {
-        return filteredData.groupBy { cross ->
+        val showCompleted = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+
+        // filter out completed wishlist items if needed
+        val dataToGroup = if (!showCompleted) {
+            filteredData.filter { entry ->
+                when (entry) {
+                    is PlannedCrossData -> entry.progress.toInt() < entry.wishMin.toInt()
+                    else -> true // keep all unplanned crosses
+                }
+            }
+        } else filteredData
+
+        return dataToGroup.groupBy { cross ->
             if (commutativeCrossingEnabled) {
                 if (cross.male < cross.female) "${cross.male}${cross.female}".hashCode()
                 else "${cross.female}${cross.male}".hashCode()
@@ -460,7 +413,8 @@ class CrossTrackerFragment :
                     is PlannedCrossData -> firstCross.copy(
                         count = totalCount,
                         persons = persons,
-                        dates = dates
+                        dates = dates,
+                        progress = entry.value.sumOf { it.count.toInt() }.toString()
                     )
                     else -> firstCross // this will never be executed
                 }
@@ -468,17 +422,17 @@ class CrossTrackerFragment :
         }
     }
 
-    private fun FragmentCrossTrackerBinding.setupTabLayout() {
-
-        summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.position) {
-                1 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(CrossTrackerFragmentDirections.actionToSummary())
-            }
-        })
-    }
+    // private fun FragmentCrossTrackerBinding.setupTabLayout() {
+    //
+    //     summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
+    //
+    //         when (tab?.position) {
+    //             1 ->
+    //                 Navigation.findNavController(mBinding.root)
+    //                     .navigate(CrossTrackerFragmentDirections.actionToSummary())
+    //         }
+    //     })
+    // }
 
     override fun onResume() {
         super.onResume()
@@ -487,7 +441,7 @@ class CrossTrackerFragment :
 
         updateToolbarWishlistIcon()
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
     }
 
@@ -504,6 +458,12 @@ class CrossTrackerFragment :
 
         systemMenu = menu
 
+        systemMenu?.findItem(R.id.action_toggle_completed_wishlist_visibility)?.let { menuItem ->
+            // set icon based on preference
+            val currentValue = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+            setToggleVisibilityIcon(menuItem, currentValue)
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -515,55 +475,62 @@ class CrossTrackerFragment :
         mBinding.noDataText.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
     }
 
+    private fun setToggleVisibilityIcon(menuItem: MenuItem, newValue: Boolean) {
+        mPref.edit().putBoolean(mKeyUtil.showCompletedWishlistItems, newValue).apply()
+
+        menuItem.setIcon(if (newValue) R.drawable.ic_show_wishlist_completed else R.drawable.ic_hide_wishlist_completed)
+        menuItem.setTitle(if (newValue) R.string.crosses_toolbar_hide_completed else R.string.crosses_toolbar_show_completed)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId) {
+            R.id.action_toggle_completed_wishlist_visibility -> {
+                val currentValue = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
+                val newValue = !currentValue
 
-            R.id.action_import -> {
-                context?.let {
-                    ImportUtil(it, R.string.dir_wishlist_import, getString(R.string.dialog_import_wishlist_title))
-                        .showImportDialog(this)
+                setToggleVisibilityIcon(item, newValue)
+
+                val commutativeCrossingEnabled = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+
+                crossAdapter.submitList(groupCrosses(filterResults(), commutativeCrossingEnabled)) {
+                    mBinding.crossesRecyclerView.scrollToPosition(0)
                 }
-
-                findNavController().navigate(R.id.cross_tracker_fragment)
-            }
-            R.id.action_parents_toolbar_initiate_wf -> {
-                findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToWishFactory())
             }
             R.id.action_to_crossblock -> {
                 findNavController().navigate(CrossTrackerFragmentDirections.actionToCrossblock())
             }
-            R.id.action_cross_count_delete_all -> {
-                val deleteFilter = when (currentFilter) {
-                    CrossFilter.ALL -> getString(R.string.dialog_cross_count_delete_both)
-                    CrossFilter.PLANNED -> getString(R.string.dialog_cross_count_delete_planned)
-                    else -> getString(R.string.dialog_cross_count_delete_unplanned)
-                }
-                context?.let { ctx ->
-                    Dialogs.onOk(AlertDialog.Builder(ctx),
-                        getString(R.string.menu_cross_count_delete_all_title),
-                        getString(android.R.string.cancel),
-                        getString(android.R.string.ok),
-                        String.format(getString(R.string.dialog_cross_count_delete_all_message), deleteFilter)) {
-
-                        Dialogs.onOk(AlertDialog.Builder(ctx),
-                            getString(R.string.menu_cross_count_delete_all_title),
-                            getString(android.R.string.cancel),
-                            getString(android.R.string.ok),
-                            getString(R.string.dialog_cross_count_delete_all_message_2)) {
-
-                            if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.UNPLANNED) {
-                                eventsModel.deleteAll()
-                            }
-                            if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.PLANNED) {
-                                wishModel.deleteAll()
-                            }
-
-                            findNavController().popBackStack()
-                        }
-                    }
-                }
-            }
+            // R.id.action_cross_count_delete_all -> {
+            //     val deleteFilter = when (currentFilter) {
+            //         CrossFilter.ALL -> getString(R.string.dialog_cross_count_delete_both)
+            //         CrossFilter.PLANNED -> getString(R.string.dialog_cross_count_delete_planned)
+            //         else -> getString(R.string.dialog_cross_count_delete_unplanned)
+            //     }
+            //     context?.let { ctx ->
+            //         Dialogs.onOk(AlertDialog.Builder(ctx),
+            //             getString(R.string.menu_cross_count_delete_all_title),
+            //             getString(android.R.string.cancel),
+            //             getString(android.R.string.ok),
+            //             String.format(getString(R.string.dialog_cross_count_delete_all_message), deleteFilter)) {
+            //
+            //             Dialogs.onOk(AlertDialog.Builder(ctx),
+            //                 getString(R.string.menu_cross_count_delete_all_title),
+            //                 getString(android.R.string.cancel),
+            //                 getString(android.R.string.ok),
+            //                 getString(R.string.dialog_cross_count_delete_all_message_2)) {
+            //
+            //                 if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.UNPLANNED) {
+            //                     eventsModel.deleteAll()
+            //                 }
+            //                 if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.PLANNED) {
+            //                     wishModel.deleteAll()
+            //                 }
+            //
+            //                 findNavController().popBackStack()
+            //             }
+            //         }
+            //     }
+            // }
         }
 
         return super.onOptionsItemSelected(item)
@@ -578,6 +545,11 @@ class CrossTrackerFragment :
                 R.id.action_nav_preferences -> {
 
                     findNavController().navigate(CrossTrackerFragmentDirections.globalActionToPreferencesFragment())
+                }
+                R.id.action_nav_summary -> {
+
+                    findNavController().navigate(CrossTrackerFragmentDirections.actionToSummary())
+
                 }
                 R.id.action_nav_parents -> {
 
@@ -596,7 +568,7 @@ class CrossTrackerFragment :
     }
 
     override fun onCrossClicked(male: String, female: String) {
-        showChildren(male, female)
+        mShowChildrenDialogUtil.showChildren(mEvents, male, female)
     }
 
     override fun onPersonChipClicked(persons: List<PersonCount>, crossCount: Int) {
@@ -641,6 +613,44 @@ class CrossTrackerFragment :
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.dialog_ok)) { d, _ -> d.dismiss() }
                 .show()
+        }
+    }
+
+    override fun onEventClick(eventId: Long) {
+        mShowChildrenDialogUtil.dismiss()
+        findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEventDetail(eventId))
+    }
+
+    private fun showAddWishlistDialog() {
+        val importArray: Array<String?> = arrayOf(
+            context?.getString(R.string.dialog_import_wishlist_title),
+            context?.getString(R.string.add_wishlist_item),
+        )
+
+        val icons = IntArray(importArray.size).apply {
+            this[0] = R.drawable.ic_file_generic
+            this[1] = R.drawable.ic_wishlist_add
+        }
+
+        val onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                when (position) {
+                    0 -> { // import wishlist
+                        context?.let {
+                            ImportUtil(it, R.string.dir_wishlist_import, getString(R.string.dialog_import_wishlist_title))
+                                .showImportDialog(this)
+                        }
+                    }
+                    // create new wishlist item
+                    1 -> findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToWishFactory())
+                }
+            }
+
+        activity?.let { fragmentActivity ->
+            val dialog = context?.getString(R.string.dialog_new_wishlist_title)?.let {
+                dialogTitle -> ListAddDialog(fragmentActivity, dialogTitle, importArray, icons, onItemClickListener)
+            }
+            dialog?.show(fragmentActivity.supportFragmentManager, "ListAddDialog")
         }
     }
 }

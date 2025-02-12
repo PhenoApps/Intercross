@@ -2,28 +2,23 @@ package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.WishlistRepository
@@ -39,7 +34,7 @@ import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFacto
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentDataSummaryBinding
-import org.phenoapps.intercross.util.Dialogs
+import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.observeOnce
 import java.util.*
 
@@ -73,14 +68,14 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         WishlistViewModelFactory(WishlistRepository.getInstance(db.wishlistDao()))
     }
 
-    private var systemMenu: Menu? = null
-
     private val MAX_LABEL_LENGTH = 16
 
     private lateinit var mEvents: List<Event>
     private lateinit var mParents: List<Parent>
     private lateinit var mWishlist: List<Wishlist>
     private lateinit var mMetadata: List<EventsDao.CrossMetadata>
+
+    private lateinit var graphColors: Array<Int>
 
     //a quick wrapper function for tab selection
     private fun tabSelected(onSelect: (TabLayout.Tab?) -> Unit) = object : TabLayout.OnTabSelectedListener {
@@ -94,14 +89,22 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        graphColors = arrayOf(
+            ContextCompat.getColor(requireContext(), R.color.colorAccentTransparent),
+            ContextCompat.getColor(requireContext(), R.color.colorAccent),
+            ContextCompat.getColor(requireContext(), R.color.progressBlank),
+            ContextCompat.getColor(requireContext(), R.color.progressStart),
+            ContextCompat.getColor(requireContext(), R.color.progressLessThanTwoThird),
+        )
+
         setHasOptionsMenu(true)
     }
 
     override fun FragmentDataSummaryBinding.afterCreateView() {
 
         //initialize pie chart parameters, this is mostly taken from the github examples
-        setupPieChart(sexSummaryPieChart)
         setupPieChart(typeSummaryPieChart)
+        setupLineChart(crossesOverTimeChart)
         setupBarChart()
 
         //listen to events and parents once and then displays the data
@@ -109,26 +112,9 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         //but that could only happen if someone used the database inspector
         startObservers()
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        bottomNavBar.selectedItemId = R.id.action_nav_summary
 
         setupBottomNavBar()
-
-        summaryTabLayout.getTabAt(1)?.select()
-
-        setupTabLayout()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-
-        inflater.inflate(R.menu.summary_toolbar, menu)
-
-        systemMenu = menu
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    private fun updateToolbarWishlistIcon() {
-        systemMenu?.findItem(R.id.action_to_crossblock)?.isVisible = ::mWishlist.isInitialized && mWishlist.isNotEmpty()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -147,28 +133,12 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragSummaryTb)
 
-        updateToolbarWishlistIcon()
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
 
-        mBinding.summaryTabLayout.getTabAt(2)?.select()
+        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_summary
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = true
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
-
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = true
-
-    }
-
-    private fun FragmentDataSummaryBinding.setupTabLayout() {
-
-        summaryTabLayout.addOnTabSelectedListener(tabSelected { tab ->
-
-            when (tab?.position) {
-                0 ->
-                    Navigation.findNavController(mBinding.root)
-                        .navigate(SummaryFragmentDirections.actionToCrossTracker())
-            }
-        })
     }
 
     //used to load label/value pair data into the adapter's view holder
@@ -193,7 +163,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
                     findNavController().navigate(SummaryFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(SummaryFragmentDirections.globalActionToCrossTracker())
 
@@ -209,30 +179,24 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
      */
     private fun FragmentDataSummaryBinding.startObservers() {
 
-        eventsModel.metadata.observeOnce(viewLifecycleOwner) { metadata ->
-
-            mMetadata = metadata
-            setData(setMetaData())
-        }
-
         eventsModel.events.observeOnce(viewLifecycleOwner) { data ->
 
             mEvents = data
 
-            parentsModel.parents.observeOnce(viewLifecycleOwner) { parents ->
-
-                mParents = parents
-
-                setData(sexSummaryPieChart, setSexData(), ChartType.SEX)
+            eventsModel.metadata.observeOnce(viewLifecycleOwner) { metadata ->
+                mMetadata = metadata
+                setData(setMetaData())
             }
 
-            setData(typeSummaryPieChart, setTypeData(), ChartType.TYPE)
+            val (dataset, xAxisLabels) = setCrossesOverTimeData()
+            setData(crossesOverTimeChart, crossesNoDataText, dataset, xAxisLabels)
+
+            setData(typeSummaryPieChart, typeNoDataText, setTypeData())
         }
 
         wishModel.wishlist.observe(viewLifecycleOwner) { wishes ->
 
             mWishlist = wishes.filter { it.wishType == "cross" }
-            updateToolbarWishlistIcon()
         }
     }
 
@@ -380,19 +344,99 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         }
     },"Meta Data Statistics")
 
-    //sets the accumulated data into the piechart and recycler view, along with some misc. parameter setting
-    private fun FragmentDataSummaryBinding.setData(dataPieChart: PieChart, dataset: PieDataSet, chartType: ChartType) {
-        if (dataset.entryCount == 0) {
-            when (chartType) {
-                ChartType.SEX -> sexNoDataText.visibility = View.VISIBLE
-                ChartType.TYPE -> typeNoDataText.visibility = View.VISIBLE
+    private fun setupLineChart(lineChart: LineChart) {
+        lineChart.apply {
+            description.isEnabled = false
+            setTouchEnabled(true)
+            isDragEnabled = true
+            setScaleEnabled(false)
+
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setAvoidFirstLastClipping(true)
             }
+
+            axisLeft.apply {
+                granularity = 1f
+            }
+
+            axisRight.isEnabled = false
+
+            legend.isEnabled = false
+        }
+    }
+
+    private fun setCrossesOverTimeData(): Pair<LineDataSet, List<String>> {
+        val entries = ArrayList<Entry>()
+        var xAxisLabels = listOf<String>()
+
+        if (::mEvents.isInitialized && mEvents.isNotEmpty()) {
+
+            val sortedEvents = mEvents.sortedBy { it.timestamp }
+
+            // group by dates
+            val groupedDates = sortedEvents.groupBy { DateUtil().getFormattedDate(it.timestamp) }
+            val dateCounts = groupedDates.mapValues { it.value.size }
+            val uniqueDates = dateCounts.keys.sorted()
+
+            var cumulative = 0
+            val labels = mutableListOf<String>()
+            uniqueDates.forEachIndexed { index, dateString ->
+                cumulative += dateCounts[dateString] ?: 0
+                entries.add(Entry(index.toFloat(), cumulative.toFloat()))
+                labels.add(dateString)
+            }
+
+            xAxisLabels = labels
+        }
+
+        val dataSet = LineDataSet(entries, "Cumulative Crosses").apply {
+            color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+            lineWidth = 2f
+            setCircleColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
+            setDrawCircleHole(false)
+            mode = LineDataSet.Mode.LINEAR
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
+                }
+            }
+        }
+
+        return dataSet to xAxisLabels
+    }
+
+    private fun FragmentDataSummaryBinding.setData(lineChart: LineChart, chartNoDataText: TextView, dataset: LineDataSet, xAxisLabels: List<String>) {
+
+        if (dataset.entryCount == 0) {
+            chartNoDataText.visibility = View.VISIBLE
+            lineChart.visibility = View.GONE
+            return
+        }
+
+        chartNoDataText.visibility = View.GONE
+        lineChart.visibility = View.VISIBLE
+
+        val lineData = LineData(dataset)
+        lineChart.data = lineData
+
+        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(xAxisLabels)
+
+        lineChart.invalidate()
+    }
+
+    //sets the accumulated data into the piechart and recycler view, along with some misc. parameter setting
+    private fun FragmentDataSummaryBinding.setData(dataPieChart: PieChart, chartNoDataText: TextView, dataset: PieDataSet) {
+        if (dataset.entryCount == 0) {
+            chartNoDataText.visibility = View.VISIBLE
             dataPieChart.visibility = View.GONE
             return
         }
 
         activity?.currentFocus?.clearFocus()
 
+        chartNoDataText.visibility = View.GONE
         dataPieChart.visibility = View.VISIBLE
 
         dataPieChart.animateY(1400, Easing.EaseInOutQuad)
@@ -402,15 +446,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         //dataset.iconsOffset = MPPointF(0f, 40f)
         dataset.selectionShift = 5f
 
-        // add a lot of colors
-        val colors = ArrayList<Int>()
-        for (c in ColorTemplate.VORDIPLOM_COLORS) colors.add(c)
-        for (c in ColorTemplate.JOYFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.LIBERTY_COLORS) colors.add(c)
-        for (c in ColorTemplate.PASTEL_COLORS) colors.add(c)
-        colors.add(ColorTemplate.getHoloBlue())
-        dataset.colors = colors
+        dataset.colors = graphColors.toMutableList()
         //dataSet.setSelectionShift(0f);
         val data = PieData(dataset)
         data.setValueFormatter(object : ValueFormatter() {
@@ -440,6 +476,7 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
         metadataSummaryBarChart.visibility = View.VISIBLE
 
+        dataset.colors = graphColors.toMutableList()
         val data = BarData(dataset)
 
         data.setValueTextColor(Color.TRANSPARENT)
@@ -462,9 +499,5 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         // undo all highlights
         metadataSummaryBarChart.highlightValues(null)
         metadataSummaryBarChart.invalidate()
-    }
-
-    private enum class ChartType {
-        SEX, TYPE
     }
 }

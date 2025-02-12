@@ -1,6 +1,5 @@
 package org.phenoapps.intercross.fragments
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -21,7 +20,6 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.ParentsAdapter
 import org.phenoapps.intercross.data.EventsRepository
@@ -43,9 +41,6 @@ import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
-import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
 
 class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.fragment_parents),
     CoroutineScope by MainScope() {
@@ -239,19 +234,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         }
 
-        /*
-        Go to Pollen Manager fragment for male group data-entry
-         */
         fragParentsNewParentBtn.setOnClickListener {
 
-            when (tabLayout.getTabAt(0)?.isSelected) {
-
-                true -> Navigation.findNavController(mBinding.root)
-                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(0))
-
-                else -> Navigation.findNavController(mBinding.root)
-                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(1))
-            }
+            showAddParentsDialog()
 
         }
 
@@ -495,9 +480,13 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
                 }
 
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(ParentsFragmentDirections.globalActionToCrossTracker())
+                }
+
+                R.id.action_nav_summary -> {
+                    findNavController().navigate(ParentsFragmentDirections.actionToSummary())
                 }
             }
 
@@ -551,16 +540,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         when (item.itemId) {
 
-            R.id.action_import -> {
-
-                context?.let {
-                    ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
-                        .showImportDialog(this)
-                }
-                // (activity as? MainActivity)?.launchImport()
-
-            }
-
             R.id.action_parents_delete -> {
                 mBinding.deleteParents()
             }
@@ -577,5 +556,50 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showAddParentsDialog() {
+        val importArray: Array<String?> = arrayOf(
+            context?.getString(R.string.dialog_import_parents_title),
+            context?.getString(R.string.add_new_female_parent),
+            context?.getString(R.string.add_new_male_parent),
+        )
+
+        val icons = IntArray(importArray.size).apply {
+            this[0] = R.drawable.ic_file_generic
+            this[1] = R.drawable.ic_female_parent
+            this[2] = R.drawable.ic_male_parent
+        }
+
+        val onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                when (position) {
+                    0 -> { // import parents
+                        context?.let {
+                            ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
+                                .showImportDialog(this)
+                        }
+                    }
+                    // create a new female parent
+                    1 -> Navigation.findNavController(mBinding.root)
+                        .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(0))
+                    // create a new male parent
+                    2 -> {
+                        /*
+                            Go to Pollen Manager fragment for male group data-entry
+                        */
+                        Navigation.findNavController(mBinding.root)
+                            .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(1))
+                    }
+
+                }
+            }
+
+        activity?.let { fragmentActivity ->
+            val dialog = context?.getString(R.string.dialog_new_parent_title)?.let {
+                    dialogTitle -> ListAddDialog(fragmentActivity, dialogTitle, importArray, icons, onItemClickListener)
+            }
+            dialog?.show(fragmentActivity.supportFragmentManager, "ListAddDialog")
+        }
     }
 }

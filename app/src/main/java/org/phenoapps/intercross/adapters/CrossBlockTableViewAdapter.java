@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
@@ -39,6 +40,19 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
         final LinearLayout linearLayout;
 
         public RowHeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            linearLayout = itemView.findViewById(R.id.list_item_table_cell_container);
+            textView = itemView.findViewById(R.id.list_item_table_cell_tv);
+        }
+    }
+
+    static class ColumnHeaderViewHolder extends AbstractViewHolder {
+
+        final TextView textView;
+        final LinearLayout linearLayout;
+
+        public ColumnHeaderViewHolder(@NonNull View itemView) {
             super(itemView);
 
             linearLayout = itemView.findViewById(R.id.list_item_table_cell_container);
@@ -119,10 +133,10 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
  
          // Get Column Header xml Layout
          View layout = LayoutInflater.from(parent.getContext())
-                 .inflate(R.layout.list_item_table_cell, parent, false);
+                 .inflate(R.layout.list_item_table_column_header, parent, false);
  
          // Create a ColumnHeader ViewHolder
-         return new CellViewHolder(layout);
+         return new ColumnHeaderViewHolder(layout);
      }
  
      /**
@@ -146,10 +160,14 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
                                               int position) {
 
          // Get the holder to update cell item text
-         CellViewHolder columnHeaderViewHolder = (CellViewHolder) holder;
+         ColumnHeaderViewHolder columnHeaderViewHolder = (ColumnHeaderViewHolder) holder;
 
          if (columnHeaderItemModel != null) {
              columnHeaderViewHolder.textView.setText(columnHeaderItemModel.getText());
+
+             columnHeaderViewHolder.itemView.setOnClickListener(v -> {
+                 Toast.makeText(v.getContext(), columnHeaderItemModel.getText(), Toast.LENGTH_SHORT).show();
+             });
          }
 
          // If your TableView should have auto resize for cells & columns.
@@ -207,6 +225,10 @@ public class CrossBlockTableViewAdapter extends AbstractTableAdapter<CrossBlockF
 
          if (rowHeaderItemModel != null) {
              rowHeaderViewHolder.textView.setText(rowHeaderItemModel.getText());
+
+             rowHeaderViewHolder.itemView.setOnClickListener(v -> {
+                 Toast.makeText(v.getContext(), rowHeaderItemModel.getText(), Toast.LENGTH_SHORT).show();
+             });
          }
 
          rowHeaderViewHolder.linearLayout.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;

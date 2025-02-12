@@ -118,6 +118,7 @@
     <string name="cancel">Cancel</string>
     <string name="qr_code_for_parent">QR Code for parent</string>
     <string name="button_to_scan_next_text">Button to scan next text entry.</string>
+    <string name="button_to_create_wishlist">Button to create a new wishlist.</string>
     <string name="barcode_preview_image">Barcode preview image.</string>
     <string name="zxing_scan_mode_single">Single Mode</string>
     <string name="zxing_status_single">Single</string>
@@ -176,7 +177,7 @@
     <string name="count">Count</string>
     <string name="wish">Wish</string>
     <string name="no_child_exists">No child exists.</string>
-    <string name="click_item_for_child_details">Click item for child details.</string>
+    <string name="click_item_to_open_child">Click item to open child cross page.</string>
     <string name="about_title">About</string>
     <string name="barcode_scan_label">Barcode Scan</string>
     <string name="events_fragment_label">Events</string>
@@ -224,7 +225,7 @@
     <string name="brapi_oidc_url_default">https://test-server.brapi.org/.well-known/openid-configuration</string>
     <string name="main_barcode_text">Scan a barcode</string>
 
-    <string name="graph_sex_title">Sex</string>
+    <string name="graph_cross_over_time_title">Crosses over time</string>
     <string name="graph_type_title">Type</string>
     <string name="graph_meta_title">Metadata</string>
     <string name="graph_no_data_available">No data available</string>
@@ -287,7 +288,6 @@
     <string name="frag_wf_values_min_must_not_be_null">Minimum must be greater than zero.</string>
     <string name="frag_wf_values_max_must_not_be_null">Maximum value must be greater than the minimum.</string>
     <string name="frag_wf_summary_summary">Is it OK to create a wish for a minimum of %d and maximum of %d %s of %s and %s pair?</string>
-    <string name="toolbar_parents_add_wish">Add a wishlist item</string>
     <string name="minimum_wish_met">Minimum wish for %s met.</string>
     <string name="maximum_wish_met">Maximum wish met for %s.</string>
     <string name="frag_wf_a_female_must_be_chosen">A female must be chosen.</string>
@@ -307,7 +307,7 @@
     <string name="completed"></string>
     <string name="wishlist_complete_content_description">Wishlist complete</string>
     <string name="frag_parents_parents_not_deleted_reason">Some parents could not be deleted because they are parents to a cross.</string>
-    <string name="frag_parents_new_parent_btn">Button to add a new parent.</string>
+    <string name="frag_parents_create_parents_btn">Button to create parents.</string>
     <string name="frag_parents_new_parent_title">New Parent</string>
     <string name="frag_parents_selected_text">%s parents are selected</string>
     <string name="menu_parents_delete_title">Delete selected parents.</string>
@@ -505,11 +505,17 @@
     <string name="prefs_zebra_import_summary">Import a ZPL file.</string>
 
     <!-- Database preferences -->
+    <string name="prefs_database_reset_title">Reset Database</string>
+    <string name="prefs_database_reset_summary">This will delete all data stored in the app.</string>
     <string name="prefs_database_import_title">Import Database</string>
     <string name="prefs_database_import_summary">Import a new database file that has been saved previously.</string>
     <string name="prefs_database_export_title">Export Database</string>
     <string name="prefs_database_export_summary">This will prompt the user to export the local database.</string>
     <string name="pref_database_title">Database</string>
+
+    <string name="database_reset_warning1">All data will be deleted. Are you sure you want to reset the database?</string>
+    <string name="database_reset_warning2">A database reset cannot be reversed. The app will quit after clearing the database. Are you really sure you want to continue?</string>
+    <string name="database_reset_message">Database has been deleted</string>
 
 
     <string name="ok">OK</string>
@@ -540,6 +546,7 @@
     <string name="dialog_no">No</string>
     <string name="profile_person_not_set">Not set</string>
     <string name="dialog_export_message">"Exporting data..."</string>
+    <string name="dialog_warning">Warning</string>
 
     <string name="profile_name_first">First name</string>
     <string name="profile_name_last">Last name</string>
@@ -569,6 +576,13 @@
     <string name="dialog_import_loading_sample">Importing Sample Data…</string>
     <string name="load_sample_success_toast">Sample data was imported</string>
     <string name="load_sample_failed_toast">Sample data could not be imported</string>
+
+    <string name="dialog_new_wishlist_title">New Wishlist</string>
+    <string name="add_wishlist_item">Add a wishlist item</string>
+
+    <string name="dialog_new_parent_title">New Parent</string>
+    <string name="add_new_male_parent">Create a new male parent</string>
+    <string name="add_new_female_parent">Create a new female parent</string>
 
     <!-- AppIntroActivity -->
     <string name="app_intro_activity_label">App Intro</string>
@@ -609,5 +623,18 @@
     <string name="dialog_crosses_by_dates">Crosses by Dates</string>
     <string name="dialog_wish_progress_title">Wish Progress</string>
     <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
+    <string name="crosses_toolbar_hide_completed">Hide completed wishlist items</string>
+    <string name="crosses_toolbar_show_completed">Show completed wishlist items</string>
+
+
+    <!--  SearchFragment  -->
+    <string name="search_fragment_title">Search</string>
+
+    <!--  BottomNavBar  -->
+    <string name="bottom_nv_home">Home</string>
+    <string name="bottom_nv_crosses">Crosses</string>
+    <string name="bottom_nv_summary">Graphs</string>
+    <string name="bottom_nv_parents">Parents</string>
+    <string name="bottom_nv_settings">Settings</string>
 
 </resources>

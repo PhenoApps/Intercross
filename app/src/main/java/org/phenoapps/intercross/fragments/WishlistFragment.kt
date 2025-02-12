@@ -90,7 +90,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
     override fun FragmentWishlistBinding.afterCreateView() {
 
-        bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
         setupBottomNavBar()
 
@@ -372,7 +372,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
                     findNavController().navigate(WishlistFragmentDirections.globalActionToParents())
 
                 }
-                R.id.action_nav_cross_count -> {
+                R.id.action_nav_crosses -> {
 
                     findNavController().navigate(WishlistFragmentDirections.globalActionToCrossTracker())
 
@@ -399,11 +399,11 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
 
         mBinding.summaryTabLayout.getTabAt(1)?.select()
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = false
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = false
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_cross_count
+        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
 
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_cross_count).isEnabled = true
+        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = true
 
     }
 
@@ -456,7 +456,7 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
         context?.let { ctx ->
             Dialogs.listAndBuildCross(
                 AlertDialog.Builder(ctx),
-                getString(R.string.click_item_for_child_details),
+                getString(R.string.click_item_to_open_child),
                 getString(R.string.no_child_exists),
                 male, female, children,
                 { id ->

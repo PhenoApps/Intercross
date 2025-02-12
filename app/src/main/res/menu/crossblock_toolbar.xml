@@ -4,6 +4,6 @@
     <item
         android:id="@+id/action_parents_toolbar_initiate_wf"
         android:icon="@drawable/ic_wishlist_add_white"
-        android:title="@string/toolbar_parents_add_wish"
+        android:title="@string/add_wishlist_item"
         app:showAsAction="ifRoom"/>
 </menu>

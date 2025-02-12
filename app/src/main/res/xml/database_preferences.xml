@@ -17,6 +17,11 @@
             app:allowDividerAbove="false"
             app:iconSpaceReserved="false">
             <Preference
+                android:icon="@drawable/ic_database_reset"
+                android:key="@string/key_pref_db_reset"
+                android:title="@string/prefs_database_reset_title"
+                android:summary="@string/prefs_database_reset_summary"/>
+            <Preference
                 android:icon="@drawable/ic_database_import"
                 android:key="@string/key_pref_db_import"
                 android:title="@string/prefs_database_import_title"

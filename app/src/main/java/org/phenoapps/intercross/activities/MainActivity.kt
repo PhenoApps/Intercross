@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -423,7 +424,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         verifyPersonHelper.updateAskedSinceOpened()
@@ -438,19 +439,34 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             R.layout.activity_main
         )
 
+        val scrim = mBinding.keyboardScrim
+
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { view, windowInsets ->
+
             val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or
-                        WindowInsetsCompat.Type.displayCutout()
+                WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
             )
 
+            val isKeyboardShowing = WindowInsetsCompat
+                .toWindowInsetsCompat(windowInsets.toWindowInsets()!!)
+                .isVisible(WindowInsetsCompat.Type.ime())
+
+            if (insets.left > 0 && isKeyboardShowing) {
+                scrim.visibility = View.VISIBLE
+               // scrim.updatePadding(left = cutoutInset.left)
+            } else {
+                scrim.visibility = View.GONE
+            }
             // applied to all fragments of MainActivity
-            view.updatePadding(
-                left = insets.left,
-                right = insets.right
-            )
+            //view.updatePadding(
+              //  top = insets.top,
+                //bottom = insets.bottom,
+                //left = insets.left,
+                // = insets.right
+            //)
 
             // set padding to toolbar
+            //view.findViewById<>()
             mBinding.mainTb.updatePadding(top = insets.top)
 
             windowInsets

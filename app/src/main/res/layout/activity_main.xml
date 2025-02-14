@@ -7,6 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:elevation="2dp"
+            android:visibility="gone"
+            android:id="@+id/keyboard_scrim"
+            android:background="@color/BLACK"
+            android:layout_width="128dp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         <androidx.appcompat.widget.Toolbar
             android:visibility="gone"
             android:id="@+id/main_tb"

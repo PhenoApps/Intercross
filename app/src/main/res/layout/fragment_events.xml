@@ -21,7 +21,6 @@
         android:id="@+id/constraint_layout_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:focusable="true"
         android:focusableInTouchMode="true">
 
@@ -153,7 +152,7 @@
             android:cropToPadding="false"
             android:elevation="5dp"
             android:scaleType="fitCenter"
-            android:tint="#ffffff"
+            app:tint="#ffffff"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="1.0"
@@ -169,7 +168,6 @@
             android:cropToPadding="false"
             android:elevation="5dp"
             android:scaleType="fitCenter"
-            android:tint="#ffffff"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:tint="#ffffff"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -6,11 +6,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -433,6 +438,24 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             R.layout.activity_main
         )
 
+        ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
+            )
+
+            // applied to all fragments of MainActivity
+            view.updatePadding(
+                left = insets.left,
+                right = insets.right
+            )
+
+            // set padding to toolbar
+            mBinding.mainTb.updatePadding(top = insets.top)
+
+            windowInsets
+        }
+
         supportActionBar.apply {
             title = ""
             this?.let {
@@ -709,4 +732,17 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
    //     val experiment = mPref.getString(mKeyUtil.profExpKey, "") ?: ""
    //     return Pair(person, experiment)
    // }
+
+    fun applyFragmentInsets(root: View, toolbar: Toolbar?) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
+            )
+
+            toolbar?.updatePadding(top = insets.top)
+
+            windowInsets
+        }
+    }
 }

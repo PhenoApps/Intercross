@@ -14,6 +14,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.evrencoskun.tableview.sort.ISortableModel
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.CrossTrackerAdapter
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.WishlistRepository
@@ -29,7 +30,6 @@ import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.intercross.interfaces.CrossController
 import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.DateUtil
-import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
@@ -187,6 +187,8 @@ class CrossTrackerFragment :
     }
 
     override fun FragmentCrossTrackerBinding.afterCreateView() {
+
+        (activity as MainActivity).applyFragmentInsets(root, fragCrossTrackerTb)
 
         mPref.edit().putString("last_visited_summary", "summary").apply()
 

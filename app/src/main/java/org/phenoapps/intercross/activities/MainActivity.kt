@@ -2,6 +2,7 @@ package org.phenoapps.intercross.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -439,38 +440,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             R.layout.activity_main
         )
 
-        val scrim = mBinding.keyboardScrim
-
-        ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { view, windowInsets ->
-
-            val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
-            )
-
-            val isKeyboardShowing = WindowInsetsCompat
-                .toWindowInsetsCompat(windowInsets.toWindowInsets()!!)
-                .isVisible(WindowInsetsCompat.Type.ime())
-
-            if (insets.left > 0 && isKeyboardShowing) {
-                scrim.visibility = View.VISIBLE
-               // scrim.updatePadding(left = cutoutInset.left)
-            } else {
-                scrim.visibility = View.GONE
-            }
-            // applied to all fragments of MainActivity
-            //view.updatePadding(
-              //  top = insets.top,
-                //bottom = insets.bottom,
-                //left = insets.left,
-                // = insets.right
-            //)
-
-            // set padding to toolbar
-            //view.findViewById<>()
-            mBinding.mainTb.updatePadding(top = insets.top)
-
-            windowInsets
-        }
+        setWindowInsetListener()
 
         supportActionBar.apply {
             title = ""
@@ -748,6 +718,50 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
    //     val experiment = mPref.getString(mKeyUtil.profExpKey, "") ?: ""
    //     return Pair(person, experiment)
    // }
+
+    private fun setWindowInsetListener() {
+        val leftScrim = mBinding.cameraScrimLeft
+        val rightScrim = mBinding.cameraScrimRight
+
+        ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars()
+            )
+
+            when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> {
+                    when { // when the camera is on the left
+                        insets.left > 0 -> {
+                            leftScrim.visibility = View.VISIBLE
+                            leftScrim.layoutParams.width = insets.left
+                            leftScrim.requestLayout()
+
+                            rightScrim.visibility = View.GONE
+
+                            mBinding.root.setPadding(0, 0, insets.right, 0)
+                        }
+                        insets.right > 0 -> { // when the camera is on the right
+                            rightScrim.visibility = View.VISIBLE
+                            rightScrim.layoutParams.width = insets.right
+                            rightScrim.requestLayout()
+
+                            leftScrim.visibility = View.GONE
+                            mBinding.root.setPadding(insets.left, 0, 0, 0)
+                        }
+                    }
+                }
+                else -> { // portrait mode
+                    leftScrim.visibility = View.GONE
+                    rightScrim.visibility= View.GONE
+                    mBinding.root.setPadding(0, 0, 0, 0)
+                }
+            }
+
+            mBinding.mainTb.updatePadding(top = insets.top)
+
+            windowInsets
+        }
+    }
 
     fun applyFragmentInsets(root: View, toolbar: Toolbar?) {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->

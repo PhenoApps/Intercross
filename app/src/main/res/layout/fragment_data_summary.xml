@@ -12,7 +12,6 @@
             android:layout_width="0dp"
             android:background="?attr/colorPrimary"
             android:gravity="center_vertical|start"
-            app:menu="@menu/summary_toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -120,15 +119,15 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         setupBottomNavBar()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId) {
-            R.id.action_to_crossblock -> {
-                findNavController().navigate(SummaryFragmentDirections.actionToCrossblock())
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+    // override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    //
+    //     when(item.itemId) {
+    //         R.id.action_to_crossblock -> {
+    //             findNavController().navigate(SummaryFragmentDirections.actionToCrossblock())
+    //         }
+    //     }
+    //     return super.onOptionsItemSelected(item)
+    // }
 
 
     override fun onResume() {

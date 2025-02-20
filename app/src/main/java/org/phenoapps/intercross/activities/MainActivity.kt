@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
@@ -427,6 +428,12 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        window.apply {
+            WindowCompat.getInsetsController(this, decorView).apply {
+                isAppearanceLightStatusBars = false
+            }
+        }
 
         verifyPersonHelper.updateAskedSinceOpened()
 

@@ -55,6 +55,8 @@ class SummaryFragment : IntercrossBaseFragment<FragmentWfSummaryBinding>(R.layou
 
     override fun FragmentWfSummaryBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         mBinding.wfSummaryTv.text = getString(R.string.frag_wf_summary_summary,
             min, max, wishType, femaleName, maleName)
 

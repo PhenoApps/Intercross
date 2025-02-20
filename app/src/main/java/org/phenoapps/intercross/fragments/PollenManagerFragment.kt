@@ -62,6 +62,8 @@ class PollenManagerFragment : IntercrossBaseFragment<FragmentPollenManagerBindin
 
     override fun FragmentPollenManagerBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         (activity as MainActivity).setBackButtonToolbar()
         (activity as MainActivity).supportActionBar?.apply {
             title = getString(R.string.frag_parents_new_parent_title)

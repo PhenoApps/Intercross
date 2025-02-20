@@ -49,6 +49,8 @@ class MaleChoiceFragment : IntercrossBaseFragment<FragmentWfChooseMaleBinding>(R
 
     override fun FragmentWfChooseMaleBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         mBinding.wfMaleSummaryTv.text = getString(R.string.frag_wf_male_choice_summary, femaleName)
 
         mBinding.wfMaleRv.adapter = SimpleListAdapter(this@MaleChoiceFragment)

@@ -89,6 +89,8 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
     override fun FragmentBarcodeScanBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         checkCamPermissions.launch(Manifest.permission.CAMERA)
 
         val singleScanString = getString(R.string.single_scan_description)

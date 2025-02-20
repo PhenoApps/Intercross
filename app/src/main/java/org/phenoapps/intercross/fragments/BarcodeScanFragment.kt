@@ -273,6 +273,8 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
     override fun FragmentBarcodeScanBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         checkCamPermissions.launch(Manifest.permission.CAMERA)
 
         val searchBarcodeString = getString(R.string.search_barcode_description)

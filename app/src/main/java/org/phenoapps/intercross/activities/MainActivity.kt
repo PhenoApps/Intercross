@@ -775,4 +775,20 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             windowInsets
         }
     }
+
+    /**
+     * use this for fragments without a bottom nav bar
+     */
+    fun applyBottomInsets(root: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
+            )
+
+            root.updatePadding(bottom = insets.bottom)
+
+            windowInsets
+        }
+    }
 }

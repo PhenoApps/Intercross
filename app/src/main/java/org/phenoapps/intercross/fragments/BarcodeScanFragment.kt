@@ -38,11 +38,11 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
     private companion object {
 
-        val SINGLE = 0
+        const val SINGLE = 0
 
-        val SEARCH = 1
+        const val SEARCH = 1
 
-        val CONTINUOUS = 2
+        const val CONTINUOUS = 2
     }
 
     private val viewModel: EventListViewModel by viewModels {
@@ -135,11 +135,11 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                             zxingBarcodeScanner.setStatusText(getString(R.string.zxing_scan_mode_search))
 
-                            val scannedEvent = mEvents.find { event -> event.eventDbId == result.text.toString().toLowerCase(Locale.ROOT) }
+                            val scannedEvent = mEvents.find { event -> event.eventDbId == result.text.toString().lowercase(Locale.ROOT) }
 
                             if (scannedEvent == null) {
 
-                                mParents.find { parent -> parent.codeId == result.text.toString().toLowerCase(Locale.ROOT) }?.let { parent ->
+                                mParents.find { parent -> parent.codeId == result.text.toString().lowercase(Locale.ROOT) }?.let { parent ->
 
                                     context?.let { ctx ->
 
@@ -272,6 +272,8 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
 
     override fun FragmentBarcodeScanBinding.afterCreateView() {
+
+        (activity as? MainActivity)?.applyBottomInsets(root)
 
         checkCamPermissions.launch(Manifest.permission.CAMERA)
 

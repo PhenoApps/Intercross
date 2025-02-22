@@ -111,6 +111,8 @@ class EventDetailFragment:
 
     override fun FragmentEventDetailBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         (activity as MainActivity).setBackButtonToolbar()
         (activity as AppCompatActivity).supportActionBar?.show()
 

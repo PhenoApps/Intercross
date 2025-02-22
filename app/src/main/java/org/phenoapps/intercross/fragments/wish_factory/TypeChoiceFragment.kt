@@ -49,6 +49,8 @@ class TypeChoiceFragment : IntercrossBaseFragment<FragmentWfChooseWishTypeBindin
 
     override fun FragmentWfChooseWishTypeBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         mBinding.wfWishTypeSummaryTv.text = getString(R.string.frag_wf_choose_type_summary,
             femaleName, maleName)
 

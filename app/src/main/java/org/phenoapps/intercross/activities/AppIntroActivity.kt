@@ -1,6 +1,10 @@
 package org.phenoapps.intercross.activities
 
 import android.os.Bundle
+import android.view.View
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro
 import com.github.appintro.AppIntroFragment.Companion.createInstance
@@ -11,7 +15,10 @@ import org.phenoapps.intercross.fragments.app_intro.RequiredSetupPolicyFragment
 
 class AppIntroActivity :  AppIntro() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        setWindowInsetListener()
 
         val context = applicationContext
 
@@ -61,5 +68,19 @@ class AppIntroActivity :  AppIntro() {
         super.onDonePressed(currentFragment)
         setResult(RESULT_OK)
         finish()
+    }
+
+    private fun setWindowInsetListener() {
+        window.decorView.findViewById<View>(android.R.id.content)?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { _, windowInsets ->
+                val insets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars()
+                )
+
+                it.setPadding(0, 0, 0, insets.bottom)
+
+                windowInsets
+            }
+        }
     }
 }

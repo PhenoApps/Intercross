@@ -598,7 +598,7 @@ class FileUtil(private val ctx: Context) {
                     }
                     uri.isMediaDocument -> {
                         val parts = docId.split(":")
-                        val contentUri = when (parts[0].toLowerCase(Locale.ROOT)) {
+                        val contentUri = when (parts[0].lowercase(Locale.ROOT)) {
                             "image" -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                             "video" -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                             "audio" -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

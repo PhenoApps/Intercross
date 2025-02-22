@@ -40,6 +40,8 @@ class ValuesChoiceFragment : IntercrossBaseFragment<FragmentWfChooseWishValuesBi
 
     override fun FragmentWfChooseWishValuesBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         mBinding.wfWishValuesSummaryTv.text = getString(R.string.frag_wf_values_summary,

@@ -8,11 +8,10 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/frag_summary_tb"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
             android:background="?attr/colorPrimary"
             android:gravity="center_vertical|start"
-            app:menu="@menu/summary_toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

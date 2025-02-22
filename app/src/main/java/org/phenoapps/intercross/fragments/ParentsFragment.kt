@@ -129,6 +129,8 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         val ctx = requireContext()
 
+        (activity as MainActivity).applyFragmentInsets(root, fragParentsTb)
+
 
         (activity as MainActivity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 

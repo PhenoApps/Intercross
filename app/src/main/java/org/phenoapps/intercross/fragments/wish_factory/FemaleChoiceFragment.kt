@@ -33,6 +33,8 @@ class FemaleChoiceFragment : IntercrossBaseFragment<FragmentWfChooseFemaleBindin
 
     override fun FragmentWfChooseFemaleBinding.afterCreateView() {
 
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         mBinding.wfFemaleNextBt.setOnClickListener {
             mSnackbar.push(SnackbarQueue.SnackJob(mBinding.root,
                 getString(R.string.frag_wf_a_female_must_be_chosen)))

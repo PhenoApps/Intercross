@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +18,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.tabs.TabLayout
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.WishlistRepository
@@ -102,6 +102,8 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
 
     override fun FragmentDataSummaryBinding.afterCreateView() {
 
+        (activity as MainActivity).applyFragmentInsets(root, fragSummaryTb)
+
         //initialize pie chart parameters, this is mostly taken from the github examples
         setupPieChart(typeSummaryPieChart)
         setupLineChart(crossesOverTimeChart)
@@ -117,15 +119,15 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         setupBottomNavBar()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId) {
-            R.id.action_to_crossblock -> {
-                findNavController().navigate(SummaryFragmentDirections.actionToCrossblock())
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+    // override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    //
+    //     when(item.itemId) {
+    //         R.id.action_to_crossblock -> {
+    //             findNavController().navigate(SummaryFragmentDirections.actionToCrossblock())
+    //         }
+    //     }
+    //     return super.onOptionsItemSelected(item)
+    // }
 
 
     override fun onResume() {

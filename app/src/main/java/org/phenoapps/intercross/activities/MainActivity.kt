@@ -2,15 +2,23 @@ package org.phenoapps.intercross.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -418,8 +426,14 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        window.apply {
+            WindowCompat.getInsetsController(this, decorView).apply {
+                isAppearanceLightStatusBars = false
+            }
+        }
 
         verifyPersonHelper.updateAskedSinceOpened()
 
@@ -432,6 +446,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         mBinding = DataBindingUtil.setContentView(this@MainActivity,
             R.layout.activity_main
         )
+
+        setWindowInsetListener()
 
         supportActionBar.apply {
             title = ""
@@ -709,4 +725,77 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
    //     val experiment = mPref.getString(mKeyUtil.profExpKey, "") ?: ""
    //     return Pair(person, experiment)
    // }
+
+    private fun setWindowInsetListener() {
+        val leftScrim = mBinding.cameraScrimLeft
+        val rightScrim = mBinding.cameraScrimRight
+
+        ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars()
+            )
+
+            when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> {
+                    when { // when the camera is on the left
+                        insets.left > 0 -> {
+                            leftScrim.visibility = View.VISIBLE
+                            leftScrim.layoutParams.width = insets.left
+                            leftScrim.requestLayout()
+
+                            rightScrim.visibility = View.GONE
+
+                            mBinding.root.setPadding(0, 0, insets.right, 0)
+                        }
+                        insets.right > 0 -> { // when the camera is on the right
+                            rightScrim.visibility = View.VISIBLE
+                            rightScrim.layoutParams.width = insets.right
+                            rightScrim.requestLayout()
+
+                            leftScrim.visibility = View.GONE
+                            mBinding.root.setPadding(insets.left, 0, 0, 0)
+                        }
+                    }
+                }
+                else -> { // portrait mode
+                    leftScrim.visibility = View.GONE
+                    rightScrim.visibility= View.GONE
+                    mBinding.root.setPadding(0, 0, 0, 0)
+                }
+            }
+
+            mBinding.mainTb.updatePadding(top = insets.top)
+
+            windowInsets
+        }
+    }
+
+    fun applyFragmentInsets(root: View, toolbar: Toolbar?) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
+            )
+
+            toolbar?.updatePadding(top = insets.top)
+
+            windowInsets
+        }
+    }
+
+    /**
+     * use this for fragments without a bottom nav bar
+     */
+    fun applyBottomInsets(root: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
+            )
+
+            root.updatePadding(bottom = insets.bottom)
+
+            windowInsets
+        }
+    }
 }

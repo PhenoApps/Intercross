@@ -1,4 +1,8 @@
 <changelog>
+    <release versionCode="201" versionName="v2.0.1" date="2025-02-26">
+        <bug>Fixed issue with wishlist crashes</bug>
+    </release>
+
     <release versionCode="200" versionName="v2.0" date="2025-02-20">
         <new>Added statistics page</new>
         <new>Updated crosses page</new>

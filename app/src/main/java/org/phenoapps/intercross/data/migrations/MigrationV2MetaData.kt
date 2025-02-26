@@ -74,29 +74,39 @@ class MigrationV2MetaData : Migration(1, 2) {
 
             with (it) {
 
-                moveToFirst()
+                if (moveToFirst()) {
 
-                do {
+                    do {
 
-                    //get indices for V1 static column string metadata and unique rowid
-                    val idIndex = getColumnIndexOrThrow("eid")
-                    val fruitsIndex = getColumnIndexOrThrow("fruits")
-                    val seedsIndex = getColumnIndexOrThrow("seeds")
-                    val flowersIndex = getColumnIndexOrThrow("flowers")
+                        //get indices for V1 static column string metadata and unique rowid
+                        val idIndex = getColumnIndexOrThrow("eid")
+                        val fruitsIndex = getColumnIndexOrThrow("fruits")
+                        val seedsIndex = getColumnIndexOrThrow("seeds")
+                        val flowersIndex = getColumnIndexOrThrow("flowers")
 
-                    //get actual string values, eid is used to update the row and
-                    //static metadata fields fruits/flowers/seeds will be encoded into a json string
-                    val eid = getIntOrNull(idIndex) ?: "-1"
-                    val fruits = getStringOrNull(fruitsIndex) ?: "0"
-                    val flowers = getStringOrNull(flowersIndex) ?: "0"
-                    val seeds = getStringOrNull(seedsIndex) ?: "0"
+                        //get actual string values, eid is used to update the row and
+                        //static metadata fields fruits/flowers/seeds will be encoded into a json string
+                        val eid = getIntOrNull(idIndex) ?: "-1"
+                        val fruits = getStringOrNull(fruitsIndex) ?: "0"
+                        val flowers = getStringOrNull(flowersIndex) ?: "0"
+                        val seeds = getStringOrNull(seedsIndex) ?: "0"
 
-                    //creates a json encoded string from the static columns
-                    execSQL("INSERT INTO metaValues (eid, metaId, value) VALUES (?, 1, ?)", arrayOf(eid, flowers))
-                    execSQL("INSERT INTO metaValues (eid, metaId, value) VALUES (?, 2, ?)", arrayOf(eid, seeds))
-                    execSQL("INSERT INTO metaValues (eid, metaId, value) VALUES (?, 3, ?)", arrayOf(eid, fruits))
+                        //creates a json encoded string from the static columns
+                        execSQL(
+                            "INSERT INTO metaValues (eid, metaId, value) VALUES (?, 1, ?)",
+                            arrayOf(eid, flowers)
+                        )
+                        execSQL(
+                            "INSERT INTO metaValues (eid, metaId, value) VALUES (?, 2, ?)",
+                            arrayOf(eid, seeds)
+                        )
+                        execSQL(
+                            "INSERT INTO metaValues (eid, metaId, value) VALUES (?, 3, ?)",
+                            arrayOf(eid, fruits)
+                        )
 
-                } while (moveToNext())
+                    } while (moveToNext())
+                }
             }
         }
     }

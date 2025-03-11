@@ -13,13 +13,6 @@ Behavior settings in Intercross allow you to customize how the app operates to m
 
 When enabled, this setting allows you to collect extra metadata about each cross.
 
-The Auto Cross setting allows you to configure how cross IDs are generated automatically.
-
-<figure align="center" class="image">
-<img src="_static/images/settings/auto_cross.png" width="350px">
-<figcaption><i>Auto Cross settings</i></figcaption>
-</figure>
-
 ## Cross ID Generation Methods
 
 There are three options for generating cross IDs:

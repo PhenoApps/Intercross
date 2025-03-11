@@ -34,7 +34,7 @@ Crossing data is exported with columns including:
 
 Exported files are saved to:
 ```
-/Intercross/crosses/
+/Intercross/crosses_export/
 ```
 
 You can access these files using any file manager app on your device or by connecting your device to a computer.

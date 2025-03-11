@@ -2,7 +2,7 @@
 
 ## Overview
 
-Database settings in Intercross allow you to update the default sotrage location or reset, import, and export the app database.
+Database settings in Intercross allow you to update the default storage location or reset, import, and export the app database.
 
 <figure align="center" class="image">
 <img src="_static/images/settings/database_settings.png" width="350px">

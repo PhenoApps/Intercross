@@ -52,7 +52,7 @@ When creating a cross with the barcode scanner:
 
 ## Audio Feedback
 
-When Audio Notifications are enabled in [Workflow Settings](settings/workflow.md), the scanner will:
+When Audio Notifications are enabled in [Behavior Settings](settings/behavior.md), the scanner will:
 - Play a "plonk" sound for successful scans
 - Play a different alert sound for errors or unrecognized barcodes
 

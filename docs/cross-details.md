@@ -37,7 +37,7 @@ Press the print icon to print a label for the cross using a Zebra printer. This 
 Remove the cross record from the database. This action cannot be undone.
 
 ### Edit Metadata
-If additional metadata collection is enabled in [Workflow Settings](settings/workflow.md), you can view and edit this information.
+If additional metadata collection is enabled in [Behavior Settings](settings/behavior.md), you can view and edit this information.
 
 ## Metadata Collection
 

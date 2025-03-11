@@ -9,30 +9,9 @@ Behavior settings in Intercross allow you to customize how the app operates to m
 <figcaption><i>Behavior settings screen</i></figcaption>
 </figure>
 
-## Collect Additional Information
+## Naming
 
-When enabled, this setting allows you to collect extra metadata about each cross.
-
-## Cross ID Generation Methods
-
-There are three options for generating cross IDs:
-
-### None
-Manual entry of cross IDs is required for each cross.
-
-### Pattern
-Configure a pattern with:
-- Prefix (e.g., `20RPN`)
-- Suffix (optional)
-- Starting value (e.g., `1`)
-- Padding (number of digits, e.g., `5` for `00001`)
-
-Example: Using prefix "20RPN", starting value "1", and padding "5" would generate: `20RPN00001`, `20RPN00002`, etc.
-
-### UUID
-Generate a Universal Unique ID for each cross. This ensures completely unique identifiers but results in longer, less human-readable IDs.
-
-## Allow Blank Male ID
+### Allow Blank Male ID
 
 When enabled, this setting allows you to record crosses without specifying a male parent.
 
@@ -41,11 +20,7 @@ This is useful for:
 - Unknown pollen sources
 - Self-pollination (when not explicitly tracking as self)
 
-To enable:
-1. Navigate to Settings > Naming
-2. Toggle "Allow Blank Male ID" to On
-
-## Scan Male First
+### Scan Male First
 
 By default, Intercross assumes you'll scan or enter the female parent ID first, followed by the male parent. This setting reverses that order.
 
@@ -54,44 +29,27 @@ When enabled:
 - Barcode scanning in sequence will populate the male field first, then female
 - The tab order on the screen changes accordingly
 
-To enable:
-1. Navigate to Settings > Naming
-2. Toggle "Scan Male First" to On
+### Create Cross ID Pattern
 
-## Create Cross ID Pattern
+This setting allows you to define a custom pattern for generating unique cross IDs, using UUID format. This ensures each cross has a distinct identifier, though the IDs may be longer and less human-readable.
 
-This setting works in conjunction with [Auto Cross](auto-cross.md) settings to determine how cross IDs are generated.
+## Workflow
 
-Here you can define a pattern template that includes:
-- Static prefix text
-- Static suffix text
-- Auto-incrementing number with padding
+### Collect Additional Information
 
-For example, a pattern of "20RPN{0000}" would generate IDs like "20RPN0001", "20RPN0002", etc.
+When enabled, this setting allows you to collect extra metadata about each cross. After creating a cross, you'll be prompted to enter additional information as configured.
 
-To configure:
-1. Navigate to Settings > Naming
-2. Tap "Create Cross ID Pattern"
-3. Enter your desired pattern
-4. Press "OK"
+### Create Metadata
 
-### Available Metadata Fields
+This option allows you to define new metadata properties to associate with crosses. You can specify the name and type of data to collect for each cross you make.
 
-After creating a cross, you'll be prompted to enter:
-- Success rating
-- Notes
-- Custom metadata fields (if configured)
+### Manage Metadata
 
-### Enabling Extra Data Collection
+Use this setting to edit or organize existing metadata properties. You can modify field names, types, or delete properties that are no longer needed.
 
-1. Navigate to Settings > Behavior
-2. Toggle "Collect Additional Information" to On
+### Sound Notifications
 
-Additional metadata fields can be configured in the Metadata settings section.
-
-## Audio Notifications
-
-Intercross can provide audio feedback for various actions:
+Enables audio feedback for various actions within the app:
 
 - Successful barcode scans
 - Completed crosses
@@ -102,27 +60,6 @@ Audio cues are particularly useful when:
 - Performing rapid barcode scanning where visual confirmation is inconvenient
 - Training new users who benefit from additional feedback
 
-### Enabling Audio Notifications
+### Open Cross After Creating
 
-1. Navigate to Settings > Behavior
-2. Toggle "Audio Notifications" to On
-
-### Sound Types
-
-- **Successful scan**: A brief chime indicates a barcode was successfully read
-- **Successful cross**: A different tone indicates a cross was successfully saved
-- **Error**: A distinct sound indicates an error condition
-
-## Custom Metadata Fields
-
-You can create custom fields to collect additional information for each cross:
-
-1. Navigate to Settings > Behavior > Manage Custom Fields
-2. Tap "Add New Field"
-3. Configure the field:
-   - Field name
-   - Field type (text, number, date, etc.)
-   - Required/optional status
-4. Press "Save"
-
-These custom fields will appear in the metadata collection form after creating a cross.
+When enabled, this setting automatically opens the newly created cross details immediately after saving. This allows you to review the cross information or add additional data without having to manually select the cross from the list.

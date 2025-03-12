@@ -1,8 +1,13 @@
+<link rel="stylesheet" type="text/css" href="_styles/styles.css">
+
 # Intercross
 
 ## Introduction
 
-Intercross is an open-source Android app that tracks parental and cross IDs as crosses are made, who makes each cross, and where each cross is made. It allows printing cross labels to Zebra label printers and exporting lists of crosses to local files. Intercross is part of the broader PhenoApps initiative, an effort to modernize plant breeding and genetics data collection and organization.
+Intercross is an open-source Android app designed to enhance the management of plant breeding crosses. It supports crossing activities by importing cross wishlists, tracking parental and cross IDs along with progress toward goals as crosses are made, and capturing metadata such as the number of flowers, fruits, and seeds. The app facilitates physical tracking of crossing material by printing custom labels to Zebra mobile printers and enables data transfer by exporting completed cross lists as files.
+
+Developed as part of the PhenoApps initiative, Intercross complements a broader suite of tools that leverage mobile technology to modernize data collection and organization in plant breeding. The source code is available on GitHub.
+
 
 <figure align="center" class="image">
 <img src="_static/images/home_screen.png" width="350px">
@@ -22,8 +27,8 @@ When you first open Intercross, you'll need to:
 
 Intercross is organized into several key areas:
 
-1. <a href="parents.md"><img style="vertical-align: middle;" src="_static/icons/home/parent.png" width="20px"></a> [Parents](parents.md) - Manage parent plants and their information
-2. <a href="creating-crosses.md"><img style="vertical-align: middle;" src="_static/icons/home/cross.png" width="20px"></a> [Creating Crosses](creating-crosses.md) - Record new crossing events
-3. <a href="wishlist.md"><img style="vertical-align: middle;" src="_static/icons/home/wishlist.png" width="20px"></a> [Wishlist](wishlist.md) - Plan and track crossing goals
-4. <a href="settings.md"><img style="vertical-align: middle;" src="_static/icons/home/cog.png" width="20px"></a> [Settings](settings.md) - Configure app behavior
-```
+1. <a href="home.md"><img style="vertical-align: middle;" src="_static/icons/home.png" width="20px"></a> [Home](home.md) - Record new crossing events
+2. <a href="crosses.md"><img style="vertical-align: middle;" src="_static/icons/ab-testing.png" width="20px"></a> [Crosses](crosses.md) - Plan and track crossing goals with wishlists
+3. <a href="parents.md"><img style="vertical-align: middle;" src="_static/icons/barley.png" width="20px"></a> [Parents](parents.md) - Manage parent plants and their information
+4. <a href="graphs.md"><img style="vertical-align: middle;" src="_static/icons/chart-pie.png" width="20px"></a> [Graphs](graphs.md) - Visualize crossing activity data, cross type data, and metadata
+5. <a href="settings.md"><img style="vertical-align: middle;" src="_static/icons/cog.png" width="20px"></a> [Settings](settings.md) - Configure app behavior

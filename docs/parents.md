@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="_styles/styles.css">
+
 # Parents
 
 ## Overview
@@ -13,7 +15,7 @@ The Parents section allows you to manage all parent plants used in your crossing
 
 Parents can be:
 - Created manually
-- Imported from a CSV file
+- Imported from a CSV file by pressing the <img class="icon" src="_static/icons/plus.png"> icon in the lower right
 - Added automatically when recording crosses
 
 ## Parent Information
@@ -27,7 +29,7 @@ Each parent has:
 
 You can print parent labels directly from Intercross:
 1. Select a parent from the list
-2. Press the print icon
+2. Press the <img class="icon" src="_static/icons/printer.png"> icon
 3. Connect to a Zebra printer
 4. Print the label
 

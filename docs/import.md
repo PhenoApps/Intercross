@@ -1,15 +1,10 @@
+<link rel="stylesheet" type="text/css" href="_styles/styles.css">
+
 # Importing Files
 
 ## Overview
 
 Intercross allows importing wishlist and parent files to enhance functionality.
-
-## File Locations
-
-Template files are available in:
-```
-/android/data/org.phenoapps.intercross/cache
-```
 
 ## Parents Import
 
@@ -37,13 +32,15 @@ id,name,sex
 <figcaption><i>File import screen</i></figcaption>
 </figure>
 
-Wishlist import files should contain:
-- Female ID
-- Male ID
-- Female Name (optional)
-- Male Name (optional)
-- Cross Type
-- Minimum crosses required
-- Maximum crosses desired
+Wishlist imports must be in csv format, and are read from the `wishlist_import` folder.
 
-Headers must match templates for successful import.
+Wishlist import files should contain the following columns:
+- femaleDbId
+- maleDbId
+- femaleName
+- maleName
+- wishType
+- wishMin
+- wishMax
+
+See the example `wishlist_sample.csv` file in the `wishlist_import` folder for more guidance.

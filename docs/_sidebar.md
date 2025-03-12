@@ -2,10 +2,9 @@
 * Structure
   * [Storage](storage.md)
   * [Parents](parents.md)
-  * [Wishlist](wishlist.md)
+  * [Crosses](crosses.md)
 * Function
-  * [Creating Crosses](creating-crosses.md)
-  * [Cross Details](cross-details.md)
+  * [Home](home.md)
   * [Wishgrid](wishgrid.md)
   * [Import](import.md)
   * [Export](export.md)

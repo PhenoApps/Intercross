@@ -11,16 +11,16 @@ Intercross is an open-source Android application developed by the PhenoApps proj
 <figcaption><i>About screen</i></figcaption>
 </figure>
 
-## Version Information
 
-The About screen displays:
+The About screen includes:
 - Current app version
-- Build date
-- Latest release notes
+- Version status: Up to Date, or a link to download the latest version
+- Changelog access (see latest release notes)
+- A link to rate on Google Play
+
+Addtional sections detail contact info for the project lead, acknowledgement of supports and contributors, and access to additional apps from PhenoApps group as well as technical details. Some of that information is repeated below.
 
 ## PhenoApps
-
-Intercross is part of the PhenoApps suite, a collection of open-source applications for field data collection in plant breeding and genetics.
 
 Other apps in the PhenoApps suite include:
 - Field Book - For collecting phenotypic data
@@ -28,33 +28,6 @@ Other apps in the PhenoApps suite include:
 - Verify - For sample tracking
 
 Visit [www.phenoapps.org](https://www.phenoapps.org) for more information.
-
-## Development Team
-
-Intercross is developed by a team at:
-- Iowa State University
-- University of Wisconsin-Madison
-- Cornell University
-- International Maize and Wheat Improvement Center (CIMMYT)
-
-## Funding
-
-The development of Intercross has been supported by:
-- The National Science Foundation
-- USDA-NIFA
-- The Bill & Melinda Gates Foundation
-
-## Open Source
-
-Intercross is open source software released under the GPL-3.0 license. The source code is available on [GitHub](https://github.com/PhenoApps/Intercross).
-
-## How to Contribute
-
-You can contribute to Intercross development by:
-- Reporting bugs or suggesting features on GitHub
-- Contributing code through pull requests
-- Helping translate the app to other languages
-- Supporting documentation efforts
 
 ## Contact Information
 

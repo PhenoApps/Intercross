@@ -15,8 +15,8 @@ Intercross allows you to export your crossing data to various formats for analys
 
 To export your data:
 
-1. Navigate to the Events screen
-2. Tap the export icon in the toolbar
+1. Navigate to the Home screen
+2. Tap the <img class="icon" src="_static/icons/content-save.png"> icon in the toolbar
 3. Enter a filename for your export
 4. Press "Export"
 5. Choose whether to delete exported crosses from the app

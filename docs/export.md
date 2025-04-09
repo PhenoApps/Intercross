@@ -18,39 +18,35 @@ To export your data:
 1. Navigate to the Events screen
 2. Tap the export icon in the toolbar
 3. Enter a filename for your export
-4. Select export options
-5. Press "Export"
+4. Press "Export"
+5. Choose whether to delete exported crosses from the app
 
 ## Export Format
 
-Crossing data is exported with columns including:
+Crossing data is exported as a csv file with the following columns populated with data:
+- `crossID` - Unique identifier for the cross
 - `femaleObsUnitID` - ID of the female parent
 - `maleObsUnitID` - ID of the male parent
-- `crossID` - Unique identifier for the cross
 - `timestamp` - Date and time of the cross
-- `person` - Name of the person who made the cross
-- `experiment` - Name of the experiment
-- Additional metadata fields (if collected)
+- `person` - Name of the person who made the cross (if set)
+- `experiment` - Name of the experiment (if set)
+- `type` - Type of cross (e.g., BIPARENTAL)
+- Additional metadata fields like `fruits`, `flowers`, `seeds` (if collected)
+
+<figure align="center" class="image">
+<img src="_static/images/export_format.png" width="700px">
+<figcaption><i>Example export file</i></figcaption>
+</figure>
 
 ## Export Location
 
 Exported files are saved to:
+
 ```
 /Intercross/crosses_export/
 ```
 
 You can access these files using any file manager app on your device or by connecting your device to a computer.
-
-## Filtering Exports
-
-To export only specific crosses:
-
-1. Use the filter option in the Events screen to narrow down the list
-2. Select "Export Filtered Results" from the export dialog
-
-## Data Security
-
-Exported data files don't contain any personal information beyond what you've entered as the operator name. Always maintain appropriate data security practices when sharing export files.
 
 ## Importing Into Other Software
 

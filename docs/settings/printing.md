@@ -2,8 +2,6 @@
 
 # Printing Settings
 
-## Overview
-
 Intercross supports printing cross labels directly to Zebra mobile printers, allowing you to immediately label your crosses in the field.
 
 <figure align="center" class="image">
@@ -11,7 +9,7 @@ Intercross supports printing cross labels directly to Zebra mobile printers, all
 <figcaption><i>Printing settings screen</i></figcaption>
 </figure>
 
-## Zebra Print Connect
+## <img class="icon" src="_static/icons/printer.png"> Zebra Print Connect
 
 Intercross integrates with the Zebra Print Connect app for printer communication. This allows printing to any supported Zebra printer over Bluetooth.
 
@@ -23,7 +21,7 @@ Intercross integrates with the Zebra Print Connect app for printer communication
 4. In Intercross, navigate to Settings > Printing
 5. Toggle "Use Zebra Print Connect" to On
 
-## ZPL Import
+## <img class="icon" src="_static/icons/import.png"> ZPL Import
 
 Zebra printers use ZPL (Zebra Programming Language) templates to format labels. Intercross allows you to import custom ZPL templates.
 
@@ -36,7 +34,14 @@ The default label includes:
 - Date
 - Creator
 
-### Importing Custom ZPL Templates
+## <img class="icon" src="_static/icons/import.png"> ZPL Import
+
+<figure align="center" class="image">
+<img src="_static/images/settings/printing_import_zpl.png" width="350px">
+<figcaption><i>ZPL import details</i></figcaption>
+</figure>
+
+It's possible to customize the label format by importing a custom zpl template.
 
 1. Create a ZPL template using Zebra designer software or a text editor
 2. Place the template file in the `/Intercross/templates/` directory

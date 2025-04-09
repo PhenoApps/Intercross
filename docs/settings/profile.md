@@ -2,51 +2,30 @@
 
 # Profile Settings
 
-## Overview
-
-Profile settings in Intercross allow you to customize user and experiment information that will be associated with your crosses.
-
 <figure align="center" class="image">
 <img src="_static/images/settings/profile_settings.png" width="350px">
 <figcaption><i>Profile settings screen</i></figcaption>
 </figure>
 
-## Person
+#### <img class="icon" src="_static/icons/account.png"> Person
 
-The "Person" setting defines the name of the individual creating crosses. This information is saved with each cross record and included in exports.
+Sets the first and last name of the person operating Intercross.
+This information is stored as metadata for each crossing event and is included in  <img class="icon" src="_static/icons/content-save.png"> [Export](export.md#export-format) files.
 
-### Setting Your Name
+<figure class="image">
+  <img class="screenshot" src="_static/images/settings/profile_set_person.png" width="325px"> 
+  <figcaption class="screenshot-caption"><i>Set Person dialog</i></figcaption> 
+</figure>
 
-1. Navigate to Settings > Profile
-2. Tap "Person"
-3. Enter your name or identifier
-4. Press "OK"
+#### <img class="icon" src="_static/icons/delete.png"> Reset Profile
 
-This name will appear in the crossing history and all exports, making it possible to track who created each cross.
+Clears existing profile settings.
 
-## Experiment
+#### <img class="icon" src="_static/icons/hours-24.png"> Verification Interval
 
-The "Experiment" setting defines the name of the current breeding experiment or project.
+Determines how frequently Intercross will ask for confirmation that the correct name is set for the person operating the app.
 
-### Setting Experiment Name
-
-1. Navigate to Settings > Profile
-2. Tap "Experiment"
-3. Enter your experiment name
-4. Press "OK"
-
-The experiment name is included in exports and can be used to categorize or filter crosses from different projects.
-
-## Multiple Users
-
-If multiple people use the same device:
-
-1. Consider creating separate experiment names for each person
-2. Always update the Person name before beginning work
-3. Use the export feature to save data before switching users
-
-## Best Practices
-
-- Use consistent naming conventions for Person and Experiment
-- Update the Experiment name when beginning a new project
-- For shared devices, verify the correct profile is active before making crosses
+<figure class="image">
+  <img class="screenshot" src="_static/images/settings/profile_verification_interval.png" width="325px"> 
+  <figcaption class="screenshot-caption"><i>Choice of profile verification intervals</i></figcaption> 
+</figure>

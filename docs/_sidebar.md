@@ -14,6 +14,5 @@
   * [Printing](settings/printing.md)
   * [Database](settings/database.md)
 * Extra
-  * [Barcode Scanning](barcode-scanning.md)
   * [Graphs](graphs.md)
   * [About](about.md)

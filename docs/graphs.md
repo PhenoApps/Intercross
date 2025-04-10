@@ -22,7 +22,7 @@ This tab displays a chart of cross counts by date:
 This visualization helps you understand the progress of crossing activity over time in your program.
 
 <figure align="center" class="image">
-<img src="_static/images/graphs/cross_counts.png" width="350px">
+<img src="_static/images/time_chart.png" width="350px">
 <figcaption><i>Crosses over time</i></figcaption>
 </figure>
 
@@ -37,7 +37,7 @@ This tab shows a pie chart of the distribution of different cross types in your 
 This helps you quickly visualize the proportion of different crossing strategies being used.
 
 <figure align="center" class="image">
-<img src="_static/images/graphs/cross_types.png" width="350px">
+<img src="_static/images/type_chart.png" width="350px">
 <figcaption><i>Cross types pie chart</i></figcaption>
 </figure>
 
@@ -50,7 +50,7 @@ This tab presents a bar chart of accumulated metadata fields such as:
 - Other custom metadata fields
 
 <figure align="center" class="image">
-<img src="_static/images/graphs/metadata_summary.png" width="350px">
+<img src="_static/images/metadata_chart.png" width="350px">
 <figcaption><i>Metadata summary bar chart</i></figcaption>
 </figure>
 

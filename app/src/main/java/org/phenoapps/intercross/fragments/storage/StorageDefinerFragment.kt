@@ -1,14 +1,20 @@
 package org.phenoapps.intercross.fragments.storage
 
 import android.app.Activity
+import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import org.phenoapps.fragments.storage.PhenoLibStorageDefinerFragment
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.DefineStorageActivity
+import org.phenoapps.security.Security
+import org.phenoapps.utils.BaseDocumentTreeUtil
+import org.phenoapps.utils.KeyUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -16,6 +22,8 @@ class StorageDefinerFragment : PhenoLibStorageDefinerFragment() {
 
     @Inject
     lateinit var prefs: SharedPreferences
+
+    private val advisor by Security().secureDocumentTree()
 
     // default root folder name if user choose an incorrect root on older devices
     override val defaultAppName: String = "intercross"
@@ -39,20 +47,32 @@ class StorageDefinerFragment : PhenoLibStorageDefinerFragment() {
             val crossesExport = ctx.getString(R.string.dir_crosses_export)
             directories = arrayOf(wishlistImport, parentsImport, crossesExport)
         }
+
+        view.visibility = View.GONE
+
+        advisor.defineDocumentTree({ treeUri ->
+            runBlocking {
+                directories?.let { dirs ->
+                    BaseDocumentTreeUtil.defineRootStructure(context, treeUri, dirs)?.let { root ->
+                        samples.entries.forEach { entry ->
+                            val sampleAsset = entry.key
+                            val dir = entry.value
+
+                            BaseDocumentTreeUtil.copyAsset(context, sampleAsset.name, sampleAsset.dir, dir)
+                        }
+                        activity?.setResult(Activity.RESULT_OK)
+                        activity?.finish()
+                    }
+                }
+            } },
+            {
+                activity?.finish()
+            }
+        )
     }
 
-    override fun onTreeDefined(treeUri: Uri) {
-            (activity as DefineStorageActivity).enableBackButton(false)
-            super.onTreeDefined(treeUri)
-            (activity as DefineStorageActivity).enableBackButton(true)
-    }
-
-    override fun actionAfterDefine() {
-        actionNoMigrate()
-    }
-
-    override fun actionNoMigrate() {
-        activity?.setResult(Activity.RESULT_OK)
-        activity?.finish()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        advisor.initialize()
     }
 }

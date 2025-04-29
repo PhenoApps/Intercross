@@ -12,13 +12,20 @@ import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.DefineStorageActivity
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.IntercrossDatabase
 import org.phenoapps.intercross.util.DateUtil
+import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getRoot
+import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getStem
+import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.isEnabled
+
 
 class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
+
+
+    private var defaultStorageLocation: Preference? = null
 
     private val mPrefs by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -27,12 +34,26 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
     override fun onResume() {
         super.onResume()
         setToolbar(getString(R.string.prefs_database_title))
+        context?.let {
+            if (isEnabled(it)) {
+                val root = getRoot(it)
+                if (root != null && root.exists()) {
+                    var path = root.uri.lastPathSegment
+                    if (path == null) {
+                        path = root.uri.getStem(it)
+                    }
+                    defaultStorageLocation?.setSummary(path)
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with ( findPreference<Preference>(getString(R.string.key_pref_storage_definer))) {
+        defaultStorageLocation = findPreference(getString(R.string.key_pref_storage_definer))
+
+        with (defaultStorageLocation) {
             this?.let {
                 setOnPreferenceClickListener {
                     activity?.let { _ ->

@@ -9,6 +9,15 @@
         android:name="org.phenoapps.intercross.fragments.storage.StorageDefinerFragment"
         tools:layout="@layout/fragment_storage_definer"
         android:label="Storage Definer" >
+        <action
+            android:id="@+id/action_storage_definer_to_storage_migrator"
+            app:destination="@id/storage_migrator" />
     </fragment>
+
+    <fragment
+        android:id="@+id/storage_migrator"
+        android:name="org.phenoapps.intercross.fragments.storage.StorageMigratorFragment"
+        tools:layout="@layout/fragment_storage_migrator"
+        android:label="Storage Migrator" />
 
 </navigation>

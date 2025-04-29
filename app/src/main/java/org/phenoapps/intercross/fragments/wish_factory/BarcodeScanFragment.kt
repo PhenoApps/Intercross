@@ -40,7 +40,7 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
             override fun barcodeResult(result: BarcodeResult) {
 
-                if (result.text == null) return
+                if (result.text == null || !isAdded) return
 
                 lastText = result.text
 

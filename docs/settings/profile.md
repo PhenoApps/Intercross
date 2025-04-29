@@ -4,7 +4,7 @@
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/profile_settings.png" width="350px">
-    <figcaption><i>Profile settings screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Profile settings screen</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/account.png"> Person

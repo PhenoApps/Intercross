@@ -8,7 +8,7 @@ Intercross is an open-source Android application developed by the PhenoApps proj
 
 <figure class="image">
     <img class="screenshot" src="_static/images/about_screen.png" width="350px">
-    <figcaption><i>About screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>About screen</i></figcaption>
 </figure>
 
 

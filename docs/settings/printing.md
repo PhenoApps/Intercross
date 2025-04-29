@@ -6,7 +6,7 @@ Intercross supports printing cross labels directly to Zebra mobile printers, all
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/printing_settings.png" width="350px">
-    <figcaption><i>Printing settings screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Printing settings screen</i></figcaption>
 </figure>
 
 ## <img class="icon" src="_static/icons/printer.png"> Zebra Print Connect
@@ -38,7 +38,7 @@ The default label includes:
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/printing_import_zpl.png" width="350px">
-    <figcaption><i>ZPL import details</i></figcaption>
+    <figcaption class="screenshot-caption"><i>ZPL import details</i></figcaption>
 </figure>
 
 It's possible to customize the label format by importing a custom zpl template.

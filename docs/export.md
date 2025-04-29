@@ -8,7 +8,7 @@ Intercross allows you to export your crossing data to various formats for analys
 
 <figure class="image">
     <img class="screenshot" src="_static/images/export_dialog.png" width="350px">
-    <figcaption><i>Export dialog</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Export dialog</i></figcaption>
 </figure>
 
 ## Export Process
@@ -35,7 +35,7 @@ Crossing data is exported as a csv file with the following columns populated wit
 
 <figure class="image">
     <img class="screenshot" src="_static/images/export_format.png" width="700px">
-    <figcaption><i>Example export file</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Example export file</i></figcaption>
 </figure>
 
 ## Export Location

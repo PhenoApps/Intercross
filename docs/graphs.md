@@ -8,7 +8,7 @@ The Graphs screen provides visual representations of your crossing data, helping
 
 <figure class="image">
     <img class="screenshot" src="_static/images/graphs.png" width="350px">
-    <figcaption><i>Graphs screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Graphs screen</i></figcaption>
 </figure>
 
 ## Features
@@ -23,7 +23,7 @@ This visualization helps you understand the progress of crossing activity over t
 
 <figure class="image">
     <img class="screenshot" src="_static/images/time_chart.png" width="350px">
-    <figcaption><i>Crosses over time</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Crosses over time</i></figcaption>
 </figure>
 
 ### Cross Types
@@ -38,7 +38,7 @@ This helps you quickly visualize the proportion of different crossing strategies
 
 <figure class="image">
     <img class="screenshot" src="_static/images/type_chart.png" width="350px">
-    <figcaption><i>Cross types pie chart</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Cross types pie chart</i></figcaption>
 </figure>
 
 ### Metadata Summary
@@ -51,7 +51,7 @@ This tab presents a bar chart of accumulated metadata fields such as:
 
 <figure class="image">
     <img class="screenshot" src="_static/images/metadata_chart.png" width="350px">
-    <figcaption><i>Metadata summary bar chart</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Metadata summary bar chart</i></figcaption>
 </figure>
 
 ## Interacting with Graphs

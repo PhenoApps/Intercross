@@ -8,7 +8,7 @@ Database settings in Intercross allow you to update the default storage location
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/database_settings.png" width="350px">
-    <figcaption><i>Database settings screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Database settings screen</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/folder-lock.png">  Define storage location
@@ -21,7 +21,7 @@ Wipes all data from the app. Shows a confirmation dialog first before doing so.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/database_delete.png" width="325px"> 
-    <figcaption><i>Database delete confirmation</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Database delete confirmation</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/database-import.png"> Import database

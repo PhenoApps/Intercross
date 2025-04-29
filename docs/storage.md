@@ -8,7 +8,7 @@ Intercross requires proper storage permissions to save and manage your crossing 
 
 <figure class="image">
     <img class="screenshot" src="_static/images/storage_structure.png" width="350px">
-    <figcaption><i>Storage folder structure</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Storage folder structure</i></figcaption>
 </figure>
 
 ## Initial Setup

@@ -4,7 +4,7 @@
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_settings.png" width="350px">
-    <figcaption><i>Behavior settings screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Behavior settings screen</i></figcaption>
 </figure>
 
 ## Naming
@@ -33,7 +33,7 @@ This setting allows you to switch from the default of randomly generated UUIDs t
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_create_uuid_pattern.png" width="350px">
-    <figcaption><i>Cross ID Pattern options</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Cross ID Pattern options</i></figcaption>
 </figure>
 
 ## Workflow
@@ -48,7 +48,7 @@ This option allows you to define new metadata properties to associate with cross
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_new_metadata_property.png" width="350px">
-    <figcaption><i>Create Metadata dialog</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Create Metadata dialog</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/update.png"> Manage Metadata
@@ -57,7 +57,7 @@ Use this setting to edit or delete existing metadata properties. Press a propert
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_manage_metadata_joined.png" width="1100px">
-    <figcaption><i>Manage metadata interface</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Manage metadata interface</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/music-note.png"> Sound Notifications

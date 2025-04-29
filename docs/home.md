@@ -8,7 +8,7 @@ Creating crosses is the primary function of Intercross. The app allows you to re
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_entry.png" width="350px">
-    <figcaption><i>Cross entry screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Cross entry screen</i></figcaption>
 </figure>
 
 ## Top Toolbar Actions
@@ -28,7 +28,7 @@ To create a cross:
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_entry_2.png" width="350px">
-    <figcaption><i>Saved cross</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Saved cross</i></figcaption>
 </figure>
 
 ## Input Methods
@@ -54,7 +54,7 @@ Press on an individual cross record to access its detail screen. Alternatively p
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_details.png" width="350px">
-    <figcaption><i>Cross detail screen</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Cross detail screen</i></figcaption>
 </figure>
 
 The cross detail screen includes options to:

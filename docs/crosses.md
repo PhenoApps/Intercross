@@ -8,7 +8,7 @@ The Crosses screen helps you plan and manage crossing goals by tracking a wishli
 
 <figure class="image">
     <img class="screenshot" src="_static/images/wishlist.png" width="350px">
-    <figcaption><i>Crosses screen showing wishlist progress</i></figcaption>
+    <figcaption class="screenshot-caption"><i>Crosses screen showing wishlist progress</i></figcaption>
 </figure>
 
 ## Top Toolbar Actions

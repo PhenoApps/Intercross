@@ -8,7 +8,6 @@ Intercross is an open-source Android app designed to enhance the management of p
 
 Developed as part of the PhenoApps initiative, Intercross complements a broader suite of tools that leverage mobile technology to modernize data collection and organization in plant breeding. The source code is available on GitHub.
 
-
 <figure class="image">
     <img class="screenshot" src="_static/images/home_screen.png" width="350px">
     <figcaption><i>Intercross home screen</i></figcaption>

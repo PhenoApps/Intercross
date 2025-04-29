@@ -1,0 +1,16 @@
+* [Home](/)
+* Structure
+  * [Storage](storage.md)
+  * [Parents](parents.md)
+  * [Crosses](crosses.md)
+* Function
+  * [Home](home.md)
+  * [Export](export.md)
+* Settings
+  * [Profile](settings/profile.md)
+  * [Behavior](settings/behavior.md)
+  * [Printing](settings/printing.md)
+  * [Database](settings/database.md)
+* Extra
+  * [Graphs](graphs.md)
+  * [About](about.md)

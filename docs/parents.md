@@ -35,4 +35,5 @@ You can print parent labels directly from Intercross:
 
 ## Name Replacement
 
-When parent names are available, they can replace barcodes in the interface for easier identification. For example, `15RPN00001` might display as `Kharkof` throughout the app.
+When parent names are available, they can replace barcodes in the interface for easier identification.
+For example, `15RPN00001` might display as `Kharkof` throughout the app.

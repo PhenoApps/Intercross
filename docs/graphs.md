@@ -56,7 +56,8 @@ This tab presents a bar chart of accumulated metadata fields such as:
 
 ## Interacting with Graphs
 
-You can tap different sections of the pie charts to highlight specific data points. The corresponding data details will be displayed in the list below the chart.
+You can tap different sections of the pie charts to highlight specific data points.
+The corresponding data details will be displayed in the list below the chart.
 
 ## Data Display Rules
 

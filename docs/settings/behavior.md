@@ -20,7 +20,8 @@ This is useful for:
 
 #### <img class="icon" src="_static/icons/repeat.png"> Scan Male First
 
-By default, Intercross assumes you'll scan or enter the female parent ID first, followed by the male parent. This setting reverses that order.
+By default, Intercross assumes you'll scan or enter the female parent ID first, followed by the male parent.
+This setting reverses that order.
 
 When enabled:
 - The male parent input field appears first
@@ -29,7 +30,8 @@ When enabled:
 
 #### <img class="icon" src="_static/icons/lock-pattern.png"> Create Cross ID Pattern
 
-This setting allows you to switch from the default of randomly generated UUIDs to define a custom pattern for generating unique cross IDs, or to no pattern. Each cross must have a distinct identifier, custom patterns can be used to make them shorter and/or more human-readable.
+This setting allows you to switch from the default of randomly generated UUIDs to define a custom pattern for generating unique cross IDs, or to no pattern.
+Each cross must have a distinct identifier, custom patterns can be used to make them shorter and/or more human-readable.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_create_uuid_pattern.png" width="350px">
@@ -40,11 +42,13 @@ This setting allows you to switch from the default of randomly generated UUIDs t
 
 #### <img class="icon" src="_static/icons/plus-box-multiple.png"> Collect Additional Information
 
-When enabled, this setting toggles on metadata options that allow you to collect extra information about each cross. Default metadata properties are `fruits`, `flowers`, and `seeds`; use the create and manage metadata settings that appear when this setting is enabled to extend or modify these properties.  
+When enabled, this setting toggles on metadata options that allow you to collect extra information about each cross.
+Default metadata properties are `fruits`, `flowers`, and `seeds`; use the create and manage metadata settings that appear when this setting is enabled to extend or modify these properties.  
 
 #### <img class="icon" src="_static/icons/note-add.png"> Create Metadata
 
-This option allows you to define new metadata properties to associate with crosses. You can specify the name and type of data to collect for each cross you make.
+This option allows you to define new metadata properties to associate with crosses.
+You can specify the name and type of data to collect for each cross you make.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_new_metadata_property.png" width="350px">
@@ -53,7 +57,9 @@ This option allows you to define new metadata properties to associate with cross
 
 #### <img class="icon" src="_static/icons/update.png"> Manage Metadata
 
-Use this setting to edit or delete existing metadata properties. Press a property to edit its name or default. Long press a property to delete it. Press the <img class="icon" src="_static/icons/plus.png"> icon in the bottom right to add a new property.
+Use this setting to edit or delete existing metadata properties.
+Press a property to edit its name or default. Long press a property to delete it.
+Press the <img class="icon" src="_static/icons/plus.png"> icon in the bottom right to add a new property.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/behavior_manage_metadata_joined.png" width="1100px">
@@ -75,7 +81,8 @@ Audio cues are particularly useful when:
 
 #### <img class="icon" src="_static/icons/book-open.png"> Open Cross After Creating
 
-When enabled, this setting automatically opens the newly created cross details immediately after saving. This allows you to review the cross information or add additional data without having to manually select the cross from the list.
+When enabled, this setting automatically opens the newly created cross details immediately after saving.
+This allows you to review the cross information or add additional data without having to manually select the cross from the list.
 
 #### <img class="icon" src="_static/icons/receipt-long.png"> Commutative Crossing
 

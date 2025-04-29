@@ -17,7 +17,8 @@ Opens the <a href="#/storage">Storage</a> dialog to define or update the **Stora
 
 #### <img class="icon" src="_static/icons/database-remove.png"> Reset database
 
-Wipes all data from the app. Shows a confirmation dialog first before doing so.
+Wipes all data from the app.
+Shows a confirmation dialog first before doing so.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/database_delete.png" width="325px"> 
@@ -26,10 +27,11 @@ Wipes all data from the app. Shows a confirmation dialog first before doing so.
 
 #### <img class="icon" src="_static/icons/database-import.png"> Import database
 
-Opens the file picker to pick a database to import (should be a previously exported database file). This replaces the current data in the app.
+Opens the file picker to pick a database to import (should be a previously exported database file).
+This replaces the current data in the app.
 
 #### <img class="icon" src="_static/icons/database-export.png"> Export database
 
-Opens the file manager to pick a filename and save location for a database export file, then exports the internal database. Contact the development team if you need
-data recovered or are having issues and send the file that is exported.
+Opens the file manager to pick a filename and save location for a database export file, then exports the internal database.
+Contact the development team if you need data recovered or are having issues and send the file that is exported.
 

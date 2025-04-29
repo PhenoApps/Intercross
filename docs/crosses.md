@@ -48,4 +48,6 @@ See the example `wishlist_sample.csv` file in the `wishlist_import` folder for m
 
 ## Tracking Progress
 
-The wishlist automatically updates as crosses are completed to show progress towards listed goals. Completed combinations (where the current count meets or exceeds the minimum) display a completely filled green progress bar and a checkmark. Light green indicates the minimum has been met or exceeded, dark green indicates the max has been met or exceeded.
+The wishlist automatically updates as crosses are completed to show progress towards listed goals.
+Completed combinations (where the current count meets or exceeds the minimum) display a completely filled green progress bar and a checkmark.
+Light green indicates the minimum has been met or exceeded, dark green indicates the max has been met or exceeded.

@@ -11,7 +11,8 @@ Intercross supports printing cross labels directly to Zebra mobile printers, all
 
 ## <img class="icon" src="_static/icons/printer.png"> Zebra Print Connect
 
-Intercross integrates with the Zebra Print Connect app for printer communication. This allows printing to any supported Zebra printer over Bluetooth.
+Intercross integrates with the Zebra Print Connect app for printer communication.
+This allows printing to any supported Zebra printer over Bluetooth.
 
 ### Setting Up Zebra Print Connect
 
@@ -23,7 +24,8 @@ Intercross integrates with the Zebra Print Connect app for printer communication
 
 ## <img class="icon" src="_static/icons/import.png"> ZPL Import
 
-Zebra printers use ZPL (Zebra Programming Language) templates to format labels. Intercross allows you to import custom ZPL templates.
+Zebra printers use ZPL (Zebra Programming Language) templates to format labels.
+Intercross allows you to import custom ZPL templates.
 
 ### Default Label Format
 

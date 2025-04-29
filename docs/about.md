@@ -18,7 +18,7 @@ The About screen includes:
 - Changelog access (see latest release notes)
 - A link to rate on Google Play
 
-Addtional sections detail contact info for the project lead, acknowledgement of supports and contributors, and access to additional apps from PhenoApps group as well as technical details. Some of that information is repeated below.
+Addtional sections detail contact info for the project lead, acknowledgement of supports and contributors, and access to additional apps from PhenoApps group as well as technical details.
 
 ## PhenoApps
 

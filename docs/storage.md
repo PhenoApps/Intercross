@@ -59,4 +59,5 @@ If you encounter storage issues:
 3. Verify that the selected storage location is accessible
 4. If using an SD card, ensure it's properly mounted
 
-On Android 10+ devices, be aware that apps have limited access to external storage. If you need to access Intercross files with other apps, consider setting your storage location to a shared folder.
+On Android 10+ devices, be aware that apps have limited access to external storage.
+If you need to access Intercross files with other apps, consider setting your storage location to a shared folder.

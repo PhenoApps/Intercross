@@ -4,7 +4,8 @@
 
 ## Overview
 
-Creating crosses is the primary function of Intercross. The app allows you to record cross events on the home screen by entering parent IDs, and access created crosses to manage them and collect metadata.
+Creating crosses is the primary function of Intercross.
+The app allows you to record cross events on the home screen by entering parent IDs, and access created crosses to manage them and collect metadata.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_entry.png" width="350px">
@@ -50,7 +51,7 @@ Saved crosses will display:
 
 ## Cross Detail Screen
 
-Press on an individual cross record to access its detail screen. Alternatively press the <img class="icon" src="_static/icons/magnify.png">  icon in the lower right to jump to a specific cross by scanning its barcode.
+Press on an individual cross record to access its detail screen. Alternatively press the <img class="icon" src="_static/icons/magnify.png"> icon in the lower right to jump to a specific cross by scanning its barcode.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_details.png" width="350px">

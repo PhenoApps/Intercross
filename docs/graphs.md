@@ -2,38 +2,25 @@
 
 # Graphs
 
-## Overview
-
-The Graphs screen provides visual representations of your crossing data, helping you analyze progress and patterns in your breeding program.
+The Graphs screen provides visual representations of your crossing data in several different graphs.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/graphs.png" width="350px">
     <figcaption class="screenshot-caption"><i>Graphs screen</i></figcaption>
 </figure>
 
-## Features
+## Crosses over time
 
-The Graphs screen organizes information into different tabs, each providing a different perspective on your crossing data:
-
-### Crosses over time
-
-This tab displays a chart of cross counts by date:
-
-This visualization helps you understand the progress of crossing activity over time in your program.
+This graph displays a chart of accumulating cross counts by date and helps you understand the crossing activity over time in your program.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/time_chart.png" width="350px">
     <figcaption class="screenshot-caption"><i>Crosses over time</i></figcaption>
 </figure>
 
-### Cross Types
+## Cross Types
 
-This tab shows a pie chart of the distribution of different cross types in your program:
-- Biparental crosses
-- Open pollinations
-- Self-pollinations
-- Other cross types
-
+This pie chart shows a distribution of different cross types in your program including biparental crosses, open pollinations, self-pollinations, and other cross types.
 This helps you quickly visualize the proportion of different crossing strategies being used.
 
 <figure class="image">
@@ -41,26 +28,17 @@ This helps you quickly visualize the proportion of different crossing strategies
     <figcaption class="screenshot-caption"><i>Cross types pie chart</i></figcaption>
 </figure>
 
-### Metadata Summary
+## Metadata Summary
 
-This tab presents a bar chart of accumulated metadata fields such as:
-- Fruits per cross
-- Seeds per cross
-- Flowers per cross
-- Other custom metadata fields
+This bar chart displays accumulated metadata fields including the number of flowers, fruits, and seeds as well as other custom metadata fields.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/metadata_chart.png" width="350px">
     <figcaption class="screenshot-caption"><i>Metadata summary bar chart</i></figcaption>
 </figure>
 
-## Interacting with Graphs
-
-You can tap different sections of the pie charts to highlight specific data points.
-The corresponding data details will be displayed in the list below the chart.
-
 ## Data Display Rules
 
 - Categories with zero counts are not displayed in the visualizations
-- If no data exists for a particular tab, the chart area will appear empty
+- If no data exists for a specific graph, the chart area will appear empty
 - Percentages are calculated based on the total count of relevant entries

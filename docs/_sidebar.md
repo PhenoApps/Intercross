@@ -5,8 +5,6 @@
   * [Crosses](crosses.md)
 * Function
   * [Home](home.md)
-  * [Wishgrid](wishgrid.md)
-  * [Import](import.md)
   * [Export](export.md)
 * Settings
   * [Profile](settings/profile.md)

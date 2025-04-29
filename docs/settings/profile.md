@@ -10,7 +10,7 @@
 #### <img class="icon" src="_static/icons/account.png"> Person
 
 Sets the first and last name of the person operating Intercross.
-This information is stored as metadata for each crossing event and is included in  <img class="icon" src="_static/icons/content-save.png"> [Export](export.md#export-format) files.
+This information is stored as metadata for each crossing event and is included in <img class="icon" src="_static/icons/content-save.png"> [Export](export.md#export-format) files.
 
 <figure class="image">
   <img class="screenshot" src="_static/images/settings/profile_set_person.png" width="325px"> 
@@ -23,7 +23,7 @@ Clears existing profile settings.
 
 #### <img class="icon" src="_static/icons/hours-24.png"> Verification Interval
 
-Determines how frequently Intercross will ask for confirmation that the correct name is set for the person operating the app.
+Determines how frequently Intercross will ask for confirmation that the name matches the person operating the app.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/profile_verification_interval.png" width="325px"> 

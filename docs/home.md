@@ -4,27 +4,29 @@
 
 ## Overview
 
-Creating crosses is the primary function of Intercross.
-The app allows you to record cross events on the home screen by entering parent IDs, and access created crosses to manage them and collect metadata.
+The primary function of Intercross is to create crosses.
+Crossing events are recorded on the Home screen by entering parent IDs.
+Crosses that have already been created can be accessed from this screen to collect metadata or print labels.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_entry.png" width="350px">
     <figcaption class="screenshot-caption"><i>Cross entry screen</i></figcaption>
 </figure>
 
-## Top Toolbar Actions
+## Top Toolbar
 
 Toolbar icons can be used to:
-- <img class="icon" src="_static/icons/flask-empty-outline.png"> Set experiment name
-- <img class="icon" src="_static/icons/content-save.png"> Export crosses to a csv file
+- <img class="icon" src="_static/icons/flask-empty-outline.png"> Set an experiment name
+- <img class="icon" src="_static/icons/content-save.png"> Export crosses to a CSV file
 
-## Basic Cross Entry
+## Cross Entry
+
+IDs can be entered using manual keyboard entry or by using the barcode scanner <img class="icon" src="_static/icons/barcode-scan.png"> in the lower right corner.
 
 To create a cross:
-
-1. Enter a **female ID** (or scan a barcode)
-2. Enter a **male ID** (or scan a barcode)
-3. Enter a **cross ID** or use auto-generation
+1. Enter a **female ID**
+2. Enter a **male ID**
+3. Enter a **cross ID** (or use auto-generation)
 4. Press **Save**
 
 <figure class="image">
@@ -32,17 +34,10 @@ To create a cross:
     <figcaption class="screenshot-caption"><i>Saved cross</i></figcaption>
 </figure>
 
-## Input Methods
-
-Parent IDs can be entered in several ways:
-- Manual keyboard entry
-- Barcode scanning (using the <img class="icon" src="_static/icons/barcode-scan.png"> icon in the lower right corner)
-- Selecting from the list of desired parent combos on the crosses screen
-  
 ## Cross Record
 
-Saved crosses will display:
-- Barcoded cross ID
+Each saved crosses will display:
+- QR code of the cross ID
 - Female ID
 - Male ID
 - Date of the cross
@@ -51,7 +46,8 @@ Saved crosses will display:
 
 ## Cross Detail Screen
 
-Press on an individual cross record to access its detail screen. Alternatively press the <img class="icon" src="_static/icons/magnify.png"> icon in the lower right to jump to a specific cross by scanning its barcode.
+Selecting an individual cross record will open its detail screen.
+The <img class="icon" src="_static/icons/magnify.png"> icon in the lower right will opnen a barcode scanner that will jump to a specific cross when an existing cross ID is scanned.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/cross_details.png" width="350px">

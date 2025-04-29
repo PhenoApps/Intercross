@@ -4,7 +4,7 @@
 
 ## Overview
 
-Intercross allows you to export your crossing data to various formats for analysis, record-keeping, or sharing.
+Intercross allows you to export your crossing data for analysis, record-keeping, or sharing.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/export_dialog.png" width="350px">
@@ -19,7 +19,7 @@ To export your data:
 2. Tap the <img class="icon" src="_static/icons/content-save.png"> icon in the toolbar
 3. Enter a filename for your export
 4. Press "Export"
-5. Choose whether to delete exported crosses from the app
+5. Choose whether to delete the newly-exported crosses from the app
 
 ## Export Format
 
@@ -46,12 +46,4 @@ Exported files are saved to:
 /Intercross/crosses_export/
 ```
 
-You can access these files using any file manager app on your device or by connecting your device to a computer.
-
-## Importing Into Other Software
-
-Exported CSV files can be opened in:
-- Spreadsheet software (Excel, Google Sheets, etc.)
-- Statistical analysis programs
-- Database systems
-- Custom breeding management software
+These files can be accessed using a file manager app on your device or by connecting your device to a computer.

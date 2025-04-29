@@ -34,4 +34,3 @@ This replaces the current data in the app.
 
 Opens the file manager to pick a filename and save location for a database export file, then exports the internal database.
 Contact the development team if you need data recovered or are having issues and send the file that is exported.
-

@@ -2,7 +2,7 @@
 
 # Printing Settings
 
-Intercross supports printing cross labels directly to Zebra mobile printers, allowing you to immediately label your crosses in the field.
+Intercross supports printing cross labels directly to Zebra mobile printers, allowing you to immediately label your crosses as they are created.
 
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/printing_settings.png" width="350px">
@@ -11,8 +11,7 @@ Intercross supports printing cross labels directly to Zebra mobile printers, all
 
 ## <img class="icon" src="_static/icons/printer.png"> Zebra Print Connect
 
-Intercross integrates with the Zebra Print Connect app for printer communication.
-This allows printing to any supported Zebra printer over Bluetooth.
+Intercross integrates with the Zebra Print Connect app for printer communication which allows printing to any supported Zebra printer over Bluetooth.
 
 ### Setting Up Zebra Print Connect
 
@@ -24,26 +23,12 @@ This allows printing to any supported Zebra printer over Bluetooth.
 
 ## <img class="icon" src="_static/icons/import.png"> ZPL Import
 
-Zebra printers use ZPL (Zebra Programming Language) templates to format labels.
-Intercross allows you to import custom ZPL templates.
-
-### Default Label Format
-
-The default label includes:
-- Cross ID (with barcode)
-- Female parent ID
-- Male parent ID
-- Date
-- Creator
-
-## <img class="icon" src="_static/icons/import.png"> ZPL Import
-
 <figure class="image">
     <img class="screenshot" src="_static/images/settings/printing_import_zpl.png" width="350px">
     <figcaption class="screenshot-caption"><i>ZPL import details</i></figcaption>
 </figure>
 
-It's possible to customize the label format by importing a custom zpl template.
+It's possible to customize the label format by importing a custom ZPL template.
 
 1. Create a ZPL template using Zebra designer software or a text editor
 2. Place the template file in the `/Intercross/templates/` directory
@@ -63,10 +48,7 @@ Your custom templates can use these variables:
 
 ## Printing a Label
 
-With printing configured, you can print labels:
-1. From the Cross Details screen by tapping the print icon
-2. After creating a new cross by tapping the print button
-3. In batch from the Events list by selecting multiple crosses
+Labels can be printed from the Cross Details screen by tapping the print icon or in the parents page by selecting the parents that you wish to print labels for.
 
 ## Troubleshooting
 

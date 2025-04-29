@@ -6,9 +6,9 @@
 
 Intercross is an open-source Android application developed by the PhenoApps project to assist plant breeders in tracking crossing events in their breeding programs.
 
-<figure align="center" class="image">
-<img src="_static/images/about_screen.png" width="350px">
-<figcaption><i>About screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/about_screen.png" width="350px">
+    <figcaption><i>About screen</i></figcaption>
 </figure>
 
 

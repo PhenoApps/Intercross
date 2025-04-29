@@ -6,9 +6,9 @@
 
 Creating crosses is the primary function of Intercross. The app allows you to record cross events on the home screen by entering parent IDs, and access created crosses to manage them and collect metadata.
 
-<figure align="center" class="image">
-<img src="_static/images/cross_entry.png" width="350px">
-<figcaption><i>Cross entry screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/cross_entry.png" width="350px">
+    <figcaption><i>Cross entry screen</i></figcaption>
 </figure>
 
 ## Top Toolbar Actions
@@ -26,9 +26,9 @@ To create a cross:
 3. Enter a **cross ID** or use auto-generation
 4. Press **Save**
 
-<figure align="center" class="image">
-<img src="_static/images/cross_entry_2.png" width="350px">
-<figcaption><i>Saved cross</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/cross_entry_2.png" width="350px">
+    <figcaption><i>Saved cross</i></figcaption>
 </figure>
 
 ## Input Methods
@@ -52,9 +52,9 @@ Saved crosses will display:
 
 Press on an individual cross record to access its detail screen. Alternatively press the <img class="icon" src="_static/icons/magnify.png">  icon in the lower right to jump to a specific cross by scanning its barcode.
 
-<figure align="center" class="image">
-<img src="_static/images/cross_details.png" width="350px">
-<figcaption><i>Cross detail screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/cross_details.png" width="350px">
+    <figcaption><i>Cross detail screen</i></figcaption>
 </figure>
 
 The cross detail screen includes options to:

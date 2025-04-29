@@ -6,9 +6,9 @@
 
 Database settings in Intercross allow you to update the default storage location or reset, import, and export the app database.
 
-<figure align="center" class="image">
-<img src="_static/images/settings/database_settings.png" width="350px">
-<figcaption><i>Database settings screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/database_settings.png" width="350px">
+    <figcaption><i>Database settings screen</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/folder-lock.png">  Define storage location
@@ -19,9 +19,9 @@ Opens the <a href="#/storage">Storage</a> dialog to define or update the **Stora
 
 Wipes all data from the app. Shows a confirmation dialog first before doing so.
 
-<figure align="center" class="image">
-  <img src="_static/images/settings/database_delete.png" width="325px"> 
-  <figcaption><i>Database delete confirmation</i></figcaption> 
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/database_delete.png" width="325px"> 
+    <figcaption><i>Database delete confirmation</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/database-import.png"> Import database

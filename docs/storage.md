@@ -6,9 +6,9 @@
 
 Intercross requires proper storage permissions to save and manage your crossing data, import files, and export results.
 
-<figure align="center" class="image">
-<img src="_static/images/storage_structure.png" width="350px">
-<figcaption><i>Storage folder structure</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/storage_structure.png" width="350px">
+    <figcaption><i>Storage folder structure</i></figcaption>
 </figure>
 
 ## Initial Setup

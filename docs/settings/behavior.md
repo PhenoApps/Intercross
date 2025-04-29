@@ -2,9 +2,9 @@
 
 # Behavior Settings
 
-<figure align="center" class="image">
-<img src="_static/images/settings/behavior_settings.png" width="350px">
-<figcaption><i>Behavior settings screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/behavior_settings.png" width="350px">
+    <figcaption><i>Behavior settings screen</i></figcaption>
 </figure>
 
 ## Naming
@@ -31,9 +31,9 @@ When enabled:
 
 This setting allows you to switch from the default of randomly generated UUIDs to define a custom pattern for generating unique cross IDs, or to no pattern. Each cross must have a distinct identifier, custom patterns can be used to make them shorter and/or more human-readable.
 
-<figure align="center" class="image">
-<img src="_static/images/settings/behavior_create_uuid_pattern.png" width="350px">
-<figcaption><i>Cross ID Pattern options</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/behavior_create_uuid_pattern.png" width="350px">
+    <figcaption><i>Cross ID Pattern options</i></figcaption>
 </figure>
 
 ## Workflow
@@ -46,18 +46,18 @@ When enabled, this setting toggles on metadata options that allow you to collect
 
 This option allows you to define new metadata properties to associate with crosses. You can specify the name and type of data to collect for each cross you make.
 
-<figure align="center" class="image">
-<img src="_static/images/settings/behavior_new_metadata_property.png" width="350px">
-<figcaption><i>Create Metadata dialog</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/behavior_new_metadata_property.png" width="350px">
+    <figcaption><i>Create Metadata dialog</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/update.png"> Manage Metadata
 
 Use this setting to edit or delete existing metadata properties. Press a property to edit its name or default. Long press a property to delete it. Press the <img class="icon" src="_static/icons/plus.png"> icon in the bottom right to add a new property.
 
-<figure align="center" class="image">
-<img src="_static/images/settings/behavior_manage_metadata_joined.png" width="1100px">
-<figcaption><i>Manage metadata interface</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/behavior_manage_metadata_joined.png" width="1100px">
+    <figcaption><i>Manage metadata interface</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/music-note.png"> Sound Notifications

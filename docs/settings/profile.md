@@ -2,9 +2,9 @@
 
 # Profile Settings
 
-<figure align="center" class="image">
-<img src="_static/images/settings/profile_settings.png" width="350px">
-<figcaption><i>Profile settings screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/profile_settings.png" width="350px">
+    <figcaption><i>Profile settings screen</i></figcaption>
 </figure>
 
 #### <img class="icon" src="_static/icons/account.png"> Person
@@ -26,6 +26,6 @@ Clears existing profile settings.
 Determines how frequently Intercross will ask for confirmation that the correct name is set for the person operating the app.
 
 <figure class="image">
-  <img class="screenshot" src="_static/images/settings/profile_verification_interval.png" width="325px"> 
-  <figcaption class="screenshot-caption"><i>Choice of profile verification intervals</i></figcaption> 
+    <img class="screenshot" src="_static/images/settings/profile_verification_interval.png" width="325px"> 
+    <figcaption class="screenshot-caption"><i>Choice of profile verification intervals</i></figcaption> 
 </figure>

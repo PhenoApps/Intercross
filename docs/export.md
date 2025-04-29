@@ -6,9 +6,9 @@
 
 Intercross allows you to export your crossing data to various formats for analysis, record-keeping, or sharing.
 
-<figure align="center" class="image">
-<img src="_static/images/export_dialog.png" width="350px">
-<figcaption><i>Export dialog</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/export_dialog.png" width="350px">
+    <figcaption><i>Export dialog</i></figcaption>
 </figure>
 
 ## Export Process
@@ -33,9 +33,9 @@ Crossing data is exported as a csv file with the following columns populated wit
 - `type` - Type of cross (e.g., BIPARENTAL)
 - Additional metadata fields like `fruits`, `flowers`, `seeds` (if collected)
 
-<figure align="center" class="image">
-<img src="_static/images/export_format.png" width="700px">
-<figcaption><i>Example export file</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/export_format.png" width="700px">
+    <figcaption><i>Example export file</i></figcaption>
 </figure>
 
 ## Export Location

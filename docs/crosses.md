@@ -6,9 +6,9 @@
 
 The Crosses screen helps you plan and manage crossing goals by tracking a wishlist of planned crosses and their completion status.
 
-<figure align="center" class="image">
-<img src="_static/images/wishlist.png" width="350px">
-<figcaption><i>Crosses screen showing wishlist progress</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/wishlist.png" width="350px">
+    <figcaption><i>Crosses screen showing wishlist progress</i></figcaption>
 </figure>
 
 ## Top Toolbar Actions

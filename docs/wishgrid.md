@@ -6,9 +6,9 @@
 
 The Wishgrid provides a visual matrix representation of your wishlist, making it easier to see crossing progress and opportunities.
 
-<figure align="center" class="image">
-<img src="_static/images/wishgrid.png" width="350px">
-<figcaption><i>Wishgrid visualization</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/wishgrid.png" width="350px">
+    <figcaption><i>Wishgrid visualization</i></figcaption>
 </figure>
 
 ## Understanding the Grid

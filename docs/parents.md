@@ -6,9 +6,9 @@
 
 The Parents section allows you to manage all parent plants used in your crossing program.
 
-<figure align="center" class="image">
-<img src="_static/images/parents_list.png" width="350px">
-<figcaption><i>Parents list view</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/parents_list.png" width="350px">
+    <figcaption><i>Parents list view</i></figcaption>
 </figure>
 
 ## Managing Parents

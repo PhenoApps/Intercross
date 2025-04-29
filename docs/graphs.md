@@ -6,9 +6,9 @@
 
 The Graphs screen provides visual representations of your crossing data, helping you analyze progress and patterns in your breeding program.
 
-<figure align="center" class="image">
-<img src="_static/images/graphs.png" width="350px">
-<figcaption><i>Graphs screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/graphs.png" width="350px">
+    <figcaption><i>Graphs screen</i></figcaption>
 </figure>
 
 ## Features
@@ -21,9 +21,9 @@ This tab displays a chart of cross counts by date:
 
 This visualization helps you understand the progress of crossing activity over time in your program.
 
-<figure align="center" class="image">
-<img src="_static/images/time_chart.png" width="350px">
-<figcaption><i>Crosses over time</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/time_chart.png" width="350px">
+    <figcaption><i>Crosses over time</i></figcaption>
 </figure>
 
 ### Cross Types
@@ -36,9 +36,9 @@ This tab shows a pie chart of the distribution of different cross types in your 
 
 This helps you quickly visualize the proportion of different crossing strategies being used.
 
-<figure align="center" class="image">
-<img src="_static/images/type_chart.png" width="350px">
-<figcaption><i>Cross types pie chart</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/type_chart.png" width="350px">
+    <figcaption><i>Cross types pie chart</i></figcaption>
 </figure>
 
 ### Metadata Summary
@@ -49,9 +49,9 @@ This tab presents a bar chart of accumulated metadata fields such as:
 - Flowers per cross
 - Other custom metadata fields
 
-<figure align="center" class="image">
-<img src="_static/images/metadata_chart.png" width="350px">
-<figcaption><i>Metadata summary bar chart</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/metadata_chart.png" width="350px">
+    <figcaption><i>Metadata summary bar chart</i></figcaption>
 </figure>
 
 ## Interacting with Graphs

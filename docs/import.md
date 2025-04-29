@@ -8,9 +8,9 @@ Intercross allows importing wishlist and parent files to enhance functionality.
 
 ## Parents Import
 
-<figure align="center" class="image">
-<img src="_static/images/import_parent.png" width="350px">
-<figcaption><i>File import screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/import_parent.png" width="350px">
+    <figcaption><i>File import screen</i></figcaption>
 </figure>
 
 The Parents import file format is a CSV containing a list of parents, typically with:
@@ -27,9 +27,9 @@ id,name,sex
 
 ## Wishlist Import
 
-<figure align="center" class="image">
-<img src="_static/images/import_wishlist.png" width="350px">
-<figcaption><i>File import screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/import_wishlist.png" width="350px">
+    <figcaption><i>File import screen</i></figcaption>
 </figure>
 
 Wishlist imports must be in csv format, and are read from the `wishlist_import` folder.

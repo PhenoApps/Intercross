@@ -4,9 +4,9 @@
 
 Intercross supports printing cross labels directly to Zebra mobile printers, allowing you to immediately label your crosses in the field.
 
-<figure align="center" class="image">
-<img src="_static/images/settings/printing_settings.png" width="350px">
-<figcaption><i>Printing settings screen</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/printing_settings.png" width="350px">
+    <figcaption><i>Printing settings screen</i></figcaption>
 </figure>
 
 ## <img class="icon" src="_static/icons/printer.png"> Zebra Print Connect
@@ -36,9 +36,9 @@ The default label includes:
 
 ## <img class="icon" src="_static/icons/import.png"> ZPL Import
 
-<figure align="center" class="image">
-<img src="_static/images/settings/printing_import_zpl.png" width="350px">
-<figcaption><i>ZPL import details</i></figcaption>
+<figure class="image">
+    <img class="screenshot" src="_static/images/settings/printing_import_zpl.png" width="350px">
+    <figcaption><i>ZPL import details</i></figcaption>
 </figure>
 
 It's possible to customize the label format by importing a custom zpl template.

@@ -116,6 +116,8 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                 lastText = result.text
 
+                val barcodeScanResult = result.text.toString()
+
                 zxingBarcodeScanner.statusView.text = getString(R.string.zxing_scan_mode_single)
 
                 arguments?.let {
@@ -126,7 +128,7 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                             zxingBarcodeScanner.setStatusText(getString(R.string.zxing_status_single))
 
-                            mSharedViewModel.lastScan.postValue(result.text.toString())
+                            mSharedViewModel.lastScan.postValue(barcodeScanResult)
 
                             findNavController().popBackStack()
 
@@ -135,11 +137,11 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                             zxingBarcodeScanner.setStatusText(getString(R.string.zxing_scan_mode_search))
 
-                            val scannedEvent = mEvents.find { event -> event.eventDbId == result.text.toString().lowercase(Locale.ROOT) }
+                            val scannedEvent = mEvents.find { event -> event.eventDbId == barcodeScanResult }
 
                             if (scannedEvent == null) {
 
-                                mParents.find { parent -> parent.codeId == result.text.toString().lowercase(Locale.ROOT) }?.let { parent ->
+                                mParents.find { parent -> parent.codeId == barcodeScanResult }?.let { parent ->
 
                                     context?.let { ctx ->
 
@@ -168,7 +170,7 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
                             } else {
 
                                 findNavController().navigate(BarcodeScanFragmentDirections
-                                    .actionToEventFragmentFromScan(scannedEvent.id ?: -1L))
+                                    .actionFromScanToEventDetail(scannedEvent.id ?: -1L))
                             }
                         }
                         CONTINUOUS -> {
@@ -181,13 +183,13 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
                                 false -> when {
 
                                     (mSharedViewModel.female.value ?: "").isEmpty() -> {
-                                        mSharedViewModel.female.value = result.text.toString()
+                                        mSharedViewModel.female.value = barcodeScanResult
                                         female.setImageBitmap(result.getBitmapWithResultPoints(Color.RED))
                                         Handler().postDelayed({
                                             mBarcodeScanner.barcodeView.decodeSingle(mCallback) }, 2000)
                                     }
                                     ((mSharedViewModel.male.value ?: "").isEmpty()) -> {
-                                        mSharedViewModel.male.value = result.text.toString()
+                                        mSharedViewModel.male.value = barcodeScanResult
                                         male.setImageBitmap(result.getBitmapWithResultPoints(Color.BLUE))
                                         if (mSettings.isUUID || mSettings.isPattern) {
                                             FileUtil(requireContext()).ringNotification(true)
@@ -198,7 +200,7 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                                     }
                                     ((mSharedViewModel.name.value ?: "").isEmpty() && !(mSettings.isUUID || mSettings.isPattern)) -> {
-                                        mSharedViewModel.name.value = result.text.toString()
+                                        mSharedViewModel.name.value = barcodeScanResult
                                         cross.setImageBitmap(result.getBitmapWithResultPoints(Color.GREEN))
                                         FileUtil(requireContext()).ringNotification(true)
                                         submitCross()
@@ -208,13 +210,13 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
                                 true -> when {
 
                                     (mSharedViewModel.male.value ?: "").isEmpty() -> {
-                                        mSharedViewModel.male.value = result.text.toString()
+                                        mSharedViewModel.male.value = barcodeScanResult
                                         male.setImageBitmap(result.getBitmapWithResultPoints(Color.BLUE))
                                         Handler().postDelayed({
                                             mBarcodeScanner.barcodeView.decodeSingle(mCallback) }, 2000)
                                     }
                                     (mSharedViewModel.female.value ?: "").isEmpty() -> {
-                                        mSharedViewModel.female.value = result.text.toString()
+                                        mSharedViewModel.female.value = barcodeScanResult
                                         female.setImageBitmap(result.getBitmapWithResultPoints(Color.RED))
                                         if (mSettings.isUUID || mSettings.isPattern) {
                                             FileUtil(requireContext()).ringNotification(true)
@@ -226,7 +228,7 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
                                     }
                                     (mSharedViewModel.name.value ?: "").isEmpty() && !(mSettings.isUUID || mSettings.isPattern) -> {
-                                        mSharedViewModel.name.value = result.text.toString()
+                                        mSharedViewModel.name.value = barcodeScanResult
                                         cross.setImageBitmap(result.getBitmapWithResultPoints(Color.GREEN))
                                         FileUtil(requireContext()).ringNotification(true)
                                         submitCross()

@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.IntercrossDatabase
 import org.phenoapps.intercross.data.MetaValuesRepository
 import org.phenoapps.intercross.data.MetadataRepository
@@ -42,6 +43,8 @@ class MetadataFormFragment: IntercrossBaseFragment<FragmentMetadataFormBinding>(
     private var mMetaList: List<Meta>? = null
 
     override fun FragmentMetadataFormBinding.afterCreateView() {
+
+        setupToolbar()
 
         fragMetadataNameEt.setText(argPropertyName)
 
@@ -90,6 +93,17 @@ class MetadataFormFragment: IntercrossBaseFragment<FragmentMetadataFormBinding>(
             }
 
             findNavController().popBackStack()
+        }
+    }
+
+    private fun setupToolbar() {
+        (activity as MainActivity).setBackButtonToolbar()
+        (activity as MainActivity).supportActionBar?.apply {
+            title = getString(
+                if (argPropertyName.isBlank()) R.string.frag_new_metadata_title
+                else R.string.frag_edit_metadata_title
+            )
+            show()
         }
     }
 }

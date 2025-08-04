@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.SimpleListAdapter
 import org.phenoapps.intercross.data.IntercrossDatabase
 import org.phenoapps.intercross.data.MetaValuesRepository
@@ -38,6 +39,7 @@ class MetadataListFragment: IntercrossBaseFragment<FragmentMetadataListBinding>(
     }
 
     override fun FragmentMetadataListBinding.afterCreateView() {
+        setupToolbar()
 
         fragMetadataListRv.layoutManager = LinearLayoutManager(context)
         fragMetadataListRv.adapter = SimpleListAdapter(this@MetadataListFragment)
@@ -57,6 +59,14 @@ class MetadataListFragment: IntercrossBaseFragment<FragmentMetadataListBinding>(
 
             findNavController().navigate(MetadataListFragmentDirections
                 .actionFromMetadataListToForm())
+        }
+    }
+
+    private fun setupToolbar() {
+        (activity as MainActivity).setBackButtonToolbar()
+        (activity as MainActivity).supportActionBar?.apply {
+            title = getString(R.string.frag_manage_metadata_title)
+            show()
         }
     }
 

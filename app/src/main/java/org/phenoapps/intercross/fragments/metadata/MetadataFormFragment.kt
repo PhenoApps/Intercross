@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments.metadata
 
+import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,8 @@ class MetadataFormFragment: IntercrossBaseFragment<FragmentMetadataFormBinding>(
     private var mMetaList: List<Meta>? = null
 
     override fun FragmentMetadataFormBinding.afterCreateView() {
+
+        (activity as? MainActivity)?.applyBottomInsets(root)
 
         setupToolbar()
 

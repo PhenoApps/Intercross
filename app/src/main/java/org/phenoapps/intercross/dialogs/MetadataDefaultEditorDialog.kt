@@ -49,7 +49,7 @@ class MetadataDefaultEditorDialog(private val ctx: Context,
 
                 dismiss()
 
-            } else Toast.makeText(ctx, R.string.dialog_metadata_value_must_be_integer, Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(ctx, R.string.dialog_metadata_value_must_be_integer_or_empty, Toast.LENGTH_SHORT).show()
         }
 
         findViewById<Button>(R.id.dialog_metadata_updater_value_delete_button).setOnClickListener {

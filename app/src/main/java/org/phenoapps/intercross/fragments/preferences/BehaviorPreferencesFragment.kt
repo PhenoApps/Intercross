@@ -160,12 +160,12 @@ class BehaviorPreferencesFragment : BasePreferenceFragment(R.xml.behavior_prefer
     }
 
     //adds the new property to all crosses in the database
-    override fun onMetadataCreated(property: String, value: String) {
-        createNewMetadata(value.toInt(), property)
+    override fun onMetadataCreated(property: String, value: String?) {
+        createNewMetadata(value?.toIntOrNull(), property)
     }
 
     //adds the new default value and property to the metadata string
-    private fun createNewMetadata(value: Int, property: String) {
+    private fun createNewMetadata(value: Int?, property: String) {
         launch {
             withContext(Dispatchers.IO) {
                 //insert a new row

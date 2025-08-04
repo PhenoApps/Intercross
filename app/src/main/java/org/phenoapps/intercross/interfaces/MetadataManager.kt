@@ -7,7 +7,7 @@ package org.phenoapps.intercross.interfaces
  */
 interface MetadataManager {
 
-    fun onMetadataCreated(property: String, value: String) = Unit
+    fun onMetadataCreated(property: String, value: String?) = Unit
 
     fun onMetadataUpdated(property: String, value: Int?) = Unit
 

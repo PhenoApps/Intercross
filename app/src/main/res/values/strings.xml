@@ -250,7 +250,7 @@
     <string name="dialog_metadata_default_hint">Default Value</string>
     <string name="dialog_metadata_title">New Property Creator</string>
     <string name="dialog_metadata_manager_title">Metadata Manager</string>
-    <string name="dialog_metadata_value_must_be_integer">Please enter an integer for the property value.</string>
+    <string name="dialog_metadata_value_must_be_integer_or_empty">Please enter an integer or leave empty for the property value.</string>
     <string name="dialog_metadata_property_must_not_be_empty">Please enter a property name.</string>
     <string name="frag_manage_metadata_title">Manage Metadata</string>
     <string name="frag_new_metadata_title">New Metadata</string>

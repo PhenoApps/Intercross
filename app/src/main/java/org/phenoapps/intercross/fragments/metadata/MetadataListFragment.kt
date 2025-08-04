@@ -39,6 +39,9 @@ class MetadataListFragment: IntercrossBaseFragment<FragmentMetadataListBinding>(
     }
 
     override fun FragmentMetadataListBinding.afterCreateView() {
+
+        (activity as? MainActivity)?.applyBottomInsets(root)
+
         setupToolbar()
 
         fragMetadataListRv.layoutManager = LinearLayoutManager(context)

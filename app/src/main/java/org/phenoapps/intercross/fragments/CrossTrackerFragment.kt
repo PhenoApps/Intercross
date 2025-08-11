@@ -17,13 +17,21 @@ import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.CrossTrackerAdapter
 import org.phenoapps.intercross.data.EventsRepository
+import org.phenoapps.intercross.data.MetaValuesRepository
+import org.phenoapps.intercross.data.MetadataRepository
 import org.phenoapps.intercross.data.WishlistRepository
 import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
+import org.phenoapps.intercross.data.models.Meta
+import org.phenoapps.intercross.data.models.MetadataValues
 import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
+import org.phenoapps.intercross.data.viewmodels.MetaValuesViewModel
+import org.phenoapps.intercross.data.viewmodels.MetadataViewModel
 import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
+import org.phenoapps.intercross.data.viewmodels.factory.MetaValuesViewModelFactory
+import org.phenoapps.intercross.data.viewmodels.factory.MetadataViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentCrossTrackerBinding
 import org.phenoapps.intercross.dialogs.ListAddDialog
@@ -33,7 +41,7 @@ import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
-import kotlin.collections.ArrayList
+import androidx.core.content.edit
 
 /**
  * Summary Fragment is a recycler list of current crosses.
@@ -56,8 +64,18 @@ class CrossTrackerFragment :
         WishlistViewModelFactory(WishlistRepository.getInstance(db.wishlistDao()))
     }
 
+    private val metaValuesViewModel: MetaValuesViewModel by viewModels {
+        MetaValuesViewModelFactory(MetaValuesRepository.getInstance(db.metaValuesDao()))
+    }
+
+    private val metadataViewModel: MetadataViewModel by viewModels {
+        MetadataViewModelFactory(MetadataRepository.getInstance(db.metadataDao()))
+    }
+
     private var mWishlistEmpty = true
     private var mEvents: List<Event> = ArrayList()
+    private var mMetaValuesList: List<MetadataValues> = emptyList()
+    private var mMetaList: List<Meta> = emptyList()
 
     private val mPref by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -90,12 +108,12 @@ class CrossTrackerFragment :
 
     data class PersonCount(
         val name: String,
-        val count: Int
+        val count: Int,
     )
 
     data class DateCount(
         val date: String,
-        val count: Int
+        val count: Int,
     )
 
     /**
@@ -108,7 +126,7 @@ class CrossTrackerFragment :
         open var count: String,
         open var persons: List<PersonCount> = emptyList(),
         open var dates: List<DateCount> = emptyList(),
-        open var maleId: String = "", open var femaleId: String = ""
+        open var maleId: String = "", open var femaleId: String = "",
     ) {
         companion object {
             const val TYPE_UNPLANNED = 0
@@ -139,13 +157,20 @@ class CrossTrackerFragment :
         }
     }
 
+    data class WishlistItem(
+        val wishType: String,
+        val min: Int,
+        val max: Int,
+        val progress: Int
+    )
+
     // for regular crosses
     data class UnplannedCrossData(
         override var male: String,
         override var female: String,
         override var count: String,
         override var persons: List<PersonCount> = emptyList(),
-        override var dates: List<DateCount> = emptyList()
+        override var dates: List<DateCount> = emptyList(),
     ) : ListEntry(male, female, count, persons, dates)
 
     // for wishlist crosses
@@ -157,9 +182,7 @@ class CrossTrackerFragment :
         override var dates: List<DateCount> = emptyList(),
         override var maleId: String = "",
         override var femaleId: String = "",
-        val wishMin: String,
-        val wishMax: String,
-        val progress: String
+        val wishes: List<WishlistItem> = emptyList()
     ) : ListEntry(male, female, count, persons, dates, maleId, femaleId) {
         override fun getType(): Int = TYPE_PLANNED
     }
@@ -190,7 +213,7 @@ class CrossTrackerFragment :
 
         (activity as MainActivity).applyFragmentInsets(root, fragCrossTrackerTb)
 
-        mPref.edit().putString("last_visited_summary", "summary").apply()
+        mPref.edit { putString("last_visited_summary", "summary") }
 
         startObservers()
 
@@ -228,7 +251,7 @@ class CrossTrackerFragment :
             val filteredData = filterResults()
             val groupedData = groupCrosses(filteredData, commutativeCrossingEnabled)
             updateNoDataTextVisibility(groupedData)
-            crossAdapter.submitList(groupedData) {
+            crossAdapter.submitList(enrichProgress(groupedData)) {
                 mBinding.crossesRecyclerView.scrollToPosition(0)
             }
         }
@@ -237,6 +260,14 @@ class CrossTrackerFragment :
     private fun startObservers() {
 
         loadData()
+
+        metaValuesViewModel.metaValues.observe(viewLifecycleOwner) {
+            it?.let { mMetaValuesList = it }
+        }
+
+        metadataViewModel.metadata.observe(viewLifecycleOwner) {
+            it?.let { mMetaList = it }
+        }
 
         /**
          * Keep track if wishlist repo is empty to disable options items menu
@@ -267,7 +298,8 @@ class CrossTrackerFragment :
 
                     updateNoDataTextVisibility(groupedData)
 
-                    crossAdapter.submitList(groupedData)
+                    val enriched = enrichProgress(groupedData)
+                    crossAdapter.submitList(enriched)
                 }
             }
         }
@@ -279,7 +311,7 @@ class CrossTrackerFragment :
     private fun getCrosses(
         crosses: List<EventsDao.ParentCount>,
         wishes: List<WishlistView>?,
-        commutativeCrossingEnabled: Boolean
+        commutativeCrossingEnabled: Boolean,
     ): List<ListEntry> {
         return crosses.map { parentRow ->
             // each cross will have a person and date with count initialized to 1 if they exist
@@ -320,9 +352,14 @@ class CrossTrackerFragment :
                     dateCount,
                     wish.dadId,
                     wish.momId,
-                    wish.wishMin.toString(),
-                    wish.wishMax.toString(),
-                    wish.wishProgress.toString()
+                    wishes = listOf(
+                        WishlistItem(
+                            wishType = wish.wishType,
+                            min = wish.wishMin,
+                            max = wish.wishMax,
+                            progress = wish.wishProgress
+                        )
+                    )
                 )
             }
         }
@@ -331,7 +368,7 @@ class CrossTrackerFragment :
     private fun getRemainingWishes(
         wishes: List<WishlistView>?,
         crossData: List<ListEntry>,
-        commutativeCrossingEnabled: Boolean
+        commutativeCrossingEnabled: Boolean,
     ): List<PlannedCrossData> {
         return wishes?.filter { wish ->
             if (commutativeCrossingEnabled) {
@@ -353,9 +390,14 @@ class CrossTrackerFragment :
                 emptyList(),
                 wish.dadId,
                 wish.momId,
-                wish.wishMin.toString(),
-                wish.wishMax.toString(),
-                wish.wishProgress.toString()
+                wishes = listOf(
+                    WishlistItem(
+                        wishType = wish.wishType,
+                        min = wish.wishMin,
+                        max = wish.wishMax,
+                        progress = wish.wishProgress
+                    )
+                )
             )
         } ?: emptyList()
     }
@@ -370,7 +412,7 @@ class CrossTrackerFragment :
 
     private fun groupCrosses(
         filteredData: List<ListEntry>,
-        commutativeCrossingEnabled: Boolean
+        commutativeCrossingEnabled: Boolean,
     ): List<ListEntry> {
         val showCompleted = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
 
@@ -378,7 +420,10 @@ class CrossTrackerFragment :
         val dataToGroup = if (!showCompleted) {
             filteredData.filter { entry ->
                 when (entry) {
-                    is PlannedCrossData -> entry.progress.toInt() < entry.wishMin.toInt()
+                    is PlannedCrossData -> {
+                        // keep if ANY wish type is still incomplete (progress < min)
+                        entry.wishes.any { it.progress < it.min }
+                    }
                     else -> true // keep all unplanned crosses
                 }
             }
@@ -389,7 +434,6 @@ class CrossTrackerFragment :
                 if (cross.male < cross.female) "${cross.male}${cross.female}".hashCode()
                 else "${cross.female}${cross.male}".hashCode()
             } else "${cross.male}${cross.female}".hashCode() // non-commutative
-
         }.map { entry ->
             if (entry.value.size == 1) entry.value[0]
             else {
@@ -412,15 +456,47 @@ class CrossTrackerFragment :
                         persons = persons,
                         dates = dates
                     )
-                    is PlannedCrossData -> firstCross.copy(
-                        count = totalCount,
-                        persons = persons,
-                        dates = dates,
-                        progress = entry.value.sumOf { it.count.toInt() }.toString()
-                    )
+                    is PlannedCrossData -> {
+                        // Merge wish lists by type; keep the max progress/min/max where appropriate
+                        val mergedWishes = entry.value.filterIsInstance<PlannedCrossData>()
+                            .flatMap { it.wishes }
+                            .groupBy { it.wishType }
+                            .map { (_, list) ->
+                                // combine progress across duplicates; MIN/MAX typically same per type,
+                                // but to be safe, keep min/min and max/max; sum progress
+                                WishlistItem(
+                                    wishType = list[0].wishType,
+                                    min = list.minOf { it.min },
+                                    max = list.maxOf { it.max },
+                                    progress = list.sumOf { it.progress }
+                                )
+                            }
+
+                        firstCross.copy(
+                            count = totalCount,
+                            persons = persons,
+                            dates = dates,
+                            wishes = mergedWishes
+                        )
+                    }
                     else -> firstCross // this will never be executed
                 }
             }
+        }
+    }
+
+    /**
+     *  Updates the wishProgress of each PlannedCross' WishlistItems once grouping is done
+     */
+    private fun enrichProgress(listEntry: List<ListEntry>): List<ListEntry> {
+        return listEntry.map { entry ->
+            if (entry is PlannedCrossData) {
+                val computed = entry.wishes.map { wish ->
+                    val p = getWishItemProgress(entry, wish.wishType)
+                    wish.copy(progress = p)
+                }
+                entry.copy(wishes = computed)
+            } else entry
         }
     }
 
@@ -478,7 +554,7 @@ class CrossTrackerFragment :
     }
 
     private fun setToggleVisibilityIcon(menuItem: MenuItem, newValue: Boolean) {
-        mPref.edit().putBoolean(mKeyUtil.showCompletedWishlistItems, newValue).apply()
+        mPref.edit { putBoolean(mKeyUtil.showCompletedWishlistItems, newValue) }
 
         menuItem.setIcon(if (newValue) R.drawable.ic_show_wishlist_completed else R.drawable.ic_hide_wishlist_completed)
         menuItem.setTitle(if (newValue) R.string.crosses_toolbar_hide_completed else R.string.crosses_toolbar_show_completed)
@@ -494,8 +570,9 @@ class CrossTrackerFragment :
                 setToggleVisibilityIcon(item, newValue)
 
                 val commutativeCrossingEnabled = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+                val grouped = groupCrosses(filterResults(), commutativeCrossingEnabled)
 
-                crossAdapter.submitList(groupCrosses(filterResults(), commutativeCrossingEnabled)) {
+                crossAdapter.submitList(enrichProgress(grouped)) {
                     mBinding.crossesRecyclerView.scrollToPosition(0)
                 }
             }
@@ -608,7 +685,14 @@ class CrossTrackerFragment :
     }
 
     override fun onWishlistProgressChipClicked(plannedCrossData: PlannedCrossData) {
-        val message = String.format(getString(R.string.dialog_wish_progress_message), plannedCrossData.wishMin, plannedCrossData.wishMax, plannedCrossData.progress)
+        val firstWish = plannedCrossData.wishes.firstOrNull()
+        if (firstWish == null) return
+
+        val min = firstWish.min.toString()
+        val max = firstWish.max.toString()
+        val progress = firstWish.progress.toString()
+        val message = String.format(getString(R.string.dialog_wish_progress_message), min, max, progress)
+
         context?.let {
             AlertDialog.Builder(it)
                 .setTitle(getString(R.string.dialog_wish_progress_title))
@@ -621,6 +705,34 @@ class CrossTrackerFragment :
     override fun onEventClick(eventId: Long) {
         mShowChildrenDialogUtil.dismiss()
         findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEventDetail(eventId))
+    }
+
+    override fun getWishItemProgress(entry: PlannedCrossData, wishType: String): Int {
+        // for "cross" just return the count
+        if (wishType == "cross") return entry.count.toIntOrNull() ?: 0
+
+        val isCommutative = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
+
+        val eventIds: Set<Int> = mEvents.asSequence()
+            .filter { e ->
+                if (isCommutative) {
+                    (e.maleObsUnitDbId == entry.maleId && e.femaleObsUnitDbId == entry.femaleId) ||
+                            (e.maleObsUnitDbId == entry.femaleId && e.femaleObsUnitDbId == entry.maleId)
+                } else {
+                    e.maleObsUnitDbId == entry.maleId && e.femaleObsUnitDbId == entry.femaleId
+                }
+            }
+            .mapNotNull { it.id?.toInt() }
+            .toSet()
+
+        if (eventIds.isEmpty()) return 0
+
+        val metaId = mMetaList.find { it.property == wishType }?.id?.toInt() ?: return 0
+
+        // find cumulative count for this metadata across the events
+        return mMetaValuesList.asSequence()
+            .filter { mv -> mv.metaId == metaId && eventIds.contains(mv.eid) }
+            .sumOf { it.value ?: 0 }
     }
 
     private fun showAddWishlistDialog() {

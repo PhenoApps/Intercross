@@ -8,4 +8,5 @@ interface CrossController {
     fun onPersonChipClicked(persons: List<CrossTrackerFragment.PersonCount>, crossCount: Int)
     fun onDateChipClicked(dates: List<CrossTrackerFragment.DateCount>)
     fun onWishlistProgressChipClicked(plannedCrossData: PlannedCrossData)
+    fun getWishItemProgress(plannedCrossData: PlannedCrossData, wishType: String): Int
 }

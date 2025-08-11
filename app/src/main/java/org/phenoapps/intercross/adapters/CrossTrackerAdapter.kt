@@ -1,6 +1,5 @@
 package org.phenoapps.intercross.adapters
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -14,16 +13,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.fragments.CrossTrackerFragment
+import org.phenoapps.intercross.fragments.CrossTrackerFragment.ListEntry
+import org.phenoapps.intercross.fragments.CrossTrackerFragment.PlannedCrossData
 import org.phenoapps.intercross.interfaces.CrossController
 import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.WishProgressColorUtil
 
 class CrossTrackerAdapter(
     private val crossController: CrossController
-) : ListAdapter<CrossTrackerFragment.ListEntry, CrossTrackerAdapter.ViewHolder>(
+) : ListAdapter<ListEntry, CrossTrackerAdapter.ViewHolder>(
         DiffCallback()
     ) {
 
@@ -33,7 +35,7 @@ class CrossTrackerAdapter(
         val maleParent: TextView = view.findViewById(R.id.male_parent)
         val personChip: Chip = view.findViewById(R.id.person_chip)
         val dateChip: Chip = view.findViewById(R.id.date_chip)
-        val wishlistProgressChip: Chip = view.findViewById(R.id.wish_progress_chip)
+        val wishProgressGroup: ChipGroup = view.findViewById(R.id.wish_progress_chip_group)
 
         val progressSection: LinearLayout = view.findViewById(R.id.wish_progress_section)
         val progressStatusIcon: ImageView = view.findViewById(R.id.wish_progress_status)
@@ -60,7 +62,7 @@ class CrossTrackerAdapter(
     private fun handleClick(position: Int) {
         if (position != RecyclerView.NO_POSITION) {
             when (val item = currentList[position]) {
-                is CrossTrackerFragment.PlannedCrossData -> {
+                is PlannedCrossData -> {
                     crossController.onCrossClicked(item.maleId, item.femaleId)
                 }
                 else -> {
@@ -121,53 +123,84 @@ class CrossTrackerAdapter(
 
             when (this) {
                 is CrossTrackerFragment.UnplannedCrossData -> hideProgressBar(viewHolder)
-                is CrossTrackerFragment.PlannedCrossData -> setProgressBar(viewHolder, this)
+                is PlannedCrossData -> setWishlistProgress(viewHolder, this)
             }
         }
     }
 
     private fun hideProgressBar(viewHolder: ViewHolder) {
         viewHolder.apply {
-            wishlistProgressChip.visibility = View.GONE
+            wishProgressGroup.visibility = View.GONE
             progressSection.visibility = View.GONE
         }
     }
 
-    private fun setProgressBar(viewHolder: ViewHolder, plannedCrossData: CrossTrackerFragment.PlannedCrossData) {
-        val wishProgress = plannedCrossData.progress.toIntOrNull() ?: 0
-        val minTarget = plannedCrossData.wishMin.toInt()
-        val maxTarget = plannedCrossData.wishMax.toInt()
+    private fun setWishlistProgress(viewHolder: ViewHolder, planned: PlannedCrossData) {
+        val ctx = viewHolder.itemView.context
+        val wishes = planned.wishes
 
-        val color = WishProgressColorUtil().getProgressColor(viewHolder.itemView.context, wishProgress, minTarget, maxTarget)
+        // build the metadata chips
+        viewHolder.wishProgressGroup.apply {
+            removeAllViews()
+            visibility = if (wishes.isEmpty()) View.GONE else View.VISIBLE
+            wishes.forEach { wish ->
+                val chip = Chip(ctx).apply {
+                    text = "${wish.wishType}: ${wish.progress}/${wish.min}"
+                    setChipIconResource(R.drawable.ic_wishlist_add)
+                    isClickable = true
+                    isCheckable = false
+                    setOnClickListener {
+                        crossController.onWishlistProgressChipClicked(
+                            planned.copy(wishes = listOf(wish))
+                        )
+                    }
+                }
+                addView(chip)
+            }
+        }
+
+        if (wishes.isEmpty()) { hideProgressBar(viewHolder); return }
+
+        // find WishlistItem with highest progress in terms of %
+        val highestProgressWish = wishes.maxBy { it.progress.toDouble() / it.min.toDouble() }
+        val bestPercent = ((highestProgressWish.progress.toDouble() / highestProgressWish.min.toDouble()) * 100).toInt().coerceAtMost(100)
+
+        val color = WishProgressColorUtil().getProgressColor(ctx, highestProgressWish.progress, highestProgressWish.min, highestProgressWish.max)
 
         viewHolder.apply {
-            wishlistProgressChip.visibility = View.VISIBLE
             progressSection.visibility = View.VISIBLE
+
+            // set progress icon if ANY wish meets min
+            val anyComplete = planned.wishes.any { it.progress >= it.min }
             progressStatusIcon.setImageDrawable(
                 ContextCompat.getDrawable(
-                    viewHolder.itemView.context,
-                    if (wishProgress >= minTarget) R.drawable.ic_wishes_complete else R.drawable.ic_wishes_incomplete
+                    ctx,
+                    if (anyComplete) R.drawable.ic_wishes_complete else R.drawable.ic_wishes_incomplete
                 )
             )
-            wishlistProgressChip.apply {
-                text = "${plannedCrossData.progress}/${plannedCrossData.wishMin}"
-                setOnClickListener {
-                    crossController.onWishlistProgressChipClicked(plannedCrossData)
-                }
-            }
+
             progressBar.apply {
-                max = minTarget
-                progress = wishProgress
+                max = 100
+                progress = bestPercent
                 setIndicatorColor(color)
                 visibility = View.VISIBLE
             }
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<CrossTrackerFragment.ListEntry>() {
+    class DiffCallback : DiffUtil.ItemCallback<ListEntry>() {
 
-        override fun areItemsTheSame(oldItem: CrossTrackerFragment.ListEntry, newItem: CrossTrackerFragment.ListEntry) = oldItem == newItem
+        override fun areItemsTheSame(oldItem: ListEntry, newItem: ListEntry) =
+            oldItem.male == newItem.male && oldItem.female == newItem.female && oldItem.getType() == newItem.getType()
 
-        override fun areContentsTheSame(oldItem: CrossTrackerFragment.ListEntry, newItem: CrossTrackerFragment.ListEntry) = oldItem == newItem
+        override fun areContentsTheSame(oldItem: ListEntry, newItem: ListEntry): Boolean {
+            if (oldItem.count != newItem.count) return false
+            if (oldItem.persons != newItem.persons) return false
+            if (oldItem.dates != newItem.dates) return false
+            if (oldItem is PlannedCrossData && newItem is PlannedCrossData) {
+                if (oldItem.wishes.sortedBy { it.wishType } != newItem.wishes.sortedBy { it.wishType }) return false
+            }
+            return true
+        }
     }
 }

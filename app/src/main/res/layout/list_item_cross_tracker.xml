@@ -65,7 +65,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:constraint_referenced_ids="person_chip,date_chip,wish_progress_chip"
+            app:constraint_referenced_ids="person_chip,date_chip"
             app:flow_horizontalGap="8dp"
             app:flow_verticalGap="4dp"
             app:flow_wrapMode="chain"
@@ -92,13 +92,19 @@
             app:chipIconSize="24dp"
             tools:text="@string/cross_tracker_item_date"/>
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/wish_progress_chip"
-            android:layout_width="wrap_content"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/wish_progress_chip_group"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:chipIcon="@drawable/ic_wishlist_add"
-            app:chipIconSize="24dp"
-            tools:text="@string/cross_tracker_item_progress"/>
+            android:layout_marginTop="8dp"
+            app:singleLine="false"
+            app:singleSelection="false"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp"
+            app:layout_constraintTop_toBottomOf="@id/chips_flow"
+            app:layout_constraintBottom_toTopOf="@+id/wish_progress_section"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
             android:id="@+id/wish_progress_section"
@@ -107,7 +113,7 @@
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/chips_flow">
+            app:layout_constraintTop_toBottomOf="@id/wish_progress_chip_group">
 
             <ImageView
                 android:id="@+id/wish_progress_status"

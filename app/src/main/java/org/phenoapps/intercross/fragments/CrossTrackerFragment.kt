@@ -42,6 +42,12 @@ import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import androidx.core.content.edit
+import org.phenoapps.intercross.data.ParentsRepository
+import org.phenoapps.intercross.data.models.Parent
+import org.phenoapps.intercross.data.viewmodels.ParentsListViewModel
+import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 /**
  * Summary Fragment is a recycler list of current crosses.
@@ -72,10 +78,16 @@ class CrossTrackerFragment :
         MetadataViewModelFactory(MetadataRepository.getInstance(db.metadataDao()))
     }
 
+    private val parentsModel: ParentsListViewModel by viewModels {
+        ParentsListViewModelFactory(ParentsRepository.getInstance(db.parentsDao()))
+    }
+
     private var mWishlistEmpty = true
     private var mEvents: List<Event> = ArrayList()
     private var mMetaValuesList: List<MetadataValues> = emptyList()
     private var mMetaList: List<Meta> = emptyList()
+    private var mParents: List<Parent> = emptyList()
+    private var parentLookup: Map<String, String> = emptyMap()
 
     private val mPref by lazy {
         PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -187,6 +199,24 @@ class CrossTrackerFragment :
         override fun getType(): Int = TYPE_PLANNED
     }
 
+    data class NormalizedParents(val dad: String, val mom: String)
+
+    /**
+     * Normalizes both parent IDs to consistent format (UUID -> name)
+     */
+    private fun normalizeParents(dadId: String, momId: String) = NormalizedParents(normalizeParentId(dadId), normalizeParentId(momId))
+
+    /**
+     * Converts a parent ID to its display name using the parent lookup table.
+     *
+     * Events table contains mixed ID formats (UUIDs vs names), so we normalize all to names
+     * to enable consistent matching between events and wishlist items across different formats.
+     *
+     * @param id The parent ID to normalize (UUID or display name)
+     * @return The display name for this parent
+     */
+    private fun normalizeParentId(id: String) = parentLookup[id] ?: id
+
     data class CellData(val text: String, val uuid: String = "", val complete: Boolean = false) :
         ISortableModel {
 
@@ -251,7 +281,7 @@ class CrossTrackerFragment :
             val filteredData = filterResults()
             val groupedData = groupCrosses(filteredData, commutativeCrossingEnabled)
             updateNoDataTextVisibility(groupedData)
-            crossAdapter.submitList(enrichProgress(groupedData)) {
+            crossAdapter.submitList(groupedData) {
                 mBinding.crossesRecyclerView.scrollToPosition(0)
             }
         }
@@ -269,40 +299,59 @@ class CrossTrackerFragment :
             it?.let { mMetaList = it }
         }
 
+        parentsModel.parents.observe(viewLifecycleOwner) { list ->
+            mParents = list ?: emptyList()
+            parentLookup = mParents.associate { it.codeId to it.name }
+        }
+
         /**
          * Keep track if wishlist repo is empty to disable options items menu
          */
         wishModel.wishlist.observe(viewLifecycleOwner) { wishes ->
 
-            mWishlistEmpty = wishes.none { it.wishType == "cross" }
+            mWishlistEmpty = wishes.none { it.wishType == getString(R.string.literal_cross) }
             updateToolbarWishlistIcon()
         }
     }
 
     private fun loadData() {
         val commutativeCrossingEnabled = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
-        eventsModel.allParents.observe(viewLifecycleOwner) { parentsCount ->
-            parentsCount?.let { crosses ->
-                wishModel.wishes.observe(viewLifecycleOwner) { wishes ->
-                    val crossData = getCrosses(crosses, wishes, commutativeCrossingEnabled)
 
-                    // Add remaining wishes that don't have crosses
-                    val remainingWishes = getRemainingWishes(wishes, crossData, commutativeCrossingEnabled)
+        val wishesLiveData = if (commutativeCrossingEnabled) {
+            wishModel.commutativeWishes
+        } else {
+            wishModel.wishes
+        }
 
-                    crossesAndWishesData = crossData + remainingWishes
-
-                    val filteredData = filterResults()
-
-                    // If commutative, group the data
-                    val groupedData = groupCrosses(filteredData, commutativeCrossingEnabled)
-
-                    updateNoDataTextVisibility(groupedData)
-
-                    val enriched = enrichProgress(groupedData)
-                    crossAdapter.submitList(enriched)
+        eventsModel.allParents.observe(viewLifecycleOwner) { crosses ->
+            crosses?.let{
+                wishesLiveData.observe(viewLifecycleOwner) { wishes ->
+                    processWishesData(crosses, wishes, commutativeCrossingEnabled)
                 }
             }
         }
+    }
+
+    private fun processWishesData(
+        crosses: List<EventsDao.ParentCount>,
+        wishes: List<WishlistView>?,
+        commutativeCrossingEnabled: Boolean
+    ) {
+        val crossData = getCrosses(crosses, wishes, commutativeCrossingEnabled)
+
+        // Add remaining wishes that don't have crosses
+        val remainingWishes = getRemainingWishes(wishes, crossData, commutativeCrossingEnabled)
+
+        crossesAndWishesData = crossData + remainingWishes
+
+        val filteredData = filterResults()
+
+        // If commutative, group the data
+        val groupedData = groupCrosses(filteredData, commutativeCrossingEnabled)
+
+        updateNoDataTextVisibility(groupedData)
+
+        crossAdapter.submitList(groupedData)
     }
 
     /**
@@ -314,6 +363,8 @@ class CrossTrackerFragment :
         commutativeCrossingEnabled: Boolean,
     ): List<ListEntry> {
         return crosses.map { parentRow ->
+            val normalizedParents = normalizeParents(parentRow.dad, parentRow.mom)
+
             // each cross will have a person and date with count initialized to 1 if they exist
             // these counts will then be aggregated in groupCrosses method
             val personCount = if (parentRow.person.isNotEmpty()) {
@@ -326,19 +377,23 @@ class CrossTrackerFragment :
 
             val wish = if (commutativeCrossingEnabled) {
                 wishes?.find { w ->
-                    (w.dadId == parentRow.dad && w.momId == parentRow.mom) ||
-                            (w.dadId == parentRow.mom && w.momId == parentRow.dad)
+                    val wishParents = normalizeParents(w.dadId, w.momId)
+
+                    (wishParents.dad == normalizedParents.dad && wishParents.mom == normalizedParents.mom) ||
+                            (wishParents.dad == normalizedParents.mom && wishParents.mom == normalizedParents.dad)
                 }
             } else {
                 wishes?.find { w ->
-                    w.dadId == parentRow.dad && w.momId == parentRow.mom
+                    val wishParents = normalizeParents(w.dadId, w.momId)
+
+                    wishParents.dad == normalizedParents.dad && wishParents.mom == normalizedParents.mom
                 }
             }
 
             if (wish == null) { // parents are not from wishlist
                 UnplannedCrossData(
-                    parentRow.dad,
-                    parentRow.mom,
+                    normalizedParents.dad,
+                    normalizedParents.mom,
                     parentRow.count.toString(),
                     personCount,
                     dateCount
@@ -371,14 +426,20 @@ class CrossTrackerFragment :
         commutativeCrossingEnabled: Boolean,
     ): List<PlannedCrossData> {
         return wishes?.filter { wish ->
+            val wishParents = normalizeParents(wish.dadId, wish.momId)
+
             if (commutativeCrossingEnabled) {
                 crossData.none { cross ->
-                    (cross.male == wish.dadId && cross.female == wish.momId) ||
-                            (cross.male == wish.momId && cross.female == wish.dadId)
+                    val crossParents = normalizeParents(cross.male, cross.female)
+
+                    (crossParents.dad == wishParents.dad && crossParents.mom == wishParents.mom) ||
+                            (crossParents.dad == wishParents.mom && crossParents.mom == wishParents.dad)
                 }
             } else {
                 crossData.none { cross ->
-                    cross.male == wish.dadId && cross.female == wish.momId
+                    val crossParents = normalizeParents(cross.male, cross.female)
+
+                    crossParents.dad == wishParents.dad && crossParents.mom == wishParents.mom
                 }
             }
         }?.map { wish ->
@@ -410,45 +471,63 @@ class CrossTrackerFragment :
         }
     }
 
+    /**
+     * Merges wishlist items from multiple planned crosses, combining by wish type
+     */
+    private fun mergeWishlistItems(entries: List<PlannedCrossData>): List<WishlistItem> {
+        return entries.flatMap { it.wishes }
+            .groupBy { it.wishType }
+            .map { (_, list) ->
+                // combine progress across duplicates; MIN/MAX typically same per type,
+                // but to be safe, keep min/min and max/max; sum progress
+                WishlistItem(
+                    wishType = list[0].wishType,
+                    min = list.minOf { it.min },
+                    max = list.maxOf { it.max },
+                    progress = list.sumOf { it.progress }
+                )
+            }
+    }
+
+    /**
+     * When user chooses to hide completed wishlist items
+     * The planned wish item who's progress is at least meeting the wishMin are filtered out (hidden)
+     */
+    private fun filterCrossDataVisibility(data: List<ListEntry>, showCompleted: Boolean): List<ListEntry> {
+        return if (!showCompleted) {
+            data.filter { entry ->
+                when (entry) {
+                    is PlannedCrossData -> entry.wishes.any { it.progress < it.min } // keep if ANY wish type is still incomplete (progress < min)
+                    else -> true // keep all unplanned crosses
+                }
+            }
+        } else data // don't hide any CrossData
+    }
+
+    /**
+     * Generates a hash for a grouped CrossData
+     */
+    private fun generateGroupKey(cross: ListEntry, commutativeCrossingEnabled: Boolean): Int {
+        return if (commutativeCrossingEnabled) {
+            if (cross.male < cross.female) "${cross.male}${cross.female}".hashCode()
+            else "${cross.female}${cross.male}".hashCode()
+        } else {
+            "${cross.male}${cross.female}".hashCode()
+        }
+    }
+
     private fun groupCrosses(
         filteredData: List<ListEntry>,
         commutativeCrossingEnabled: Boolean,
     ): List<ListEntry> {
         val showCompleted = mPref.getBoolean(mKeyUtil.showCompletedWishlistItems, true)
 
-        // filter out completed wishlist items if needed
-        val dataToGroup = if (!showCompleted) {
-            filteredData.filter { entry ->
-                when (entry) {
-                    is PlannedCrossData -> {
-                        // keep if ANY wish type is still incomplete (progress < min)
-                        entry.wishes.any { it.progress < it.min }
-                    }
-                    else -> true // keep all unplanned crosses
-                }
-            }
-        } else filteredData
-
-        return dataToGroup.groupBy { cross ->
-            if (commutativeCrossingEnabled) {
-                if (cross.male < cross.female) "${cross.male}${cross.female}".hashCode()
-                else "${cross.female}${cross.male}".hashCode()
-            } else "${cross.male}${cross.female}".hashCode() // non-commutative
-        }.map { entry ->
+        val groupedData = filteredData.groupBy { generateGroupKey(it, commutativeCrossingEnabled) }.map { entry ->
             if (entry.value.size == 1) entry.value[0]
             else {
                 val totalCount = entry.value.sumOf { it.count.toInt() }.toString()
-                val persons = entry.value.flatMap { it.persons }
-                    .groupBy { it.name }
-                    .map { (name, counts) ->
-                        PersonCount(name, counts.sumOf { it.count })
-                    }
-                // group dates by the format we want to show in - yyyy-MM-dd
-                val dates = entry.value.flatMap { it.dates }
-                    .groupBy { DateUtil().getFormattedDate(it.date) }
-                    .map { (_, dateCounts) ->
-                        DateCount(dateCounts.first().date, dateCounts.sumOf { it.count })
-                    }
+                val persons = aggregatePersonCounts(entry.value)
+                val dates = aggregateDateCounts(entry.value)
 
                 when (val firstCross = entry.value[0]) {
                     is UnplannedCrossData -> firstCross.copy(
@@ -458,19 +537,7 @@ class CrossTrackerFragment :
                     )
                     is PlannedCrossData -> {
                         // Merge wish lists by type; keep the max progress/min/max where appropriate
-                        val mergedWishes = entry.value.filterIsInstance<PlannedCrossData>()
-                            .flatMap { it.wishes }
-                            .groupBy { it.wishType }
-                            .map { (_, list) ->
-                                // combine progress across duplicates; MIN/MAX typically same per type,
-                                // but to be safe, keep min/min and max/max; sum progress
-                                WishlistItem(
-                                    wishType = list[0].wishType,
-                                    min = list.minOf { it.min },
-                                    max = list.maxOf { it.max },
-                                    progress = list.sumOf { it.progress }
-                                )
-                            }
+                        val mergedWishes = mergeWishlistItems(entry.value.filterIsInstance<PlannedCrossData>())
 
                         firstCross.copy(
                             count = totalCount,
@@ -483,12 +550,15 @@ class CrossTrackerFragment :
                 }
             }
         }
+
+        // update progress of PlannedCrossData and filter visibility
+        return filterCrossDataVisibility(updateWishProgress(groupedData), showCompleted)
     }
 
     /**
      *  Updates the wishProgress of each PlannedCross' WishlistItems once grouping is done
      */
-    private fun enrichProgress(listEntry: List<ListEntry>): List<ListEntry> {
+    private fun updateWishProgress(listEntry: List<ListEntry>): List<ListEntry> {
         return listEntry.map { entry ->
             if (entry is PlannedCrossData) {
                 val computed = entry.wishes.map { wish ->
@@ -572,7 +642,7 @@ class CrossTrackerFragment :
                 val commutativeCrossingEnabled = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
                 val grouped = groupCrosses(filterResults(), commutativeCrossingEnabled)
 
-                crossAdapter.submitList(enrichProgress(grouped)) {
+                crossAdapter.submitList(grouped) {
                     mBinding.crossesRecyclerView.scrollToPosition(0)
                 }
             }
@@ -709,17 +779,21 @@ class CrossTrackerFragment :
 
     override fun getWishItemProgress(entry: PlannedCrossData, wishType: String): Int {
         // for "cross" just return the count
-        if (wishType == "cross") return entry.count.toIntOrNull() ?: 0
+        if (wishType == getString(R.string.literal_cross)) return entry.count.toIntOrNull() ?: 0
 
         val isCommutative = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
 
+        val normalizedEntryParents = normalizeParents(entry.maleId, entry.femaleId)
+
         val eventIds: Set<Int> = mEvents.asSequence()
             .filter { e ->
+                val normalizedEventParents = normalizeParents(e.maleObsUnitDbId, e.femaleObsUnitDbId)
+
                 if (isCommutative) {
-                    (e.maleObsUnitDbId == entry.maleId && e.femaleObsUnitDbId == entry.femaleId) ||
-                            (e.maleObsUnitDbId == entry.femaleId && e.femaleObsUnitDbId == entry.maleId)
+                    (normalizedEventParents.dad == normalizedEntryParents.dad && normalizedEventParents.mom == normalizedEntryParents.mom) ||
+                            (normalizedEventParents.dad == normalizedEntryParents.mom && normalizedEventParents.mom == normalizedEntryParents.dad)
                 } else {
-                    e.maleObsUnitDbId == entry.maleId && e.femaleObsUnitDbId == entry.femaleId
+                    normalizedEventParents.dad == normalizedEntryParents.dad && normalizedEventParents.mom == normalizedEntryParents.mom
                 }
             }
             .mapNotNull { it.id?.toInt() }
@@ -766,5 +840,28 @@ class CrossTrackerFragment :
             }
             dialog?.show(fragmentActivity.supportFragmentManager, "ListAddDialog")
         }
+    }
+
+    /**
+     * Aggregates person counts across multiple list entries
+     */
+    private fun aggregatePersonCounts(entries: List<ListEntry>): List<PersonCount> {
+        return entries.flatMap { it.persons }
+            .groupBy { it.name }
+            .map { (name, counts) ->
+                PersonCount(name, counts.sumOf { it.count })
+            }
+    }
+
+    /**
+     * Aggregates date counts across multiple list entries, formatting dates consistently
+     * Format we want to show in: yyyy-MM-dd
+     */
+    private fun aggregateDateCounts(entries: List<ListEntry>): List<DateCount> {
+        return entries.flatMap { it.dates }
+            .groupBy { DateUtil().getFormattedDate(it.date) }
+            .map { (_, dateCounts) ->
+                DateCount(dateCounts.first().date, dateCounts.sumOf { it.count })
+            }
     }
 }

@@ -1,6 +1,5 @@
 package org.phenoapps.intercross.fragments.metadata
 
-import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +68,7 @@ class MetadataFormFragment: IntercrossBaseFragment<FragmentMetadataFormBinding>(
 
         fragMetadataSubmitBtn.setOnClickListener {
 
-            val name = fragMetadataNameEt.text.toString()
+            val name = fragMetadataNameEt.text.toString().trim()
             var default: Int? = fragMetadataDefaultValueEt.text?.toString()?.toIntOrNull()
 
             if (argPropertyName.isBlank()) {

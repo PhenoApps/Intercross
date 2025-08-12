@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -145,15 +146,11 @@ class CrossTrackerAdapter(
             visibility = if (wishes.isEmpty()) View.GONE else View.VISIBLE
             wishes.forEach { wish ->
                 val chip = Chip(ctx).apply {
-                    text = "${wish.wishType}: ${wish.progress}/${wish.min}"
-                    setChipIconResource(R.drawable.ic_wishlist_add)
+                    text = "${wish.progress}/${wish.min}"
+                    setChipIconResource(getWishTypeIcon(wish.wishType, ctx))
                     isClickable = true
                     isCheckable = false
-                    setOnClickListener {
-                        crossController.onWishlistProgressChipClicked(
-                            planned.copy(wishes = listOf(wish))
-                        )
-                    }
+                    setOnClickListener { crossController.onWishlistProgressChipClicked(wish) }
                 }
                 addView(chip)
             }
@@ -185,6 +182,16 @@ class CrossTrackerAdapter(
                 setIndicatorColor(color)
                 visibility = View.VISIBLE
             }
+        }
+    }
+
+    private fun getWishTypeIcon(wishType: String, context: Context): Int {
+        return when (wishType) {
+            context.getString(R.string.metadata_fruits) -> R.drawable.ic_fruit
+            context.getString(R.string.metadata_seeds) -> R.drawable.ic_seed
+            context.getString(R.string.metadata_flowers) -> R.drawable.ic_flower
+            context.getString(R.string.literal_cross) -> R.drawable.ic_cross
+            else -> R.drawable.ic_sprout
         }
     }
 

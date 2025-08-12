@@ -396,7 +396,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    for (property in arrayOf("fruits", "flowers", "seeds")) {
+                    for (property in arrayOf(getString(R.string.metadata_fruits),
+                        getString(R.string.metadata_flowers), getString(R.string.metadata_seeds))) {
                         metadataViewModel.insert(
                             Meta(property, 0)
                         )

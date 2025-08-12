@@ -284,6 +284,9 @@
     <string name="wf_must_choose_at_least_one_parent">You must choose at least one parent.</string>
     <string name="wf_no_male_chosen_assuming_self_cross">No male chosen, assuming self cross.</string>
     <string name="literal_cross">cross</string>
+    <string name="metadata_fruits">fruits</string>
+    <string name="metadata_seeds">seeds</string>
+    <string name="metadata_flowers">flowers</string>
     <string name="frag_wf_toolbar_title">New Wishlist Item</string>
     <string name="frag_wf_male_choice_summary">Please choose a male to pair with %s</string>
     <string name="frag_wf_choose_type_summary">Please choose a wish type for %s and %s pair.</string>
@@ -625,7 +628,7 @@
     <string name="dialog_crosses_by_person_known_message">%d crosses collected by unknown persons</string>
     <string name="dialog_crosses_by_dates">Crosses by Dates</string>
     <string name="dialog_wish_progress_title">Wish Progress</string>
-    <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
+    <string name="dialog_wish_progress_message">Wish Type: %s\nMinimum: %s\nMaximum: %s\nProgress: %s</string>
     <string name="crosses_toolbar_hide_completed">Hide completed wishlist items</string>
     <string name="crosses_toolbar_show_completed">Show completed wishlist items</string>
 

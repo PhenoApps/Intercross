@@ -754,14 +754,12 @@ class CrossTrackerFragment :
         }
     }
 
-    override fun onWishlistProgressChipClicked(plannedCrossData: PlannedCrossData) {
-        val firstWish = plannedCrossData.wishes.firstOrNull()
-        if (firstWish == null) return
-
-        val min = firstWish.min.toString()
-        val max = firstWish.max.toString()
-        val progress = firstWish.progress.toString()
-        val message = String.format(getString(R.string.dialog_wish_progress_message), min, max, progress)
+    override fun onWishlistProgressChipClicked(wishlistItem: WishlistItem) {
+        val wishType = wishlistItem.wishType
+        val min = wishlistItem.min.toString()
+        val max = wishlistItem.max.toString()
+        val progress = wishlistItem.progress.toString()
+        val message = String.format(getString(R.string.dialog_wish_progress_message), wishType, min, max, progress)
 
         context?.let {
             AlertDialog.Builder(it)

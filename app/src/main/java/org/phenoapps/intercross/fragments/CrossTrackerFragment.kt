@@ -1,6 +1,7 @@
 package org.phenoapps.intercross.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -375,22 +376,22 @@ class CrossTrackerFragment :
                 listOf(DateCount(parentRow.date, 1))
             } else emptyList()
 
-            val wish = if (commutativeCrossingEnabled) {
-                wishes?.find { w ->
+            val wishList = if (commutativeCrossingEnabled) {
+                wishes?.filter { w ->
                     val wishParents = normalizeParents(w.dadId, w.momId)
 
                     (wishParents.dad == normalizedParents.dad && wishParents.mom == normalizedParents.mom) ||
                             (wishParents.dad == normalizedParents.mom && wishParents.mom == normalizedParents.dad)
                 }
             } else {
-                wishes?.find { w ->
+                wishes?.filter { w ->
                     val wishParents = normalizeParents(w.dadId, w.momId)
 
                     wishParents.dad == normalizedParents.dad && wishParents.mom == normalizedParents.mom
                 }
-            }
+            } ?: emptyList()
 
-            if (wish == null) { // parents are not from wishlist
+            if (wishList.isEmpty()) { // parents are not from wishlist
                 UnplannedCrossData(
                     normalizedParents.dad,
                     normalizedParents.mom,
@@ -399,22 +400,23 @@ class CrossTrackerFragment :
                     dateCount
                 )
             } else { // parents are in the wishlist
+                val firstWish = wishList.first()
                 PlannedCrossData(
-                    wish.dadName,
-                    wish.momName,
+                    firstWish.dadName,
+                    firstWish.momName,
                     parentRow.count.toString(),
                     personCount,
                     dateCount,
-                    wish.dadId,
-                    wish.momId,
-                    wishes = listOf(
+                    firstWish.dadId,
+                    firstWish.momId,
+                    wishes = wishList.map { wish ->
                         WishlistItem(
                             wishType = wish.wishType,
                             min = wish.wishMin,
                             max = wish.wishMax,
                             progress = wish.wishProgress
                         )
-                    )
+                    }
                 )
             }
         }
@@ -473,6 +475,7 @@ class CrossTrackerFragment :
 
     /**
      * Merges wishlist items from multiple planned crosses, combining by wish type
+     * TODO: get rid of this function once this is fixed: a set of parents can only have one wish for a wishType
      */
     private fun mergeWishlistItems(entries: List<PlannedCrossData>): List<WishlistItem> {
         return entries.flatMap { it.wishes }
@@ -562,6 +565,7 @@ class CrossTrackerFragment :
         return listEntry.map { entry ->
             if (entry is PlannedCrossData) {
                 val computed = entry.wishes.map { wish ->
+                    Log.d("TAG", "updateWishProgress: ${wish.wishType}")
                     val p = getWishItemProgress(entry, wish.wishType)
                     wish.copy(progress = p)
                 }

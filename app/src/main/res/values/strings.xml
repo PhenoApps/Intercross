@@ -287,6 +287,7 @@
     <string name="metadata_fruits">fruits</string>
     <string name="metadata_seeds">seeds</string>
     <string name="metadata_flowers">flowers</string>
+    <string name="metadata_null_placeholder">null</string>
     <string name="frag_wf_toolbar_title">New Wishlist Item</string>
     <string name="frag_wf_male_choice_summary">Please choose a male to pair with %s</string>
     <string name="frag_wf_choose_type_summary">Please choose a wish type for %s and %s pair.</string>

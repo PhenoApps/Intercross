@@ -51,8 +51,6 @@ class MetadataAdapter(val imm: InputMethodManager?, val listener: MetadataManage
                     mFirstLoad = false
                 }
 
-                listItemMetadataEditText.hint = meta.property
-
                 listItemMetadataTextLayout.hint = meta.property
 
                 listItemMetadataEditText.addTextChangedListener {

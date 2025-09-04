@@ -44,6 +44,7 @@
     <string name="Fruits">Fruits</string>
     <string name="Flowers">Flowers</string>
     <string name="UpdateMetaData">Update Metadata</string>
+    <string name="error_value_exceeds_max">Value cannot exceed %d</string>
     <string name="navigate_to_wishlist">Navigate to wishlist</string>
     <string name="navigate_to_crossblock">Navigate to crossblock</string>
     <string name="Clear">Clear</string>

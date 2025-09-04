@@ -42,6 +42,27 @@ class MetadataAdapter(val imm: InputMethodManager?, val listener: MetadataManage
         fun bind(meta: MetadataModel) {
 
             with(binding) {
+                fun validateInputForMaxInt(newInput: String, previousValue: String): String {
+                    if (newInput.isNotEmpty()) {
+                        val longValue = newInput.toLongOrNull()
+
+                        if (longValue != null && longValue > Int.MAX_VALUE) { // retain old value
+                            listItemMetadataEditText.setText(previousValue)
+                            listItemMetadataEditText.setSelection(previousValue.length)
+                            listItemMetadataTextLayout.error = listItemMetadataTextLayout.context.getString(
+                                R.string.error_value_exceeds_max,
+                                Int.MAX_VALUE
+                            )
+                            return previousValue
+                        } else { // valid input
+                            listItemMetadataTextLayout.error = null
+                            return newInput
+                        }
+                    } else { // input is empty = valid
+                        listItemMetadataTextLayout.error = null
+                        return ""
+                    }
+                }
 
                 listItemMetadataEditText.setText(meta.value)
 
@@ -53,12 +74,25 @@ class MetadataAdapter(val imm: InputMethodManager?, val listener: MetadataManage
 
                 listItemMetadataTextLayout.hint = meta.property
 
+                var previousValidValue = meta.value
+
                 listItemMetadataEditText.addTextChangedListener {
 
-                    val intValue = listItemMetadataEditText.text.toString().toIntOrNull()
+                    val currentInput = listItemMetadataEditText.text.toString()
+
+                    // update the variable to hold validated input
+                    previousValidValue = validateInputForMaxInt(currentInput, previousValidValue)
+
+                    val intValue = previousValidValue.toIntOrNull()
 
                     listener.onMetadataUpdated(meta.property, intValue)
 
+                }
+
+                listItemMetadataEditText.setOnFocusChangeListener { _, hasFocus -> // clear any errors when focus shifts
+                    if (!hasFocus) {
+                        listItemMetadataTextLayout.error = null
+                    }
                 }
 
                 value = if (meta.value == "null") "" else meta.value

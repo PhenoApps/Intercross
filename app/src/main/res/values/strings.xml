@@ -44,6 +44,7 @@
     <string name="Fruits">Fruits</string>
     <string name="Flowers">Flowers</string>
     <string name="UpdateMetaData">Update Metadata</string>
+    <string name="error_value_exceeds_max">Value cannot exceed %d</string>
     <string name="navigate_to_wishlist">Navigate to wishlist</string>
     <string name="navigate_to_crossblock">Navigate to crossblock</string>
     <string name="Clear">Clear</string>
@@ -250,8 +251,11 @@
     <string name="dialog_metadata_default_hint">Default Value</string>
     <string name="dialog_metadata_title">New Property Creator</string>
     <string name="dialog_metadata_manager_title">Metadata Manager</string>
-    <string name="dialog_metadata_value_must_be_integer">Please enter an integer for the property value.</string>
+    <string name="dialog_metadata_value_must_be_integer_or_empty">Please enter an integer or leave empty for the property value.</string>
     <string name="dialog_metadata_property_must_not_be_empty">Please enter a property name.</string>
+    <string name="frag_manage_metadata_title">Manage Metadata</string>
+    <string name="frag_new_metadata_title">New Metadata</string>
+    <string name="frag_edit_metadata_title">Edit Metadata</string>
     <string name="summary">Summary</string>
     <string name="crossblock">Cross Block</string>
     <string name="wishlist">Wishes</string>
@@ -281,6 +285,10 @@
     <string name="wf_must_choose_at_least_one_parent">You must choose at least one parent.</string>
     <string name="wf_no_male_chosen_assuming_self_cross">No male chosen, assuming self cross.</string>
     <string name="literal_cross">cross</string>
+    <string name="metadata_fruits">fruits</string>
+    <string name="metadata_seeds">seeds</string>
+    <string name="metadata_flowers">flowers</string>
+    <string name="metadata_null_placeholder">null</string>
     <string name="frag_wf_toolbar_title">New Wishlist Item</string>
     <string name="frag_wf_male_choice_summary">Please choose a male to pair with %s</string>
     <string name="frag_wf_choose_type_summary">Please choose a wish type for %s and %s pair.</string>
@@ -622,7 +630,7 @@
     <string name="dialog_crosses_by_person_known_message">%d crosses collected by unknown persons</string>
     <string name="dialog_crosses_by_dates">Crosses by Dates</string>
     <string name="dialog_wish_progress_title">Wish Progress</string>
-    <string name="dialog_wish_progress_message">Minimum: %s\nMaximum: %s\nProgress: %s</string>
+    <string name="dialog_wish_progress_message">Wish Type: %s\nMinimum: %s\nMaximum: %s\nProgress: %s</string>
     <string name="crosses_toolbar_hide_completed">Hide completed wishlist items</string>
     <string name="crosses_toolbar_show_completed">Show completed wishlist items</string>
 

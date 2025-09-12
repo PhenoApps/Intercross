@@ -12,6 +12,7 @@
     app:cardCornerRadius="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
@@ -65,16 +66,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:constraint_referenced_ids="person_chip,date_chip,wish_progress_chip"
-            app:flow_horizontalGap="8dp"
-            app:flow_verticalGap="4dp"
-            app:flow_wrapMode="chain"
-            app:flow_horizontalStyle="packed"
+            app:constraint_referenced_ids="person_chip,date_chip"
             app:flow_horizontalAlign="start"
             app:flow_horizontalBias="0"
-            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            app:flow_horizontalGap="8dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/header_layout" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/person_chip"
@@ -91,14 +92,6 @@
             app:chipIcon="@drawable/ic_calendar"
             app:chipIconSize="24dp"
             tools:text="@string/cross_tracker_item_date"/>
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/wish_progress_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:chipIcon="@drawable/ic_wishlist_add"
-            app:chipIconSize="24dp"
-            tools:text="@string/cross_tracker_item_progress"/>
 
         <LinearLayout
             android:id="@+id/wish_progress_section"

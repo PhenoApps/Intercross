@@ -9,7 +9,7 @@ import org.phenoapps.intercross.interfaces.MetadataManager
 
 /**
  * A cancelable dialog for creating a new metadata property with a default value.
- * Metadata property must not be blank, while metadata default value must be an integer
+ * Metadata property must not be blank, while metadata default value can be an integer or null (empty string)
  * Updating the database with the new properties is handled by the MetadataManager implemented in the accompanied fragment.
  */
 class MetadataCreatorDialog(private val ctx: Context, private val listener: MetadataManager) : Dialog(ctx, R.style.Dialog) {
@@ -35,21 +35,18 @@ class MetadataCreatorDialog(private val ctx: Context, private val listener: Meta
 
         findViewById<Button>(R.id.dialog_metadata_value_submit_button).setOnClickListener {
 
-            if (property.text.isNotBlank()) {
+            val propertyText = property.text.toString()
+            val valueText = value.text.toString()
 
-                if (!property.text.contains(",")) {
-
-                    if (value.text.isNotBlank()) {
-
-                        listener.onMetadataCreated(property.text.toString(), value.text.toString())
-
-                        dismiss()
-
-                    } else Toast.makeText(ctx, R.string.dialog_metadata_value_must_be_integer, Toast.LENGTH_SHORT).show()
-
-                }else Toast.makeText(ctx, R.string.dialog_metadata_property_must_not_have_comma, Toast.LENGTH_SHORT).show()
-
-            } else Toast.makeText(ctx, R.string.dialog_metadata_property_must_not_be_empty, Toast.LENGTH_SHORT).show()
+            when {
+                propertyText.isBlank() -> Toast.makeText(ctx, R.string.dialog_metadata_property_must_not_be_empty, Toast.LENGTH_SHORT).show()
+                propertyText.contains(",") -> Toast.makeText(ctx, R.string.dialog_metadata_property_must_not_have_comma, Toast.LENGTH_SHORT).show()
+                valueText.isNotBlank() && valueText.toIntOrNull() == null -> Toast.makeText(ctx, R.string.dialog_metadata_value_must_be_integer_or_empty, Toast.LENGTH_SHORT).show()
+                else -> { // valueText was blank OR toInt() was a valid int
+                    listener.onMetadataCreated(propertyText, valueText)
+                    dismiss()
+                }
+            }
         }
     }
 }

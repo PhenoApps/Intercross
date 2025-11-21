@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- About dialog -->
-  <!-- Parents Input File Header's
+    <!-- About dialog -->
+    <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name
             must not match wishlist_header_type-->
-  <!-- Wishlist Input File Header's -->
-  <!-- Brapi strings -->
-  <!-- Brapi strings -->
-  <!-- Import dialog -->
-  <!-- Dialogs -->
-  <!-- Experiment -->
-  <!-- Profile -->
-  <!-- PREFERENCES -->
-  <!-- Profile Preferences-->
-  <!-- Behavior Preferences: Naming and Workflow preferences -->
-  <!-- Printing preferences -->
-  <!-- Database preferences -->
-  <!-- Storage Definer -->
-  <!--  Export  -->
-  <!-- Permissions  -->
-  <!-- Import  -->
-  <!-- AppIntroActivity -->
-  <!-- CrossesTrackerFragment -->
-  <!--  SearchFragment  -->
-  <!--  BottomNavBar  -->
+    <!-- Wishlist Input File Header's -->
+    <!-- Brapi strings -->
+    <!-- Brapi strings -->
+    <!-- Import dialog -->
+    <!-- Dialogs -->
+    <!-- Experiment -->
+    <!-- Profile -->
+    <!-- PREFERENCES -->
+    <!-- Profile Preferences-->
+    <!-- Behavior Preferences: Naming and Workflow preferences -->
+    <!-- Printing preferences -->
+    <!-- Database preferences -->
+    <!-- Storage Definer -->
+    <!--  Export  -->
+    <!-- Permissions  -->
+    <!-- Import  -->
+    <!-- AppIntroActivity -->
+    <!-- CrossesTrackerFragment -->
+    <!--  SearchFragment  -->
+    <!--  BottomNavBar  -->
 </resources>

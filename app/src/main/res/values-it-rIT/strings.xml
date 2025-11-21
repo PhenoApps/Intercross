@@ -291,7 +291,6 @@
     <string name="progress">Progress</string>
     <string name="minimum">Minimum</string>
     <string name="maximum">Maximum</string>
-    <string name="completed"></string>
     <string name="wishlist_complete_content_description">Wishlist complete</string>
     <string name="frag_parents_parents_not_deleted_reason">Some parents could not be deleted because they are parents to a cross.</string>
     <string name="frag_parents_create_parents_btn">Button to create parents.</string>

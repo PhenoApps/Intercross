@@ -5,8 +5,8 @@
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Latest](https://img.shields.io/github/v/release/phenoapps/intercross)](https://github.com/PhenoApps/Intercross/releases/latest) 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![Crowdin](https://badges.crowdin.net/intercross/localized.svg)](https://crowdin.com/project/intercross)
 <!-- ![Build Status](https://img.shields.io/github/actions/workflow/status/PhenoApps/Intercross/github-release.yml) -->
-<!-- [![Crowdin](https://badges.crowdin.net/intercross/localized.svg)](https://crowdin.com/project/intercross) -->
 
 Intercross tracks parental and cross IDs as crosses are made, who makes each cross, and where each cross is made. Cross labels can be printed to Zebra label printers and lists of crosses can be exported to local files. Intercross is part of the broader PhenoApps initiative, an effort to modernize plant breeding and genetics data collection and organization via by developing new strategies and tools for data capture.
 

@@ -1,13 +1,10 @@
 package org.phenoapps.intercross.fragments
 
-import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.SettingsRepository
@@ -189,10 +186,5 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
             num.toInt(),
             pad.toInt()
         )
-    }
-
-    fun onBackButtonPressed() {
-        settingsModel.insert(buildSettings())
-        findNavController().popBackStack()
     }
 }

@@ -1,8 +1,8 @@
 package org.phenoapps.intercross.activities
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -30,16 +30,22 @@ class DefineStorageActivity: AppCompatActivity() {
         setContentView(R.layout.activity_define_storage)
 
         setWindowInsetListener()
+
+        onBackPressedDispatcher.addCallback(backCallback)
     }
 
-    override fun onBackPressed() {
+    private val backCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (mBackButtonEnabled) {
+                val result =
+                    if (BaseDocumentTreeUtil.isEnabled(this@DefineStorageActivity))
+                        RESULT_OK
+                    else
+                        RESULT_CANCELED
 
-        if (mBackButtonEnabled) {
-            super.onBackPressed()
-            setResult(if (BaseDocumentTreeUtil.isEnabled(this)) {
-                Activity.RESULT_OK
-            } else Activity.RESULT_CANCELED)
-            finish()
+                setResult(result)
+                finish()
+            }
         }
     }
 

@@ -1,14 +1,15 @@
 package org.phenoapps.intercross.activities
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -22,7 +23,6 @@ import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
 import com.bytehamster.lib.preferencesearch.SearchPreferenceFragment
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult
@@ -67,7 +67,6 @@ import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.ActivityMainBinding
 import org.phenoapps.intercross.fragments.EventsFragmentDirections
 import org.phenoapps.intercross.fragments.ImportSampleDialogFragment
-import org.phenoapps.intercross.fragments.PatternFragment
 import org.phenoapps.intercross.fragments.preferences.PreferencesFragment
 import org.phenoapps.intercross.util.DateUtil
 import org.phenoapps.intercross.util.Dialogs
@@ -79,6 +78,8 @@ import org.phenoapps.intercross.util.VerifyPersonHelper
 import org.phenoapps.utils.BaseDocumentTreeUtil
 import java.io.File
 import javax.inject.Inject
+import androidx.core.content.edit
+import androidx.navigation.findNavController
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
@@ -366,7 +367,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         when (result.resultCode) {
-            Activity.RESULT_OK -> {
+            RESULT_OK -> {
 
                 val loadSampleWishlist = mPref.getBoolean(mKeyUtil.loadSampleWishlist, false)
                 val loadSampleParents = mPref.getBoolean(mKeyUtil.loadSampleParents, false)
@@ -374,7 +375,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 if (loadSampleParents || loadSampleWishlist) {
                     ImportSampleDialogFragment().show(supportFragmentManager, "ImportSampleDialogFragment")
                 }
-                mPref.edit().putBoolean(mKeyUtil.firstRunKey, false).apply()
+                mPref.edit { putBoolean(mKeyUtil.firstRunKey, false) }
             }
             else -> {
                 finish()
@@ -411,7 +412,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         when (result.resultCode) {
-            Activity.RESULT_CANCELED -> {
+            RESULT_CANCELED -> {
                 finish()
             }
         }
@@ -461,7 +462,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
         mSnackbar = SnackbarQueue()
 
-        mNavController = Navigation.findNavController(this@MainActivity, R.id.nav_fragment)
+        mNavController = findNavController(R.id.nav_fragment)
+
+        onBackPressedDispatcher.addCallback(this, backCallback)
 
         // toolbar for search screen
         supportFragmentManager.addOnBackStackChangedListener {
@@ -556,9 +559,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
                 when (which) {
 
-                    0 -> exportCrossesFile?.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
+                    0 -> exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
 
-                    1 -> exportDatabase?.launch("intercross.zip")
+                    1 -> exportDatabase.launch("intercross.zip")
 
                 }
 
@@ -613,7 +616,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
                     when (which) {
                         0 -> {
-                            exportCrossesFile?.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
+                            exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
                         }
                         else -> {
                             mNavController.navigate(R.id.global_action_to_brapi_export)
@@ -630,7 +633,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             onDismiss()
 
         } else {
-            exportCrossesFile?.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
+            exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
         }
     }
 
@@ -666,43 +669,36 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         }
     }
 
-    override fun onBackPressed() {
-        mNavController.currentDestination?.let { it ->
+    private val backCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            val destId = mNavController.currentDestination?.id
 
-            when (it.id) {
-
-                R.id.pattern_fragment -> {
-
-                    supportFragmentManager.primaryNavigationFragment?.let {
-                        (it.childFragmentManager.fragments[0] as PatternFragment).onBackButtonPressed()
-                        //(supportFragmentManager.primaryNavigationFragment as PatternFragment).onBackButtonPressed()
-                    }
+            if (destId == R.id.events_fragment) {
+                if (doubleBackToExitPressedOnce) { // exits the app
+                    finish()
+                    return
                 }
-                //go back to the last fragment instead of opening the navigation drawer
-                R.id.events_fragment -> {
 
-                    if (doubleBackToExitPressedOnce) {
+                doubleBackToExitPressedOnce = true
+                Toast.makeText(this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
 
-                        super.onBackPressed()
-
-                        return
-                    }
-
-                    this.doubleBackToExitPressedOnce = true
-
-                    Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
-
-                    Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-                }
-                else -> super.onBackPressed()
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { doubleBackToExitPressedOnce = false },
+                    2000
+                )
+                return
             }
+
+            // for any other fragment, just pop the fragment
+            val popped = mNavController.popBackStack()
+            if (!popped) finish()
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)

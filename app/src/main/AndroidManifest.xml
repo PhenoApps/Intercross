@@ -21,6 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- opt out of adaptive layouts -->
+        <property android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY" android:value="true" />
 <!--        <service android:name="org.phenoapps.services.BrapiAccountAuthenticatorService"-->
 <!--            android:exported="false">-->
 <!--            <intent-filter>-->

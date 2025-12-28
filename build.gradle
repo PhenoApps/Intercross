@@ -21,28 +21,28 @@ buildscript {
 
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:11.2.3"
 
-        classpath 'com.android.tools.build:gradle:8.9.0'
+        classpath 'com.android.tools.build:gradle:8.9.3'
 
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0'
 
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
         // Check that you have the Google Services Gradle plugin v4.3.2 or later
         // (if not, add it).
-        classpath 'com.google.gms:google-services:4.4.2'
+        classpath 'com.google.gms:google-services:4.4.4'
 
         // Add the Crashlytics Gradle plugin.
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.6'
 
 
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.51.1'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.56.2'
 
     }
 }
 
 plugins {
-    id 'com.google.dagger.hilt.android' version '2.51.1' apply false
-    id 'com.google.devtools.ksp' version "2.0.10-1.0.24" apply false
+    id 'com.google.dagger.hilt.android' version '2.56.2' apply false
+    id 'com.google.devtools.ksp' version "2.1.0-1.0.29" apply false
 }
 
 allprojects {

@@ -22,6 +22,7 @@ import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.isEnabled
 
 
 import dagger.hilt.android.AndroidEntryPoint
+import org.phenoapps.intercross.util.FileUtil
 import javax.inject.Inject
 @AndroidEntryPoint
 class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {

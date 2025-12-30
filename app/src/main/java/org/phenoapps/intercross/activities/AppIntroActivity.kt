@@ -8,11 +8,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro
 import com.github.appintro.AppIntroFragment.Companion.createInstance
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.fragments.app_intro.GallerySlideFragment
 import org.phenoapps.intercross.fragments.app_intro.OptionalSetupFragment
 import org.phenoapps.intercross.fragments.app_intro.RequiredSetupPolicyFragment
 
+@AndroidEntryPoint
 class AppIntroActivity :  AppIntro() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

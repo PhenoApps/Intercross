@@ -109,7 +109,8 @@ class RequiredSetupPolicyFragment : Fragment(), SlidePolicy {
             val wishlistImport = ctx.getString(R.string.dir_wishlist_import)
             val parentsImport = ctx.getString(R.string.dir_parents_import)
             val crossesExport = ctx.getString(R.string.dir_crosses_export)
-            directories = arrayOf(wishlistImport, parentsImport, crossesExport)
+            val databaseDir = ctx.getString(R.string.dir_database)
+            directories = arrayOf(wishlistImport, parentsImport, crossesExport, databaseDir)
         }
     }
 

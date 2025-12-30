@@ -92,14 +92,14 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
                 if (importDir != null && importDir.exists()) {
                     FileExploreDialogFragment().apply {
                         arguments = Bundle().apply {
-                            putString("dialogTitle", importDialogTitle)
-                            putString("path", importDir.uri.toString())
-                            putStringArray("include", arrayOf("csv", "xls", "xlsx"))
+                            putString(getString(R.string.dialog_title), importDialogTitle)
+                            putString(getString(R.string.path), importDir.uri.toString())
+                            putStringArray(getString(R.string.include), arrayOf("csv", "xls", "xlsx"))
                         }
                         setOnFileSelectedListener { uri ->
                             (it.activity as MainActivity).importFromUri(uri)
                         }
-                    }.show(it.parentFragmentManager, "FileExploreDialogFragment")
+                    }.show(it.parentFragmentManager, FileExploreDialogFragment.TAG)
                 }
             }
         } catch (e: Exception) {

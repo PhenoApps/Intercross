@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,11 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.evrencoskun.tableview.sort.SortState
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.adapters.TableViewAdapter
@@ -39,11 +40,13 @@ import org.phenoapps.intercross.databinding.FragmentWishlistBinding
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.KeyUtil
 import java.lang.IndexOutOfBoundsException
+import javax.inject.Inject
 
 /**
  * Summary Fragment is a recycler list of currenty crosses.
  * Users can navigate to and from cross block and wishlist fragments.
  */
+@AndroidEntryPoint
 class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layout.fragment_wishlist), ITableViewListener {
 
     private val eventsModel: EventListViewModel by viewModels {
@@ -62,13 +65,11 @@ class WishlistFragment : IntercrossBaseFragment<FragmentWishlistBinding>(R.layou
         MetadataViewModelFactory(MetadataRepository.getInstance(db.metadataDao()))
     }
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private var mIsSorting = false
 

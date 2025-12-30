@@ -8,7 +8,6 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,13 +21,19 @@ import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getStem
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.isEnabled
 
 
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+@AndroidEntryPoint
 class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
 
 
     private var defaultStorageLocation: Preference? = null
 
-    private val mPrefs by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
+    @Inject
+    lateinit var fileUtil: FileUtil
+
+    companion object {
+        private const val TAG = "DatabaseFragment"
     }
 
     override fun onResume() {

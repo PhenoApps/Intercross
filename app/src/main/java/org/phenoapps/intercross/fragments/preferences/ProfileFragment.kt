@@ -6,19 +6,10 @@ import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.preference.Preference
-import androidx.preference.PreferenceManager
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.util.KeyUtil
+import androidx.core.content.edit
 
 class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
-
-    private val mPrefs by lazy {
-        context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
-    }
-
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
 
     private var profilePerson: Preference? = null
     private var profileReset: Preference? = null
@@ -33,7 +24,7 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
 
-        mPrefs?.edit()?.putLong(mKeyUtil.lastTimeAskedKey, System.nanoTime())?.apply()
+        mPrefs.edit { putLong(mKeyUtil.lastTimeAskedKey, System.nanoTime()) }
 
         profilePerson = findPreference(mKeyUtil.profilePersonKey)
         profileReset = findPreference(mKeyUtil.profileResetKey)
@@ -71,8 +62,8 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
         val firstName = layout.findViewById<EditText>(R.id.firstName)
         val lastName = layout.findViewById<EditText>(R.id.lastName)
 
-        firstName.setText(mPrefs?.getString(mKeyUtil.personFirstNameKey, ""))
-        lastName.setText(mPrefs?.getString(mKeyUtil.personLastNameKey, ""))
+        firstName.setText(mPrefs.getString(mKeyUtil.personFirstNameKey, ""))
+        lastName.setText(mPrefs.getString(mKeyUtil.personLastNameKey, ""))
 
         firstName.setSelectAllOnFocus(true)
         lastName.setSelectAllOnFocus(true)
@@ -83,11 +74,11 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
             .setView(layout)
             .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ -> dialog.dismiss() }
             .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
-                val e = mPrefs?.edit()
-                e?.putString(mKeyUtil.personFirstNameKey, firstName.text.toString())
-                e?.putString(mKeyUtil.personLastNameKey, lastName.text.toString())
+                mPrefs.edit {
+                    putString(mKeyUtil.personFirstNameKey, firstName.text.toString())
+                    putString(mKeyUtil.personLastNameKey, lastName.text.toString())
+                }
 
-                e?.apply()
                 updatePersonSummary()
             }
 
@@ -106,10 +97,10 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
             .setNegativeButton(getString(R.string.dialog_no)) { dialog, _ -> dialog.dismiss() }
             .setPositiveButton(getString(R.string.dialog_yes)) { dialog, _ ->
                 dialog.dismiss()
-                val ed = mPrefs!!.edit()
-                ed.putString(mKeyUtil.personFirstNameKey, "")
-                ed.putString(mKeyUtil.personLastNameKey, "")
-                ed.apply()
+                mPrefs.edit {
+                    putString(mKeyUtil.personFirstNameKey, "")
+                    putString(mKeyUtil.personLastNameKey, "")
+                }
                 updatePersonSummary()
             }
 
@@ -123,11 +114,11 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
     private fun personSummary(): String {
         var tagName = ""
 
-        val firstNameLength = mPrefs?.getString(mKeyUtil.personFirstNameKey, "")?.length ?: 0
-        val lastNameLength = mPrefs?.getString(mKeyUtil.personLastNameKey, "")?.length ?: 0
+        val firstNameLength = mPrefs.getString(mKeyUtil.personFirstNameKey, "")?.length ?: 0
+        val lastNameLength = mPrefs.getString(mKeyUtil.personLastNameKey, "")?.length ?: 0
 
         if ((firstNameLength > 0) or (lastNameLength > 0)) {
-            tagName += mPrefs?.getString(mKeyUtil.personFirstNameKey, "") + " " + mPrefs?.getString(mKeyUtil.personLastNameKey, "")
+            tagName += mPrefs.getString(mKeyUtil.personFirstNameKey, "") + " " + mPrefs.getString(mKeyUtil.personLastNameKey, "")
         }
         return tagName
     }

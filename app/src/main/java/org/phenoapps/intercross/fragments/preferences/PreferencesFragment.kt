@@ -18,10 +18,6 @@ import org.phenoapps.intercross.util.KeyUtil
  */
 class PreferencesFragment : BasePreferenceFragment(R.xml.preferences) {
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
-
     private var searchPreference: SearchPreference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

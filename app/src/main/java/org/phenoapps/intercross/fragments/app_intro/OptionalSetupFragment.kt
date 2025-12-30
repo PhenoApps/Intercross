@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.views.OptionalSetupItem
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OptionalSetupFragment : Fragment(){
     private var slideTitle: String? = null
     private var slideSummary: String? = null
@@ -20,11 +22,11 @@ class OptionalSetupFragment : Fragment(){
     private var loadSampleParents: OptionalSetupItem? = null
     private var loadSampleWishlist: OptionalSetupItem? = null
 
-    private var prefs: SharedPreferences? = null
+    @Inject
+    lateinit var prefs: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,8 +36,6 @@ class OptionalSetupFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
 
         val slideTitle = view.findViewById<TextView>(R.id.slide_title)
         val slideSummary = view.findViewById<TextView>(R.id.slide_summary)

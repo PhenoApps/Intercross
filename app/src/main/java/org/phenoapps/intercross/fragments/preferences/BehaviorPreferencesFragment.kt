@@ -34,15 +34,10 @@ import org.phenoapps.intercross.data.viewmodels.factory.SettingsViewModelFactory
 import org.phenoapps.intercross.dialogs.MetadataCreatorDialog
 import org.phenoapps.intercross.interfaces.MetadataManager
 import org.phenoapps.intercross.util.Dialogs
-import org.phenoapps.intercross.util.KeyUtil
 
 class BehaviorPreferencesFragment : BasePreferenceFragment(R.xml.behavior_preferences), MetadataManager, CoroutineScope by MainScope() {
 
     private val TAG = "BehaviorPreferences"
-
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
 
     private val settingsModel: SettingsViewModel by viewModels {
         SettingsViewModelFactory(SettingsRepository
@@ -122,7 +117,7 @@ class BehaviorPreferencesFragment : BasePreferenceFragment(R.xml.behavior_prefer
     private fun setupMetadataPreferences() {
         try {
             findPreference<SwitchPreference>(mKeyUtil.collectAdditionalInfoKey)?.setOnPreferenceChangeListener { _, newValue ->
-                val isCollectEnabled = newValue as? Boolean ?: false
+                val isCollectEnabled = newValue as? Boolean == true
                 metadataPref?.isVisible = isCollectEnabled
                 defaultsPref?.isVisible = isCollectEnabled
                 true

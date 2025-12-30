@@ -1,6 +1,7 @@
 package org.phenoapps.intercross.fragments
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Handler
 import androidx.activity.result.contract.ActivityResultContracts
@@ -8,11 +9,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +34,9 @@ import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.layout.fragment_barcode_scan) {
 
     private companion object {
@@ -89,13 +92,11 @@ class BarcodeScanFragment: IntercrossBaseFragment<FragmentBarcodeScanBinding>(R.
 
     private var lastText: String? = null
 
-    private val mPrefs by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPrefs: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private val checkCamPermissions = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
 

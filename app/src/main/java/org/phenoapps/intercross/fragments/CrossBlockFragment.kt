@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -9,6 +10,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.adapters.CrossBlockTableViewAdapter
@@ -25,8 +27,9 @@ import org.phenoapps.intercross.interfaces.EventClickListener
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import org.phenoapps.intercross.util.WishProgressColorUtil
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.layout.fragment_cross_block),
     ITableViewListener,
     EventClickListener {
@@ -48,13 +51,12 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
 
     private var mEvents: List<Event> = ArrayList()
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
+
     private val mShowChildrenDialogUtil by lazy {
         ShowChildrenDialogUtil(
             this,

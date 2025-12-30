@@ -25,6 +25,7 @@ import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.isEnabled
 import androidx.core.content.edit
 import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
+import org.phenoapps.intercross.fragments.ImportSampleDialogFragment
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import javax.inject.Inject
@@ -97,6 +98,15 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
             this?.let {
                 setOnPreferenceClickListener {
                     showDatabaseExportDialog()
+
+                    true
+                }
+            }
+        }
+        with (findPreference<Preference>(getString(R.string.key_pref_db_reload))) {
+            this?.let {
+                setOnPreferenceClickListener {
+                    showDatabaseReloadDialog()
 
                     true
                 }
@@ -192,7 +202,7 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
                 .setNegativeButton(getString(R.string.dialog_no)) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(getString(R.string.dialog_yes)) { dialog, _ ->
                     runCatching {
-                        resetDatabase(ctx) { resetStatus ->
+                        resetDatabase(ctx, true) { resetStatus ->
                             dialog.dismiss()
                             if (resetStatus) {
                                 Toast.makeText(ctx, R.string.database_reset_success, Toast.LENGTH_SHORT).show()
@@ -209,7 +219,10 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
 
     }
 
-    private fun resetDatabase(context: Context, successCallBack: (Boolean) -> Unit) {
+    /**
+     * [clearPrefs] decides whether all preferences need to be cleared (for reset db)
+     */
+    private fun resetDatabase(context: Context, clearPrefs: Boolean, successCallBack: (Boolean) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
                 withContext(Dispatchers.IO) {
@@ -228,7 +241,7 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
                     val db = IntercrossDatabase.getInstance(context)
                     db.clearAllTables()
 
-                    mPrefs.edit { clear() }
+                    if (clearPrefs) mPrefs.edit { clear() }
                 }
             }.onFailure { e ->
                 Log.e(TAG, "Error resetting the database: ${e.message}", e)
@@ -265,6 +278,40 @@ class DatabaseFragment : BasePreferenceFragment(R.xml.database_preferences) {
                 successCallBack(false)
             }.onSuccess {
                 successCallBack(true)
+            }
+        }
+    }
+
+    private fun showDatabaseReloadDialog() {
+        context?.let { ctx ->
+            AlertDialog.Builder(ctx)
+                .setTitle(getString(R.string.dialog_warning))
+                .setMessage(getString(R.string.database_reload_warning))
+                .setNegativeButton(getString(R.string.dialog_no)) { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.dialog_yes)) { dialog, _ ->
+                    dialog.dismiss()
+                    reloadSampleDatabase(ctx)
+                }
+                .create()
+                .show()
+        }
+    }
+
+    private fun reloadSampleDatabase(context: Context) {
+        resetDatabase(context, false) { resetStatus ->
+            if (resetStatus) {
+                // set the flags to true to import
+                mPrefs.edit {
+                    putBoolean(mKeyUtil.loadSampleWishlist, true)
+                    putBoolean(mKeyUtil.loadSampleParents, true)
+                }
+
+                ImportSampleDialogFragment().show(
+                    parentFragmentManager,
+                    ImportSampleDialogFragment.TAG
+                )
+            } else {
+                Toast.makeText(context, R.string.database_reload_error, Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -12,6 +12,7 @@ import org.phenoapps.intercross.R
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.views.OptionalSetupItem
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class OptionalSetupFragment : Fragment(){
@@ -31,7 +32,7 @@ class OptionalSetupFragment : Fragment(){
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.app_intro_optional_setup_slide, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +77,7 @@ class OptionalSetupFragment : Fragment(){
         optionalSetupItemView.let {
             it.setCheckbox(!it.isChecked())
 
-            prefs?.edit()?.putBoolean(prefKey, it.isChecked())?.apply()
+            prefs.edit { putBoolean(prefKey, it.isChecked()) }
         }
     }
 
@@ -84,7 +85,7 @@ class OptionalSetupFragment : Fragment(){
         fun newInstance(
             slideTitle: String,
             slideSummary: String,
-            slideBackgroundColor: Int
+            slideBackgroundColor: Int,
         ): OptionalSetupFragment {
             val fragment = OptionalSetupFragment()
             fragment.slideTitle = slideTitle

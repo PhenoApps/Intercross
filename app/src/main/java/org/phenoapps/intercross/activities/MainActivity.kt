@@ -373,7 +373,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 val loadSampleParents = mPref.getBoolean(mKeyUtil.loadSampleParents, false)
 
                 if (loadSampleParents || loadSampleWishlist) {
-                    ImportSampleDialogFragment().show(supportFragmentManager, "ImportSampleDialogFragment")
+                    ImportSampleDialogFragment().show(supportFragmentManager, ImportSampleDialogFragment.TAG)
                 }
                 mPref.edit { putBoolean(mKeyUtil.firstRunKey, false) }
             }

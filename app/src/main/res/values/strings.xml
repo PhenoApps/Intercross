@@ -531,6 +531,8 @@
     <string name="prefs_database_import_summary">Import a new database file that has been saved previously.</string>
     <string name="prefs_database_export_title">Export Database</string>
     <string name="prefs_database_export_summary">This will prompt the user to export the local database.</string>
+    <string name="prefs_database_reload_title">Reload Database</string>
+    <string name="prefs_database_reload_summary">This will delete all data stored in the app and load sample data (wishlist and parents).</string>
     <string name="pref_database_title">Database</string>
 
     <string name="database_file_name_blank_error">File name cannot be blank</string>
@@ -547,7 +549,8 @@
     <string name="database_reset_warning1">All data will be deleted. Are you sure you want to reset the database?</string>
     <string name="database_reset_warning2">A database reset cannot be reversed. The app will quit after clearing the database. Are you really sure you want to continue?</string>
     <string name="database_reset_message">Database has been deleted</string>
-
+    <string name="database_reload_warning">All data will be deleted and sample data will be loaded. Are you sure you want to reload the database?</string>
+    <string name="database_reload_error">Error reloading sample database</string>
 
     <string name="ok">OK</string>
     <string name="person_and_experiment_saved">Person and experiment names saved</string>

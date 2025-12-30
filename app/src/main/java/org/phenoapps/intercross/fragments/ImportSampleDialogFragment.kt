@@ -2,11 +2,11 @@ package org.phenoapps.intercross.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,9 +17,17 @@ import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.utils.BaseDocumentTreeUtil
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class ImportSampleDialogFragment : DialogFragment() {
+
+    companion object {
+        const val TAG = "ImportSampleDialogFragment"
+    }
+
+    @Inject
+    lateinit var mPref: SharedPreferences
 
     @Inject
     lateinit var mKeyUtil: KeyUtil
@@ -40,9 +48,8 @@ class ImportSampleDialogFragment : DialogFragment() {
     }
 
     private fun startImportSample() {
-        val mPref = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
-        val loadSampleWishlist = mPref?.getBoolean(mKeyUtil.loadSampleWishlist, false)
-        val loadSampleParents = mPref?.getBoolean(mKeyUtil.loadSampleParents, false)
+        val loadSampleWishlist = mPref.getBoolean(mKeyUtil.loadSampleWishlist, false)
+        val loadSampleParents = mPref.getBoolean(mKeyUtil.loadSampleParents, false)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -93,6 +100,12 @@ class ImportSampleDialogFragment : DialogFragment() {
                             .show()
                         dismiss()
                     }
+                }
+            } finally {
+                // reset the preferences to false
+                mPref.edit {
+                    putBoolean(mKeyUtil.loadSampleWishlist, false)
+                    putBoolean(mKeyUtil.loadSampleParents, false)
                 }
             }
         }

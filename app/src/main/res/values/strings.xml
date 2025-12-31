@@ -129,6 +129,8 @@
     <string name="choose_an_export_file_path">Choose an export file path.</string>
     <string name="exported_file_name">Exported file name.</string>
     <string name="default_crosses_export_file_name">crosses</string>
+    <string name="default_database_export_file_name">intercross</string>
+    <string name="default_database_backup_export_file_name">intercross_backup</string>
     <string name="ask_for_new_name">Enter a new file name</string>
     <string name="crosses_export_mom_header">femaleObsUnitDbId</string>
     <string name="crosses_export_dad_header">maleObsUnitDbId</string>
@@ -453,6 +455,16 @@
     <string name="error_no_bluetooth_permission">Bluetooth permission is required to print.</string>
     <string name="search_fragment_label">Search</string>
 
+    <!-- File Explore Dialog -->
+    <string name="path">path</string>
+    <string name="include">include</string>
+    <string name="exclude">exclude</string>
+    <string name="dialog_title">dialog_title</string>
+
+    <string name="error">Error</string>
+    <string name="error_opening_path_message">There was an error opening the file location.</string>
+
+
     <!-- Dialogs -->
     <string name="dialog_file_name_hint">File Name</string>
 
@@ -519,12 +531,26 @@
     <string name="prefs_database_import_summary">Import a new database file that has been saved previously.</string>
     <string name="prefs_database_export_title">Export Database</string>
     <string name="prefs_database_export_summary">This will prompt the user to export the local database.</string>
+    <string name="prefs_database_reload_title">Reload Database</string>
+    <string name="prefs_database_reload_summary">This will delete all data stored in the app and load sample data (wishlist and parents).</string>
     <string name="pref_database_title">Database</string>
+
+    <string name="database_file_name_blank_error">File name cannot be blank</string>
+    <string name="import_database_title">Import Database</string>
+
+    <string name="database_export_title">Export Database</string>
+    <string name="database_reset_success">Database successfully reset</string>
+    <string name="database_reset_error">Error resetting the database</string>
+    <string name="database_import_success">Database successfully imported</string>
+    <string name="database_import_error">Error importing database</string>
+    <string name="database_export_success">Database successfully exported</string>
+    <string name="database_export_error">Error exporting the database</string>
 
     <string name="database_reset_warning1">All data will be deleted. Are you sure you want to reset the database?</string>
     <string name="database_reset_warning2">A database reset cannot be reversed. The app will quit after clearing the database. Are you really sure you want to continue?</string>
     <string name="database_reset_message">Database has been deleted</string>
-
+    <string name="database_reload_warning">All data will be deleted and sample data will be loaded. Are you sure you want to reload the database?</string>
+    <string name="database_reload_error">Error reloading sample database</string>
 
     <string name="ok">OK</string>
     <string name="person_and_experiment_saved">Person and experiment names saved</string>

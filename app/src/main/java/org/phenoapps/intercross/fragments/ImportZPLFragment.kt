@@ -1,22 +1,23 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.SharedPreferences
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.databinding.FragmentImportZplBinding
 import org.phenoapps.intercross.util.KeyUtil
 import java.io.InputStreamReader
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.layout.fragment_import_zpl) {
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private val importZplFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
 

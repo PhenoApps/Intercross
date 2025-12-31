@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.SharedPreferences
 import org.phenoapps.intercross.R
 import android.os.Bundle
 import android.text.Editable
@@ -7,8 +8,8 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -25,7 +26,9 @@ import org.phenoapps.intercross.databinding.FragmentSearchBinding
 import org.phenoapps.intercross.interfaces.OnSimpleItemClicked
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.observeOnce
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchFragment : IntercrossBaseFragment<FragmentSearchBinding>(R.layout.fragment_search),
     CoroutineScope by MainScope(), OnSimpleItemClicked {
 
@@ -40,13 +43,11 @@ class SearchFragment : IntercrossBaseFragment<FragmentSearchBinding>(R.layout.fr
         EventsListViewModelFactory(EventsRepository.getInstance(db.eventsDao()))
     }
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private fun FragmentSearchBinding.startSearch(query: String) {
 

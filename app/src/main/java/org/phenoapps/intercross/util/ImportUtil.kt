@@ -2,11 +2,11 @@ package org.phenoapps.intercross.util
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
@@ -14,16 +14,15 @@ import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import javax.inject.Inject
 
 class ImportUtil (private val context: Context, private val importDirectory: Int, private val importDialogTitle: String) {
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(context)
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     fun showImportDialog(fragment: Fragment) {
         var importArray: Array<String?> = arrayOf(
@@ -93,14 +92,14 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
                 if (importDir != null && importDir.exists()) {
                     FileExploreDialogFragment().apply {
                         arguments = Bundle().apply {
-                            putString("dialogTitle", importDialogTitle)
-                            putString("path", importDir.uri.toString())
-                            putStringArray("include", arrayOf("csv", "xls", "xlsx"))
+                            putString(getString(R.string.dialog_title), importDialogTitle)
+                            putString(getString(R.string.path), importDir.uri.toString())
+                            putStringArray(getString(R.string.include), arrayOf("csv", "xls", "xlsx"))
                         }
                         setOnFileSelectedListener { uri ->
                             (it.activity as MainActivity).importFromUri(uri)
                         }
-                    }.show(it.parentFragmentManager, "FileExploreDialogFragment")
+                    }.show(it.parentFragmentManager, FileExploreDialogFragment.TAG)
                 }
             }
         } catch (e: Exception) {

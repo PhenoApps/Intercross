@@ -16,17 +16,23 @@ import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.IntercrossDatabase
 import org.phenoapps.intercross.data.models.*
+import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import java.io.*
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class FileUtil(private val ctx: Context) {
+@Singleton
+class FileUtil @Inject constructor(
+    @ApplicationContext private val ctx: Context
+) {
 
     /**
      * Parent's input file header fields. These are queried from the strings XML.
@@ -440,62 +446,41 @@ class FileUtil(private val ctx: Context) {
     fun ringNotification(success: Boolean) {
 
         if (mPref.getBoolean(mKeyUtil.soundNotificationKey, false)) {
-            try {
-                when (success) {
-                    true -> {
-                        val chimePlayer = MediaPlayer.create(ctx, ctx.resources.getIdentifier("plonk", "raw", ctx.packageName))
-                        chimePlayer.start()
-                        chimePlayer.setOnCompletionListener {
-                            chimePlayer.release()
-                        }
-                    }
-                    false -> {
-                        val chimePlayer = MediaPlayer.create(ctx, ctx.resources.getIdentifier("error", "raw", ctx.packageName))
-                        chimePlayer.start()
-                        chimePlayer.setOnCompletionListener {
-                            chimePlayer.release()
-                        }
-                    }
-                }
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-            }
+            val mediaPlayer = MediaPlayer.create(ctx, if (success) R.raw.plonk else R.raw.error)
+            mediaPlayer.start()
+            mediaPlayer.setOnCompletionListener { it.release() }
         }
     }
 
     fun exportCrossesToFile(uri: Uri, crosses: List<Event>, parents: List<Parent>, groups: List<PollenGroup>,
                             metadata: List<Meta>, metaValues: List<MetadataValues>) {
 
-        val newLine: ByteArray = System.getProperty("line.separator")?.toByteArray() ?: "\n".toByteArray()
+        val newLine: ByteArray = System.lineSeparator().toByteArray()
 
         try {
 
-            ctx.contentResolver.openOutputStream(uri).apply {
+            ctx.contentResolver.openOutputStream(uri)?.use { outputStream ->
 
                 if (crosses.isNotEmpty()) {
-
-                    this?.let {
 
                         val properties = if (metadata.isNotEmpty()) metadata.joinToString(",", ",") { it.property }
                                          else ""
                         val propMap = metadata.map { it.id to it.property }
 
                         //add metadata properties as headers to the export file
-                        write((eventModelHeaderString + properties).toByteArray())
+                        outputStream.write((eventModelHeaderString + properties).toByteArray())
 
-                        write(newLine)
+                        outputStream.write(newLine)
 
-                        crosses.forEachIndexed { index, cross ->
+                        crosses.forEach { cross ->
 
                             //print either the actual saved values for each property or its default value
-                            val values = ArrayList<String>()
-                            for (keyVal in propMap) {
-                                val actuals = metaValues.filter { it.eid == cross.id?.toInt()
-                                        && keyVal.first?.toInt() == it.metaId }
-                                if (actuals.isNotEmpty()) {
-                                    values.add(actuals.first().value.toString())
-                                } else values.add(metadata
-                                    .find { it.property == keyVal.second }?.defaultValue?.toString() ?: "0")
+                            val values = propMap.map { (id, property) ->
+                                metaValues.find { // consider using find instead of firstOrNull for clarity
+                                    it.eid == cross.id?.toInt() && it.metaId == id?.toInt()
+                                }?.value?.toString()
+                                    ?: metadata.find { it.property == property }?.defaultValue?.toString()
+                                    ?: "0"
                             }
 
                             val valueString = if (values.isNotEmpty()) values.joinToString(",", ",") { it }
@@ -507,31 +492,26 @@ class FileUtil(private val ctx: Context) {
                                 var groupName = groups.find { g -> g.codeId == cross.maleObsUnitDbId }?.name
 
                                 val males = groups.filter { g -> g.codeId == cross.maleObsUnitDbId }
-                                    .map { g ->
-                                        parents.find { c -> c.id == g.maleId }.let {
-                                            it?.codeId
-                                        }
+                                    .mapNotNull { g ->
+                                        parents.find { c -> c.id == g.maleId }?.codeId
                                     }.joinToString(";", "{", "}")
 
-                                write((cross.toPollenGroupString(males, groupName) + valueString).toByteArray())
+                                outputStream.write((cross.toPollenGroupString(males, groupName) + valueString).toByteArray())
 
-                                write(newLine)
+                                outputStream.write(newLine)
 
                             } else {
 
-                                write((cross.toString() + valueString).toByteArray())
+                                outputStream.write((cross.toString() + valueString).toByteArray())
 
-                                write(newLine)
+                                outputStream.write(newLine)
 
                             }
                         }
-
-                        close()
                     }
-                }
             }
 
-        } catch (exception: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
 
             Log.e("IntFileNotFound", "Chosen uri path was not found: $uri")
 
@@ -591,7 +571,7 @@ class FileUtil(private val ctx: Context) {
                     }
                     uri.isDownloadsDocument -> {
                         val contentUri = ContentUris.withAppendedId(
-                                Uri.parse("content://downloads/public_downloads"),
+                                "content://downloads/public_downloads".toUri(),
                                 docId.toLong()
                         )
                         return getDataColumn(contentUri, null, null)
@@ -654,7 +634,9 @@ class FileUtil(private val ctx: Context) {
 //        }
 
     /**
-     * Opens an input stream from the user-selected uri and copies it to the app specific database.
+     * The user can pick a zip file from storage/database directory
+     *
+     * Opens an input stream from the user-selected file uri and copies it to the app specific database.
      */
     fun importDatabase(uri: Uri) {
 
@@ -691,8 +673,16 @@ class FileUtil(private val ctx: Context) {
      *
      * Also backup /data/data/org.phenoapps.intercross/shared_prefs/org.phenoapps.intercross_preferences.xml
      * and compress the .db and .xml files to a zip
+     *
+     * the zip will be saved to storage/database directory with [fileName]
      */
-    fun exportDatabase(uri: Uri) {
+    fun exportDatabase(fileName: String) {
+
+        val databaseDir = getDirectory(ctx, R.string.dir_database)
+            ?: throw IOException("Cannot access database directory")
+
+        val zipFile = databaseDir.createFile("*/*", "$fileName.zip")
+            ?: throw IOException("Cannot create a create zip file")
 
         //create parent directory for storing intercross.db and shared_prefs.xml
         //this directory is temporary and will be used to create a zip file
@@ -702,7 +692,7 @@ class FileUtil(private val ctx: Context) {
 
                 val stream = ctx.getDatabasePath(IntercrossDatabase.DATABASE_NAME).inputStream()
 
-                val zipOutput = ctx.contentResolver.openOutputStream(uri)
+                val zipOutput = ctx.contentResolver.openOutputStream(zipFile.uri)
 
                 val dir = File(parent, "backup")
 
@@ -807,13 +797,13 @@ class FileUtil(private val ctx: Context) {
 
                         "preferences_backup" -> {
 
-                            val prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
+                            val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
 
                             ObjectInputStream(zin).use { objectStream ->
 
                                 val prefMap = objectStream.readObject() as Map<*, *>
 
-                                with (prefs.edit()) {
+                                with(prefs.edit()) {
 
                                     clear()
 

@@ -1,6 +1,7 @@
 package org.phenoapps.intercross.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.MetadataAdapter
@@ -47,7 +49,9 @@ import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.observeOnce
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EventDetailFragment:
     IntercrossBaseFragment<FragmentEventDetailBinding>(R.layout.fragment_event_detail),
     MetadataManager {
@@ -84,13 +88,11 @@ class EventDetailFragment:
         WishlistViewModelFactory(WishlistRepository.getInstance(db.wishlistDao()))
     }
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private lateinit var eventDetailViewModel: EventDetailViewModel
 

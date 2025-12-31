@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -43,10 +44,12 @@ import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import androidx.core.content.edit
+import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.viewmodels.ParentsListViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
+import javax.inject.Inject
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -54,6 +57,7 @@ import kotlin.collections.component2
  * Summary Fragment is a recycler list of current crosses.
  * Users can navigate to and from cross block and wishlist fragments.
  */
+@AndroidEntryPoint
 class CrossTrackerFragment :
     IntercrossBaseFragment<FragmentCrossTrackerBinding>(R.layout.fragment_cross_tracker),
     CrossController,
@@ -90,13 +94,11 @@ class CrossTrackerFragment :
     private var mParents: List<Parent> = emptyList()
     private var parentLookup: Map<String, String> = emptyMap()
 
-    private val mPref by lazy {
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-    }
+    @Inject
+    lateinit var mPref: SharedPreferences
 
-    private val mKeyUtil by lazy {
-        KeyUtil(context)
-    }
+    @Inject
+    lateinit var mKeyUtil: KeyUtil
 
     private val mShowChildrenDialogUtil by lazy {
         ShowChildrenDialogUtil(

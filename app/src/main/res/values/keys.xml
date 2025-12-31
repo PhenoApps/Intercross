@@ -76,6 +76,7 @@
     <string name="key_pref_db_reset">&package;DATABASE_RESET</string>
     <string name="key_pref_db_import">&package;DATABASE_IMPORT</string>
     <string name="key_pref_db_export">&package;DATABASE_EXPORT</string>
+    <string name="key_pref_db_reload">&package;DATABASE_RELOAD</string>
 
     <!-- About preference keys -->
     <string name="key_pref_about">&package;ABOUT</string>

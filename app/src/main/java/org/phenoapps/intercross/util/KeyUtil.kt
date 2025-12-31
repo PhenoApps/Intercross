@@ -1,7 +1,9 @@
 package org.phenoapps.intercross.util
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.phenoapps.intercross.R
+import javax.inject.Inject
 import kotlin.properties.ReadOnlyProperty
 
 
@@ -9,7 +11,9 @@ import kotlin.properties.ReadOnlyProperty
  * Utility class for easily accessing preference keys.
  * Converts keys.xml into string fields to be accessed within a context.
  */
-class KeyUtil(private val ctx: Context?) {
+class KeyUtil @Inject constructor(
+    @ApplicationContext private val ctx: Context,
+) {
 
     //explicitly state phenolib utils
     val brapiKeys by lazy {
@@ -17,7 +21,7 @@ class KeyUtil(private val ctx: Context?) {
     }
 
     private fun key(id: Int): ReadOnlyProperty<Any?, String> =
-        ReadOnlyProperty { _, _ -> ctx?.getString(id)!! }
+        ReadOnlyProperty { _, _ -> ctx.getString(id) }
 
     val firstRunKey by key(R.string.key_first_run)
     val loadSampleParents by key(R.string.key_load_sample_parents)

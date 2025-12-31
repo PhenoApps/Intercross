@@ -20,6 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.IntercrossDatabase
 import org.phenoapps.intercross.data.models.*
+import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import java.io.*
 import java.util.*
 import java.util.zip.ZipEntry
@@ -633,7 +634,9 @@ class FileUtil @Inject constructor(
 //        }
 
     /**
-     * Opens an input stream from the user-selected uri and copies it to the app specific database.
+     * The user can pick a zip file from storage/database directory
+     *
+     * Opens an input stream from the user-selected file uri and copies it to the app specific database.
      */
     fun importDatabase(uri: Uri) {
 
@@ -670,8 +673,16 @@ class FileUtil @Inject constructor(
      *
      * Also backup /data/data/org.phenoapps.intercross/shared_prefs/org.phenoapps.intercross_preferences.xml
      * and compress the .db and .xml files to a zip
+     *
+     * the zip will be saved to storage/database directory with [fileName]
      */
-    fun exportDatabase(uri: Uri) {
+    fun exportDatabase(fileName: String) {
+
+        val databaseDir = getDirectory(ctx, R.string.dir_database)
+            ?: throw IOException("Cannot access database directory")
+
+        val zipFile = databaseDir.createFile("*/*", "$fileName.zip")
+            ?: throw IOException("Cannot create a create zip file")
 
         //create parent directory for storing intercross.db and shared_prefs.xml
         //this directory is temporary and will be used to create a zip file
@@ -681,7 +692,7 @@ class FileUtil @Inject constructor(
 
                 val stream = ctx.getDatabasePath(IntercrossDatabase.DATABASE_NAME).inputStream()
 
-                val zipOutput = ctx.contentResolver.openOutputStream(uri)
+                val zipOutput = ctx.contentResolver.openOutputStream(zipFile.uri)
 
                 val dir = File(parent, "backup")
 
@@ -792,7 +803,7 @@ class FileUtil @Inject constructor(
 
                                 val prefMap = objectStream.readObject() as Map<*, *>
 
-                                with (prefs.edit()) {
+                                with(prefs.edit()) {
 
                                     clear()
 

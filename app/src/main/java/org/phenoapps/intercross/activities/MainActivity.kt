@@ -151,35 +151,35 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         }
     }
 
-    /**
-     * User selects a new uri document with CreateDocument(), default name is intercross.db
-     * which can be changed where this is launched.
-     */
-    val exportDatabase = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+    // /**
+    //  * User selects a new uri document with CreateDocument(), default name is intercross.db
+    //  * which can be changed where this is launched.
+    //  */
+    // val exportDatabase = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+    //
+    //     uri?.let { x ->
+    //
+    //         FileUtil(this).exportDatabase(x)
+    //
+    //     }
+    // }
 
-        uri?.let { x ->
-
-            FileUtil(this).exportDatabase(x)
-
-        }
-    }
-
-    /**
-     * Used in main activity to import a user-chosen database.
-     * User selects a uri from a GetContent() call which is passed to FileUtil to copy streams.
-     * Finally, the app is recreated to use the new database.
-     */
-    val importDatabase = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-
-        uri?.let { x ->
-
-            FileUtil(this).importDatabase(x)
-
-            finish()
-
-            startActivity(intent)
-        }
-    }
+    // /**
+    //  * Used in main activity to import a user-chosen database.
+    //  * User selects a uri from a GetContent() call which is passed to FileUtil to copy streams.
+    //  * Finally, the app is recreated to use the new database.
+    //  */
+    // val importDatabase = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    //
+    //     uri?.let { x ->
+    //
+    //         FileUtil(this).importDatabase(x)
+    //
+    //         finish()
+    //
+    //         startActivity(intent)
+    //     }
+    // }
 
     /**
      * Ask the user to either drop table before import or append to the current table.
@@ -373,7 +373,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 val loadSampleParents = mPref.getBoolean(mKeyUtil.loadSampleParents, false)
 
                 if (loadSampleParents || loadSampleWishlist) {
-                    ImportSampleDialogFragment().show(supportFragmentManager, "ImportSampleDialogFragment")
+                    ImportSampleDialogFragment().show(supportFragmentManager, ImportSampleDialogFragment.TAG)
                 }
                 mPref.edit { putBoolean(mKeyUtil.firstRunKey, false) }
             }
@@ -561,7 +561,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
                     0 -> exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
 
-                    1 -> exportDatabase.launch("intercross.zip")
+                    // 1 -> exportDatabase.launch("intercross.zip")
 
                 }
 

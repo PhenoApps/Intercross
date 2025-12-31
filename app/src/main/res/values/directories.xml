@@ -4,5 +4,6 @@
     <string name="dir_wishlist_import" translatable="false">wishlist_import</string>
     <string name="dir_parents_import" translatable="false">parents_import</string>
     <string name="dir_crosses_export" translatable="false">crosses_export</string>
+    <string name="dir_database" translatable="false">database</string>
 
 </resources>

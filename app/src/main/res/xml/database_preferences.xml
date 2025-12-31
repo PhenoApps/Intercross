@@ -31,5 +31,10 @@
                 android:key="@string/key_pref_db_export"
                 android:title="@string/prefs_database_export_title"
                 android:summary="@string/prefs_database_export_summary"/>
+            <Preference
+                android:icon="@drawable/ic_database_reload"
+                android:key="@string/key_pref_db_reload"
+                android:title="@string/prefs_database_reload_title"
+                android:summary="@string/prefs_database_reload_summary"/>
         </PreferenceCategory>
 </PreferenceScreen>

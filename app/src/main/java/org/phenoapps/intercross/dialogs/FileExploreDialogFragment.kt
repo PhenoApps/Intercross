@@ -18,8 +18,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.net.toUri
 
 class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope() {
+
+    companion object {
+        const val TAG = "FileExploreDialogFragment"
+    }
 
     private var mainListView: RecyclerView? = null
     private var progressBar: ProgressBar? = null
@@ -67,10 +72,13 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
         mainListView = view?.findViewById(R.id.fileRecyclerView)
         progressBar = view?.findViewById(R.id.progressBar)
 
-        path = DocumentFile.fromTreeUri(requireContext(), Uri.parse(arguments?.getString("path")))
-        exclude = arguments?.getStringArray("exclude")
-        include = arguments?.getStringArray("include")
-        val dialogTitle = arguments?.getString("dialogTitle")
+        val fileUri = arguments?.getString(getString(R.string.path))?.toUri()
+            ?: return showPathError()
+
+        path = DocumentFile.fromTreeUri(requireContext(), fileUri)
+        exclude = arguments?.getStringArray(getString(R.string.exclude))
+        include = arguments?.getStringArray(getString(R.string.include))
+        val dialogTitle = arguments?.getString(getString(R.string.dialog_title))
 
         val builder = AlertDialog.Builder(context)
             .setTitle(dialogTitle)
@@ -84,6 +92,12 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
 
         return builder.create()
     }
+
+    private fun showPathError() =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.error)
+            .setMessage(R.string.error_opening_path_message)
+            .create()
 
     private fun setupRecyclerView() {
         // set the click action for each type of item
@@ -176,6 +190,7 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
                     val icon = when {
                         name.lowercase().endsWith(".csv") -> R.drawable.ic_file_csv
                         name.endsWith(".xls") -> R.drawable.ic_file_xls
+                        name.endsWith(".zip") -> R.drawable.ic_file_zip
                         file.isDirectory -> R.drawable.ic_file_directory
                         else -> R.drawable.ic_file_generic
                     }

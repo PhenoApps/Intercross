@@ -3,18 +3,14 @@ package org.phenoapps.intercross.fragments.storage
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import org.phenoapps.fragments.storage.PhenoLibStorageDefinerFragment
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.activities.DefineStorageActivity
 import org.phenoapps.security.Security
 import org.phenoapps.utils.BaseDocumentTreeUtil
-import org.phenoapps.utils.KeyUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,7 +41,8 @@ class StorageDefinerFragment : PhenoLibStorageDefinerFragment() {
             val wishlistImport = ctx.getString(R.string.dir_wishlist_import)
             val parentsImport = ctx.getString(R.string.dir_parents_import)
             val crossesExport = ctx.getString(R.string.dir_crosses_export)
-            directories = arrayOf(wishlistImport, parentsImport, crossesExport)
+            val databaseDir = ctx.getString(R.string.dir_database)
+            directories = arrayOf(wishlistImport, parentsImport, crossesExport, databaseDir)
         }
 
         view.visibility = View.GONE

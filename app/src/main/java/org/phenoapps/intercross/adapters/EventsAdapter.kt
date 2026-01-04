@@ -13,6 +13,7 @@ import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
 import org.phenoapps.intercross.databinding.ListItemEventsBinding
 import org.phenoapps.intercross.interfaces.EventClickListener
+import org.phenoapps.intercross.util.DateUtil
 
 
 class EventsAdapter(
@@ -67,7 +68,7 @@ class EventsAdapter(
 
                     if ("_" in event.timestamp) {
 
-                        this.timestamp = event.timestamp.split("_")[0]
+                        this.timestamp = DateUtil().getEntireTimestamp(event.timestamp)
 
                     } else this.timestamp = event.timestamp
 

@@ -49,70 +49,62 @@
             app:layout_constraintStart_toStartOf="parent"
             app:setQRCode="@{event.eventDbId}" />
 
-        <TextView
-            android:id="@+id/femaleTextView"
+        <LinearLayout
+            android:id="@+id/textContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{female}"
-            android:gravity="start"
-            android:ellipsize="end"
-            android:singleLine="true"
+            android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@id/barcodeView"
-            app:layout_constraintBottom_toTopOf="@id/maleTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="@id/barcodeView"
+            app:layout_constraintBottom_toBottomOf="@id/barcodeView">
 
-        <TextView
-            android:id="@+id/maleTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{male}"
-            android:gravity="start"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintStart_toEndOf="@id/barcodeView"
-            app:layout_constraintBottom_toTopOf="@id/timestampTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/femaleTextView" />
+            <TextView
+                android:id="@+id/femaleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{female}"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true" />
 
-        <TextView
-            android:id="@+id/timestampTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{timestamp}"
-            android:gravity="start"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintStart_toEndOf="@id/barcodeView"
-            app:layout_constraintBottom_toTopOf="@id/codeTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/maleTextView" />
+            <TextView
+                android:id="@+id/maleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{male}"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true" />
 
-        <TextView
-            android:id="@+id/codeTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{event.eventDbId}"
-            android:gravity="start"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintStart_toEndOf="@id/barcodeView"
-            app:layout_constraintBottom_toTopOf="@id/personTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/timestampTextView" />
+            <TextView
+                android:id="@+id/timestampTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{timestamp}"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true" />
 
-        <TextView
-            android:id="@+id/personTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{event.person}"
-            android:gravity="start"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintStart_toEndOf="@id/barcodeView"
-            app:layout_constraintBottom_toTopOf="@id/codeTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/codeTextView" />
+            <TextView
+                android:id="@+id/codeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{event.eventDbId}"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/personTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{event.person}"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

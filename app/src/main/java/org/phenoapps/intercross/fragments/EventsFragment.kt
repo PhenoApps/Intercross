@@ -43,6 +43,7 @@ import org.phenoapps.intercross.util.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
@@ -135,7 +136,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         if ("demo" in BuildConfig.BUILD_TYPE) {
 
-            mPref.edit().putString("org.phenoapps.intercross.PERSON", "Developer").apply()
+            mPref.edit { putString("org.phenoapps.intercross.PERSON", "Developer") }
 
         }
 
@@ -627,7 +628,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
     open class KeyboardToggleListener(
         private val root: View?,
-        private val onKeyboardToggleAction: (shown: Boolean) -> Unit
+        private val onKeyboardToggleAction: (shown: Boolean) -> Unit,
     ) : ViewTreeObserver.OnGlobalLayoutListener {
         private var shown = false
         override fun onGlobalLayout() {
@@ -862,7 +863,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         val layout: View = inflater.inflate(R.layout.dialog_set_experiment, null)
         val experimentName = layout.findViewById<EditText>(R.id.experimentName)
 
-        experimentName.setText(mPref?.getString(mKeyUtil.experimentNameKey, ""))
+        experimentName.setText(mPref.getString(mKeyUtil.experimentNameKey, ""))
 
         experimentName.setSelectAllOnFocus(true)
 
@@ -872,18 +873,16 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             .setView(layout)
             .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ -> dialog.dismiss() }
             .setNeutralButton(R.string.Clear) { _, _ ->
-                val e = mPref?.edit()
-                e?.putString(mKeyUtil.experimentNameKey, "")
+                mPref.edit {
+                    putString(mKeyUtil.experimentNameKey, "")
+                }
                 (activity as MainActivity).supportActionBar?.title = null
-
-                e?.apply()
             }
             .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
-                val e = mPref?.edit()
-                e?.putString(mKeyUtil.experimentNameKey, experimentName.text.toString())
+                mPref.edit {
+                    putString(mKeyUtil.experimentNameKey, experimentName.text.toString())
+                }
                 (activity as MainActivity).supportActionBar?.title = experimentName.text
-
-                e?.apply()
             }
 
         val experimentDialog = builder.create()

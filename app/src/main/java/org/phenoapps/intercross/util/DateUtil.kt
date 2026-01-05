@@ -27,4 +27,7 @@ class DateUtil {
         val dateObject = parser.parse(dateString)
         return dateObject?.let { date.format(it) } ?: dateString
     }
+
+    // yyyy-MM-dd_HH_mm_ss_SSS drop the last SSS
+    fun getEntireTimestamp(dateString: String) = dateString.split("_").dropLast(1).joinToString(separator = "_")
 }

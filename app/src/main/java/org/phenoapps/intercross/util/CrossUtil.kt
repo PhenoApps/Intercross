@@ -139,20 +139,8 @@ class CrossUtil(val context: Context) {
         wishlist.filter { (it.momId == f && it.dadId == dadId)
                 || (it.momId == dadId && it.dadId == f) }.forEach { item ->
 
-            if (item.wishProgress + 1 >= item.wishMin && item.wishMin != 0) {
+            checkWishProgress(item)
 
-                FileUtil(context).ringNotification(true)
-
-                if (item.wishProgress + 1 >= item.wishMax && item.wishMax != 0) {
-
-                    Dialogs.notify(AlertDialog.Builder(context), context.getString(R.string.wish_max_complete))
-
-                } else {
-
-                    Dialogs.notify(AlertDialog.Builder(context), context.getString(R.string.wish_min_complete))
-
-                }
-            }
         }
     }
 
@@ -162,20 +150,36 @@ class CrossUtil(val context: Context) {
 
         wishlist.find { it.momId == f && it.dadId == dadId }?.let { item ->
 
-            if (item.wishProgress + 1 >= item.wishMin && item.wishMin != 0) {
+            checkWishProgress(item)
 
-                FileUtil(context).ringNotification(true)
+        }
+    }
 
-                if (item.wishProgress + 1 >= item.wishMax && item.wishMax != 0) {
+    /**
+     * Displays a notification through dialog if the wish progress reaches min and/or max
+     */
+    private fun checkWishProgress(wishItem: WishlistView) {
+        val newProgress = wishItem.wishProgress + 1
 
-                    Dialogs.notify(AlertDialog.Builder(context), context.getString(R.string.wish_max_complete))
+        if (newProgress >= wishItem.wishMin && wishItem.wishMin != 0) {
+
+            FileUtil(context).ringNotification(true)
+
+            val messageRes =
+                if (newProgress >= wishItem.wishMax && wishItem.wishMax != 0) {
+
+                    if (wishItem.wishMin == wishItem.wishMax)
+                        R.string.wish_min_max_complete
+                    else R.string.wish_max_complete
 
                 } else {
 
-                    Dialogs.notify(AlertDialog.Builder(context), context.getString(R.string.wish_min_complete))
+                    R.string.wish_min_complete
 
                 }
-            }
+
+            Dialogs.notify(AlertDialog.Builder(context), context.getString(messageRes))
+
         }
     }
 

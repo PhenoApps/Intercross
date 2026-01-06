@@ -163,6 +163,7 @@
     <string name="unknown">Unknown</string>
     <string name="wish_min_complete">Wish minimum completed.</string>
     <string name="wish_max_complete">Wish maximum completed.</string>
+    <string name="wish_min_max_complete">Wish minimum and maximum completed.</string>
     <string name="you_must_enter_cross_name">You must enter a cross name.</string>
     <string name="you_must_enter_female_name">You must enter a female name.</string>
     <string name="you_must_enter_male_name">You must enter a male name.</string>
@@ -296,7 +297,7 @@
     <string name="frag_wf_choose_type_summary">Please choose a wish type for %s and %s pair.</string>
     <string name="frag_wf_values_summary">Please choose a minimum and maximum number of %s for %s and %s pair.</string>
     <string name="frag_wf_values_min_must_not_be_null">Minimum must be greater than zero.</string>
-    <string name="frag_wf_values_max_must_not_be_null">Maximum value must be greater than the minimum.</string>
+    <string name="frag_wf_values_max_must_not_be_null">Maximum value must be equal to or greater than the minimum.</string>
     <string name="frag_wf_summary_summary">Is it OK to create a wish for a minimum of %d and maximum of %d %s of %s and %s pair?</string>
     <string name="minimum_wish_met">Minimum wish for %s met.</string>
     <string name="maximum_wish_met">Maximum wish met for %s.</string>

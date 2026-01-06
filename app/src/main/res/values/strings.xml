@@ -301,6 +301,7 @@
     <string name="frag_wf_summary_summary">Is it OK to create a wish for a minimum of %d and maximum of %d %s of %s and %s pair?</string>
     <string name="minimum_wish_met">Minimum wish for %s met.</string>
     <string name="maximum_wish_met">Maximum wish met for %s.</string>
+    <string name="minimum_maximum_wish_met">Minimum and maximum wish met for %s.</string>
     <string name="frag_wf_a_female_must_be_chosen">A female must be chosen.</string>
     <string name="menu_cross_count_delete_all_title">Delete All</string>
     <string name="dialog_cross_count_delete_all_message">This will irreversibly delete all (%s) crosses.</string>

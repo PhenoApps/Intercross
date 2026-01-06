@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
@@ -382,13 +381,22 @@ class EventDetailFragment:
         context?.let { ctx ->
             val mom = mEvent.femaleObsUnitDbId
             val dad = mEvent.maleObsUnitDbId
-            val relaventWishes = mWishlist.filter { wish -> wish.momId == mom && wish.dadId == dad }
-            val propertyWishes = relaventWishes.filter { wish -> wish.wishType == property }
-            if (propertyWishes.any { wish -> wish.wishMax in 1..value }) {
-                Dialogs.notify(AlertDialog.Builder(ctx), getString(R.string.maximum_wish_met, property))
-            } else if (propertyWishes.any { wish -> wish.wishMin in 1..value }) {
-                Dialogs.notify(AlertDialog.Builder(ctx), getString(R.string.minimum_wish_met, property))
+            val relevantWishes = mWishlist.filter { wish -> wish.momId == mom && wish.dadId == dad }
+            val propertyWishes = relevantWishes.filter { wish -> wish.wishType == property }
+
+            propertyWishes.forEach { wish ->
+                if (value >= wish.wishMax && wish.wishMax > 0) {
+                    val messageRes = if (wish.wishMin == wish.wishMax) {
+                        R.string.minimum_maximum_wish_met
+                    } else {
+                        R.string.maximum_wish_met
+                    }
+                    Dialogs.notify(AlertDialog.Builder(ctx), getString(messageRes, property))
+                } else if (value >= wish.wishMin && wish.wishMin > 0) {
+                    Dialogs.notify(AlertDialog.Builder(ctx), getString(R.string.minimum_wish_met, property))
+                }
             }
+
         }
     }
 

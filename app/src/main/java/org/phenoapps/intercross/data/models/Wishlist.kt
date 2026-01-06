@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "wishlist")
-data class Wishlist constructor(var femaleDbId: String,
+data class Wishlist(var femaleDbId: String,
                     var maleDbId: String,
                     var femaleName: String=femaleDbId,
                     var maleName: String=maleDbId,

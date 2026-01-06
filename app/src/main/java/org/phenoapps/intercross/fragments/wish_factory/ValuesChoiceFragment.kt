@@ -52,7 +52,7 @@ class ValuesChoiceFragment : IntercrossBaseFragment<FragmentWfChooseWishValuesBi
             val min = mBinding.wfWishValuesMinEt.text.toString().toIntOrNull()
             val max = mBinding.wfWishValuesMaxEt.text.toString().toIntOrNull()
             if (min != null && min > 0) {
-                if (max != null && max > min) {
+                if (max != null && max >= min) {
                     findNavController().navigate(ValuesChoiceFragmentDirections
                         .actionFromValuesToSummaryFragment(femaleId, femaleName,
                             maleId, maleName, wishType, min, max))

@@ -567,7 +567,6 @@ class CrossTrackerFragment :
         return listEntry.map { entry ->
             if (entry is PlannedCrossData) {
                 val computed = entry.wishes.map { wish ->
-                    Log.d("TAG", "updateWishProgress: ${wish.wishType}")
                     val p = getWishItemProgress(entry, wish.wishType)
                     wish.copy(progress = p)
                 }

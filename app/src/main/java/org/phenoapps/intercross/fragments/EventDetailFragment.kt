@@ -100,8 +100,6 @@ class EventDetailFragment:
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
-
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     private fun getMetaDataVisibility(context: Context): Int {

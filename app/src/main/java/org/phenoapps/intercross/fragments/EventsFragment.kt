@@ -153,12 +153,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             else mBinding.secondText.setText(male)
         }
 
-        if (mSettings.isUUID) {
-
-            mBinding.editTextCross.setText(UUID.randomUUID().toString())
-
-        }
-
         arguments?.getString("male")?.let { male ->
             if (maleFirst) {
                 mBinding.firstText.setText(male)
@@ -182,8 +176,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         startObservers()
 
         (activity as MainActivity).supportActionBar?.hide()
-
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 
         setupUI()
 
@@ -286,6 +278,12 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                 mSettings = it
 
                 mBinding.settings = it
+
+                if (it.isUUID) {
+
+                    mBinding.editTextCross.setText(UUID.randomUUID().toString())
+
+                }
 
             }
         }

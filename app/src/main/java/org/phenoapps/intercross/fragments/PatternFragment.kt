@@ -56,8 +56,6 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
     }
 
     private fun setupUI() {
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
         settingsModel.settings.observeForever { settings ->
             settings?.let {
                 mBinding.settings = it

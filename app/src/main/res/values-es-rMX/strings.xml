@@ -87,9 +87,13 @@
     <string name="wishlist_header_min">deseosMin</string>
     <string name="wishlist_header_max">deseosMax</string>
     <string name="parental_navigation">Progenitores</string>
+    <string name="navigate_to_summary">Ir al resumen</string>
     <string name="add_female">Agregar Hembra</string>
     <string name="add_male_group">Agregar Grupo de Machos</string>
     <string name="add_male">Agregar Macho</string>
+    <string name="export">Exportar</string>
+    <string name="about">Acerca de</string>
+    <string name="settings">Ajustes</string>
     <string name="go">Ir</string>
     <string name="cancel">Cancelar</string>
     <string name="qr_code_for_parent">Código QR para progenitor</string>
@@ -117,11 +121,51 @@
     <string name="search_barcode_description">Buscar por código de barras</string>
     <string name="single_scan_description">Escanear un solo código de barras</string>
     <string name="continuous_scan_description">Escanear una secuencia de códigos de barras</string>
+    <string name="printer_open">Impresora abierta</string>
+    <string name="printer_paused">Impresora pausada</string>
+    <string name="printer_empty">Impresora vacía</string>
+    <string name="printner_not_connected">Impresora no conectada</string>
+    <string name="unknown">Desconocido</string>
+    <string name="wish_min_complete">Mínimo de deseos completados.</string>
+    <string name="wish_max_complete">Máximo de deseos completado.</string>
+    <string name="wish_min_max_complete">Mínimo y máximo de deseos completado.</string>
+    <string name="you_must_enter_cross_name">Debe introducir un nombre de cruza.</string>
+    <string name="you_must_enter_female_name">Debe introducir un nombre de hembra.</string>
+    <string name="you_must_enter_male_name">Debe introducir un nombre de macho.</string>
     <string name="person">Usuario</string>
     <string name="set_person">Establecer Usuario</string>
     <string name="person_must_be_set">El usuario debe ser establecido antes de que se puedan hacer cruzas.</string>
     <string name="undo">Deshacer</string>
     <string name="cross_id_cannot_be_blank">ID Cruza no puede estar en blanco.</string>
+    <string name="minimum_wish_for_fruits_met">El deseo mínimo de frutos se ha cumplido.</string>
+    <string name="minimum_wish_for_seeds_met">El deseo mínimo de semillas se ha cumplido.</string>
+    <string name="minimum_wish_for_flowers_met">El deseo mínimo de flores se ha cumplido.</string>
+    <string name="was_created">fue creado</string>
+    <string name="parents_of_crosses_not_deleted">Los progenitores de las cruzas no se pueden eliminar.</string>
+    <string name="count">Contador</string>
+    <string name="wish">Deseo</string>
+    <string name="no_child_exists">No hay progenie.</string>
+    <string name="click_item_to_open_child">Haga clic para abrir la página de progenie de cruza.</string>
+    <string name="about_title">Acerca de</string>
+    <string name="barcode_scan_label">Escanear Códigos de Barras</string>
+    <string name="events_fragment_label">Eventos</string>
+    <string name="event_detail_label">Evento</string>
+    <string name="parent_label">Progenitores</string>
+    <string name="settings_label">Ajustes</string>
+    <string name="patterns_label">Patrones</string>
+    <string name="import_zpl_label">Importar ZPL</string>
+    <string name="pollen_manager_label">Administrador de Polen</string>
+    <string name="wishlist_label">Resumen de Lista de Deseos</string>
+    <string name="summary_label">Resumen</string>
+    <string name="cross_block_label">Bloque de Cruzas</string>
+    <string name="no_crosses_made">Ninguna</string>
+    <string name="wishlist_less_than_one_third">&lt;=33%</string>
+    <string name="wishlist_less_than_two_third">&lt;=66%</string>
+    <string name="wishlist_more_than_two_third">&gt;=66%</string>
+    <string name="wishlist_achieved_legend_label">Mínimo</string>
+    <string name="wishlist_maximum_met_legend_label">Máximo</string>
+    <string name="delete_all_wishlist_title">¿Eliminar toda la lista de deseos?</string>
+    <string name="missing_headers">Faltan encabezados en el archivo de importación.</string>
     <!-- Brapi strings -->
     <string name="preferences_brapi_server_add">Enviar un servidor</string>
     <string name="frag_event_detail_add_new_metadata">Agregar Nuevos Metadatos</string>
@@ -140,6 +184,7 @@
     <string name="collect_dialog_verify_no_button">No</string>
     <string name="collect_dialog_verify_yes_button">Sí</string>
     <string name="collect_dialog_neutral_button">Modificar ajustes</string>
+    <string name="collect_dialog_new_collector">¿Quieres guardar el nombre de la persona que colecta datos?</string>
     <!-- PREFERENCES -->
     <!-- Profile Preferences-->
     <!-- Behavior Preferences: Naming and Workflow preferences -->
@@ -156,7 +201,10 @@
     <string name="add_new_male_parent">Crear un nuevo progenitor macho</string>
     <string name="add_new_female_parent">Crear un nuevo progenitor hembra</string>
     <!-- AppIntroActivity -->
+    <string name="app_intro_intro_summary_slide1">Intercross se utiliza para rastrear cruzas en programas de mejoramiento e investigación fitogenética. La aplicación rastrea a los progenitores, IDs de cruzas y metadatos a medida que se crean cruzamientos. Las etiquetas para las cruzas se pueden imprimir con impresoras Bluetooth Zebra y las listas de cruzas pueden ser exportadas. Intercross es parte del proyecto PhenoApps que tiene como objetivo modernizar la recopilación de datos de mejoramiento genetico de plantas a través de herramientas optimizadas para captura de datos.</string>
+    <string name="app_intro_optional_setup_summary">Los ajustes opcionales personalizan la configuración de Intercross para la colección de datos.</string>
     <!-- CrossesTrackerFragment -->
+    <string name="dialog_crosses_by_person_known_message">%d cruzas colectadas por usuarios desconocidos</string>
     <!--  SearchFragment  -->
     <!--  BottomNavBar  -->
 </resources>

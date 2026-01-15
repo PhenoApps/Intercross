@@ -204,6 +204,7 @@
     <string name="frag_new_metadata_title">Nuevos Metadatos</string>
     <string name="frag_edit_metadata_title">Editar Metadatos</string>
     <string name="summary">Resumen</string>
+    <string name="crossblock">Bloque de Cruzas</string>
     <string name="wishlist">Deseos</string>
     <string name="cross_count">Conteo Cruzas</string>
     <string name="brapi_pref_add_account_title">Agregar Cuenta Android</string>

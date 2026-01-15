@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Intercross</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="drawer_close">Cerrar</string>
+    <string name="cross_id">ID Cruza:</string>
+    <string name="save_text">Guardar</string>
+    <string name="start_from">Empieza De</string>
+    <string name="auto">Auto</string>
+    <string name="pad_length">largo del pad</string>
+    <string name="number">número</string>
+    <string name="suffix">sufijo</string>
+    <string name="prefix">prefijo</string>
     <!-- About dialog -->
+    <string name="about_version_title">Versión</string>
+    <string name="about_title_other_apps">PhenoApps</string>
+    <string name="about_project_lead_title">Líder del Projecto</string>
+    <string name="about_developer_title">Desarrollador</string>
+    <string name="about_email_title">Email</string>
+    <string name="about_contributors_title">Colaboradores</string>
+    <string name="about_contributors_developers_title">Desarrolladores</string>
+    <string name="about_translators_title">Traductores</string>
+    <string name="about_contributors_funding_title">Financiamiento</string>
+    <string name="about_rate">Calificar esta aplicación</string>
+    <string name="about_technical_title">Detalles Tecnicos</string>
+    <string name="about_github_title">GitHub</string>
+    <string name="about_licenses_title">Licencias</string>
+    <string name="about_help_translate_title">Ayúdanos a traducir</string>
+    <string name="changelog_title">Registro de Cambios</string>
+    <string name="libraries_title">Bibliotecas</string>
+    <string name="parents">Progenitores</string>
+    <string name="metaData">Metadatos</string>
+    <string name="Seeds">Semillas</string>
+    <string name="Fruits">Frutos</string>
+    <string name="Flowers">Flores</string>
+    <string name="UpdateMetaData">Actualizar Metadatos</string>
+    <string name="error_value_exceeds_max">El valor no puede exceder %d</string>
+    <string name="navigate_to_wishlist">Navegar a la lista de deseos</string>
     <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name
             must not match wishlist_header_type-->

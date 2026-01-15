@@ -36,26 +36,125 @@
     <string name="UpdateMetaData">Actualizar Metadatos</string>
     <string name="error_value_exceeds_max">El valor no puede exceder %d</string>
     <string name="navigate_to_wishlist">Navegar a la lista de deseos</string>
+    <string name="navigate_to_crossblock">Navegar al bloque de cruzas</string>
+    <string name="Clear">Limpiar</string>
+    <string name="New">Nuevo</string>
+    <string name="SelectAllRows">Seleccionar todas las filas</string>
+    <string name="Name">Nombre</string>
+    <string name="Code">Código</string>
+    <string name="PotentialMales">Machos Potentiales</string>
+    <string name="ErrorCodeExists">Código Existente</string>
+    <string name="FemaleID">ID Hembrar:</string>
+    <string name="MaleID">ID Macho:</string>
+    <string name="search_with_barcode_scanner">Buscar con el escáner de código de barras.</string>
+    <string name="continuous_scan_and_submit">Escaneo y envío continuos.</string>
+    <string name="test">PRUEBA</string>
+    <string name="import_a_zpl_file">Importar un archivo ZPL</string>
+    <string name="zpl_default" formatted="false">        ^XA^DFR:TEMPLATE^FS
+        ^PW406
+        ^LH10,10^FS
+        ^FO0,0^A0,25,20^FN1^FS
+        ^FO140,30^BQN,2,3,H,^FN2^FS
+        ^FO140,170^A0,25,20^FN5^FS
+        ^XZ
+    </string>
+    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2\"x1\" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
+    <string name="import_zpl">Importar ZPL</string>
+    <string name="female">Hembra</string>
+    <string name="male">Macho</string>
+    <string name="delete">Eliminar</string>
+    <string name="delete_all">Eliminar todo</string>
+    <string name="print">Imprimir</string>
+    <string name="none">Ninguno</string>
+    <string name="pattern">Patrón</string>
+    <string name="uuid">UUID</string>
+    <string name="male_parent">Progenitor Macho</string>
+    <string name="female_parent">Progenitor Hembra</string>
+    <string name="crosses">Cruzas</string>
+    <string name="import_file">Importar</string>
     <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name
             must not match wishlist_header_type-->
+    <string name="parents_header_code_id">codigoId</string>
+    <string name="parents_header_readable_name">nombre</string>
+    <string name="parents_header_sex">sexo</string>
     <!-- Wishlist Input File Header's -->
+    <string name="wishlist_header_female_id">hembraDbId</string>
+    <string name="wishlist_header_male_id">machoDbId</string>
+    <string name="wishlist_header_female_name">nombreHembra</string>
+    <string name="wishlist_header_male_name">machoNombre</string>
+    <string name="wishlist_header_type">deseoTipo</string>
+    <string name="wishlist_header_min">deseosMin</string>
+    <string name="wishlist_header_max">deseosMax</string>
+    <string name="parental_navigation">Progenitores</string>
+    <string name="add_female">Agregar Hembra</string>
+    <string name="add_male_group">Agregar Grupo de Machos</string>
+    <string name="add_male">Agregar Macho</string>
+    <string name="go">Ir</string>
+    <string name="cancel">Cancelar</string>
+    <string name="qr_code_for_parent">Código QR para progenitor</string>
+    <string name="exported_file_name">Nombre de archivo exportado.</string>
+    <string name="default_crosses_export_file_name">cruzas</string>
+    <string name="default_database_export_file_name">intercross</string>
+    <string name="default_database_backup_export_file_name">intercross_backup</string>
+    <string name="ask_for_new_name">Ingrese un nuevo nombre de archivo</string>
+    <string name="crosses_export_mom_header">hembraObsUnitDbId</string>
+    <string name="crosses_export_dad_header">machoObsUnitDbId</string>
+    <string name="crosses_export_name_header">nombre legible</string>
+    <string name="crosses_export_date_header">timestamp</string>
+    <string name="crosses_export_person_header">usuario</string>
+    <string name="crosses_export_experiment_header">experimento</string>
+    <string name="crosses_export_type_header">tipo</string>
+    <string name="crosses_export_sex_header">sexo</string>
+    <string name="crosses_export_fruits_header">frutos</string>
+    <string name="crosses_export_flowers_header">flores</string>
+    <string name="crosses_export_seeds_header">semillas</string>
+    <string name="crosses_export_id_header">cruzaDbId</string>
+    <string name="ask_user_to_append_or_drop_parents">Ya existe una tabla de progenitores.</string>
+    <string name="ask_user_to_append_or_drop_wishlist">Ya existe una tabla de lista de deseos.</string>
+    <string name="start_fresh">Iniciar nuevo</string>
+    <string name="append">Añadir</string>
+    <string name="search_barcode_description">Buscar por código de barras</string>
+    <string name="single_scan_description">Escanear un solo código de barras</string>
+    <string name="continuous_scan_description">Escanear una secuencia de códigos de barras</string>
+    <string name="person">Usuario</string>
+    <string name="set_person">Establecer Usuario</string>
+    <string name="person_must_be_set">El usuario debe ser establecido antes de que se puedan hacer cruzas.</string>
+    <string name="undo">Deshacer</string>
+    <string name="cross_id_cannot_be_blank">ID Cruza no puede estar en blanco.</string>
     <!-- Brapi strings -->
+    <string name="preferences_brapi_server_add">Enviar un servidor</string>
+    <string name="frag_event_detail_add_new_metadata">Agregar Nuevos Metadatos</string>
+    <string name="brapi_pref_add_account_title">Agregar Cuenta Android</string>
+    <string name="collect_metadata_label">Colectar Metadatos</string>
+    <string name="collect_metadata_toast_enabled">Colección de metadatos activada</string>
+    <string name="collect_metadata_toast_disabled">Colección de metadatos desactivada</string>
     <!-- Brapi strings -->
     <!-- Import dialog -->
+    <string name="pref_brapi_server_title">Dirección Servidor BrAPI</string>
     <!-- File Explore Dialog -->
     <!-- Dialogs -->
     <!-- Experiment -->
     <!-- Profile -->
+    <string name="collect_dialog_verify_collector">Es esto aún</string>
+    <string name="collect_dialog_verify_no_button">No</string>
+    <string name="collect_dialog_verify_yes_button">Sí</string>
+    <string name="collect_dialog_neutral_button">Modificar ajustes</string>
     <!-- PREFERENCES -->
     <!-- Profile Preferences-->
     <!-- Behavior Preferences: Naming and Workflow preferences -->
+    <string name="prefs_behavior_collect_additional_info_title">Colectar información adicional</string>
+    <string name="prefs_behavior_collect_additional_info_summary">Crear y administrar metadatos adicionales.</string>
     <!-- Printing preferences -->
     <!-- Database preferences -->
+    <string name="profile_require_user">Requiere Usuario para Colectar</string>
     <!-- Storage Definer -->
     <!--  Export  -->
     <!-- Permissions  -->
     <!-- Import  -->
+    <string name="add_wishlist_item">Agregar un elemento a lista de deseos</string>
+    <string name="add_new_male_parent">Crear un nuevo progenitor macho</string>
+    <string name="add_new_female_parent">Crear un nuevo progenitor hembra</string>
     <!-- AppIntroActivity -->
     <!-- CrossesTrackerFragment -->
     <!--  SearchFragment  -->

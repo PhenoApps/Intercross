@@ -269,6 +269,10 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         metadataSummaryBarChart.xAxis.textSize = 10f
 
         metadataSummaryBarChart.xAxis.textColor = Color.BLACK
+
+        metadataSummaryBarChart.setScaleEnabled(false)
+        
+        metadataSummaryBarChart.isDoubleTapToZoomEnabled = false
     }
 
     private fun setSexData(): PieDataSet = PieDataSet(ArrayList<PieEntry>().apply {

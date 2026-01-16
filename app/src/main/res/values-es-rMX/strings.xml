@@ -315,11 +315,24 @@
     <!-- Brapi strings -->
     <string name="brapi_base_url_desc">La URL base para el servidor conectado por BrAPI</string>
     <string name="brapi_base_url_default">https://test-server.brapi.org/</string>
+    <string name="brapi_field_non_matching_sources">No se pueden sincronizar datos. Los datos de campo se originan en %1$s, la url de BrAPI  establecida actualmente en %2$s. Los origenes deben coincidir.</string>
+    <string name="brapi_trait_already_exists">La variable ya existe: %1$s. No guardado.</string>
+    <string name="brapi_error_saving_all_traits">Error al guardar las variables. No se guardaron variables.</string>
+    <string name="brapi_error_saving_some_traits">Error al guardar algunas variables. Algunas variables no se guardaron</string>
+    <string name="brapi_traits_saved_success">Variables seleccionadas guardadas con éxito.</string>
+    <string name="device_offline_warning">Dispositivo sin conexión: conéctese a una red e intente nuevamente</string>
     <string name="no_studies_selected_warning">No hay estudios seleccionados.</string>
     <string name="next">Siguiente</string>
     <string name="prev">Anterior</string>
     <string name="page_one_of_one">Página 1 de 1</string>
     <string name="brapi_auth_needed_title">Inicio de Sesión Necesario</string>
+    <string name="brapi_auth_needed">Debe iniciar sesión en el sistema con el que está intentando sincronizar datos para poder
+para sincronizar tus datos.
+
+¿Desea autenticarse ahora?</string>
+    <string name="brapi_info_message">        Las variables y los campos importados vía BrAPI podrán exportar sus observaciones a través de la exportación BrAPI.
+       Las variables y los campos creados manualmente o importados a través de CSV deberán exportarse a través de formato CSV.
+    </string>
     <string name="brapi_info_title">Breeding API</string>
     <string name="brapi_auth_btn">Iniciar Sesión en el Sitio</string>
     <!-- Import dialog -->
@@ -327,6 +340,15 @@
     <string name="import_source_cloud">Almacenamiento en la nube</string>
     <string name="import_source_brapi">BrAPI</string>
     <string name="import_source_ask">Preguntar siempre</string>
+    <string name="import_dialog_title_fields">Importar campo</string>
+    <string name="import_dialog_title_traits">Importar variables</string>
+    <string name="import_dialog_unique">Identificador único</string>
+    <string name="import_dialog_primary">Orden primario</string>
+    <string name="import_dialog_secondary">Orden secundario</string>
+    <string name="import_dialog_importing">Espere…</string>
+    <string name="import_error_general">Error importando</string>
+    <string name="dialog_cross_project_summary">%1$s creado con id: %2$s</string>
+    <string name="brapi_export">Exportación BrAPI</string>
     <string name="pref_brapi_server_title">Dirección Servidor BrAPI</string>
     <!-- File Explore Dialog -->
     <!-- Dialogs -->
@@ -340,12 +362,31 @@
     <!-- PREFERENCES -->
     <!-- Profile Preferences-->
     <!-- Behavior Preferences: Naming and Workflow preferences -->
+    <string name="prefs_behavior_create_cross_id_pattern_summary">UUID</string>
+    <string name="prefs_behavior_workflow_category">Workflow</string>
     <string name="prefs_behavior_collect_additional_info_title">Colectar información adicional</string>
     <string name="prefs_behavior_collect_additional_info_summary">Crear y administrar metadatos adicionales.</string>
+    <string name="prefs_behavior_create_metadata_title">Crear Metadatos</string>
     <!-- Printing preferences -->
     <!-- Database preferences -->
+    <string name="profile_settings">Ajustes del Perfil</string>
     <string name="profile_require_user">Requiere Usuario para Colectar</string>
+    <string name="profile_verification_interval">Intervalo de Verificación</string>
+    <string name="profile_person_title">Establecer Usuario</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_save">Guardar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_export">Exportar</string>
+    <string name="dialog_confirm">¿Está seguro de que desea restablecer su perfil?</string>
+    <string name="dialog_yes">Sí</string>
+    <string name="dialog_no">No</string>
+    <string name="profile_person_not_set">No establecido</string>
+    <string name="dialog_export_message">"Exportando datos..."</string>
+    <string name="dialog_warning">Advertencia</string>
+    <string name="profile_name_first">Nombre</string>
+    <string name="profile_name_last">Apellido</string>
     <!-- Storage Definer -->
+    <string name="storage_definer_title">Ubicación de Almacenamiento</string>
     <string name="define_button_text">Elegir Carpeta</string>
     <!--  Export  -->
     <string name="brapi_edit_display_name_default">Servidor de Pruebas BrAPI</string>
@@ -356,9 +397,47 @@
     <string name="add_new_female_parent">Crear un nuevo progenitor hembra</string>
     <!-- AppIntroActivity -->
     <string name="app_intro_intro_summary_slide1">Intercross se utiliza para rastrear cruzas en programas de mejoramiento e investigación fitogenética. La aplicación rastrea a los progenitores, IDs de cruzas y metadatos a medida que se crean cruzamientos. Las etiquetas para las cruzas se pueden imprimir con impresoras Bluetooth Zebra y las listas de cruzas pueden ser exportadas. Intercross es parte del proyecto PhenoApps que tiene como objetivo modernizar la recopilación de datos de mejoramiento genetico de plantas a través de herramientas optimizadas para captura de datos.</string>
+    <string name="app_intro_intro_title_slide2">Funcionalidades</string>
+    <string name="app_intro_required_setup_title">Configuración Requerida</string>
+    <string name="app_intro_required_setup_summary">Para empezar a usar Intercross, otorgar los permisos necesarios para la aplicación y luego definir una carpeta donde sus datos serán almacenados.</string>
+    <string name="app_intro_permissions_title">Permisos</string>
+    <string name="app_intro_permissions_summary">Por favor, otorga los permisos necesarios</string>
+    <string name="app_intro_storage_title">Definir Almacenamiento</string>
+    <string name="app_intro_storage_summary">Defina una carpeta donde se almacenarán sus datos.</string>
+    <string name="app_intro_permissions_warning">Permisos no otorgados</string>
+    <string name="app_intro_storage_warning">Directorio de almacenamiento no establecido</string>
+    <string name="app_intro_optional_setup_title">Configuración Opcional</string>
     <string name="app_intro_optional_setup_summary">Los ajustes opcionales personalizan la configuración de Intercross para la colección de datos.</string>
+    <string name="app_intro_load_sample_data_title">Cargar Datos de Ejemplo</string>
+    <string name="app_intro_load_sample_data_summary">Importar datos de ejemplo.</string>
+    <string name="app_intro_load_sample_parents_title">Progenitores</string>
+    <string name="app_intro_load_sample_parents_summary">Importar datos de progenitores de ejemplo.</string>
+    <string name="app_intro_load_sample_wishlist_title">Lista de Deseos</string>
+    <string name="app_intro_load_sample_wishlist_summary">Importar un ejemplo de lista de deseos con datos incluyendo padres.</string>
     <!-- CrossesTrackerFragment -->
+    <string name="crosses_all_filter">Todas</string>
+    <string name="crosses_unplanned_filter">No planeada(s)</string>
+    <string name="crosses_planned_filter">Planeada(s)</string>
+    <string name="no_crosses_text">No hay datos disponibles.</string>
+    <string name="cross_tracker_item_count">123</string>
+    <string name="cross_tracker_item_female">progenitor hembra</string>
+    <string name="cross_tracker_item_male">progenitor macho</string>
+    <string name="cross_tracker_item_person">Usuario</string>
+    <string name="cross_tracker_item_date">2024-12-20</string>
+    <string name="cross_tracker_item_progress">5/5</string>
+    <string name="dialog_crosses_by_persons">Cruzas por Usuarios</string>
     <string name="dialog_crosses_by_person_known_message">%d cruzas colectadas por usuarios desconocidos</string>
+    <string name="dialog_crosses_by_dates">Cruzas por Fechas</string>
+    <string name="dialog_wish_progress_title">Progreso de Deseos</string>
+    <string name="dialog_wish_progress_message">Tipo de Deseo: %s\nMínimo: %s\nMáximo: %s\nProgreso: %s</string>
+    <string name="crosses_toolbar_hide_completed">Ocultar elementos completados</string>
+    <string name="crosses_toolbar_show_completed">Mostrar elementos completados</string>
     <!--  SearchFragment  -->
+    <string name="search_fragment_title">Buscar</string>
     <!--  BottomNavBar  -->
+    <string name="bottom_nv_home">Inicio</string>
+    <string name="bottom_nv_crosses">Cruzas</string>
+    <string name="bottom_nv_summary">Gráficos</string>
+    <string name="bottom_nv_parents">Progenitores</string>
+    <string name="bottom_nv_settings">Ajustes</string>
 </resources>

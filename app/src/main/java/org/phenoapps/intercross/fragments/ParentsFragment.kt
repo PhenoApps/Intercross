@@ -132,9 +132,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         (activity as MainActivity).applyFragmentInsets(root, fragParentsTb)
 
-
-        (activity as MainActivity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
         val tabFocus = arguments?.getInt("malesFirst") ?: 0
 
         viewModel.updateSelection(0)

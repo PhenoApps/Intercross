@@ -479,7 +479,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         startObservers()
 
         mBinding.mainTb.setNavigationOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -785,12 +785,19 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
      */
     fun applyBottomInsets(root: View) {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(
+            val systemInsets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or
                         WindowInsetsCompat.Type.displayCutout()
             )
 
-            root.updatePadding(bottom = insets.bottom)
+            val imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // if keyboard is visible, use ime insets, otherwise use system insets
+            val bottomInsets =
+                if (imeInsets.bottom > 0) imeInsets.bottom
+                else systemInsets.bottom
+
+            root.updatePadding(bottom = bottomInsets)
 
             windowInsets
         }

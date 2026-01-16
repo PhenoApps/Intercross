@@ -1,28 +1,364 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Intercross</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="drawer_close">Cerrar</string>
+    <string name="cross_id">ID Cruza:</string>
+    <string name="save_text">Guardar</string>
+    <string name="start_from">Empieza De</string>
+    <string name="auto">Auto</string>
+    <string name="pad_length">largo del pad</string>
+    <string name="number">número</string>
+    <string name="suffix">sufijo</string>
+    <string name="prefix">prefijo</string>
     <!-- About dialog -->
+    <string name="about_version_title">Versión</string>
+    <string name="about_title_other_apps">PhenoApps</string>
+    <string name="about_project_lead_title">Líder del Projecto</string>
+    <string name="about_developer_title">Desarrollador</string>
+    <string name="about_email_title">Email</string>
+    <string name="about_contributors_title">Colaboradores</string>
+    <string name="about_contributors_developers_title">Desarrolladores</string>
+    <string name="about_translators_title">Traductores</string>
+    <string name="about_contributors_funding_title">Financiamiento</string>
+    <string name="about_rate">Calificar esta aplicación</string>
+    <string name="about_technical_title">Detalles Tecnicos</string>
+    <string name="about_github_title">GitHub</string>
+    <string name="about_licenses_title">Licencias</string>
+    <string name="about_help_translate_title">Ayúdanos a traducir</string>
+    <string name="changelog_title">Registro de Cambios</string>
+    <string name="libraries_title">Bibliotecas</string>
+    <string name="parents">Progenitores</string>
+    <string name="metaData">Metadatos</string>
+    <string name="Seeds">Semillas</string>
+    <string name="Fruits">Frutos</string>
+    <string name="Flowers">Flores</string>
+    <string name="UpdateMetaData">Actualizar Metadatos</string>
+    <string name="error_value_exceeds_max">El valor no puede exceder %d</string>
+    <string name="navigate_to_wishlist">Navegar a la lista de deseos</string>
+    <string name="navigate_to_crossblock">Navegar al bloque de cruzas</string>
+    <string name="Clear">Limpiar</string>
+    <string name="New">Nuevo</string>
+    <string name="SelectAllRows">Seleccionar todas las filas</string>
+    <string name="Name">Nombre</string>
+    <string name="Code">Código</string>
+    <string name="PotentialMales">Machos Potentiales</string>
+    <string name="ErrorCodeExists">Código Existente</string>
+    <string name="FemaleID">ID Hembrar:</string>
+    <string name="MaleID">ID Macho:</string>
+    <string name="search_with_barcode_scanner">Buscar con el escáner de código de barras.</string>
+    <string name="continuous_scan_and_submit">Escaneo y envío continuos.</string>
+    <string name="test">PRUEBA</string>
+    <string name="import_a_zpl_file">Importar un archivo ZPL</string>
+    <string name="zpl_default" formatted="false">        ^XA^DFR:TEMPLATE^FS
+        ^PW406
+        ^LH10,10^FS
+        ^FO0,0^A0,25,20^FN1^FS
+        ^FO140,30^BQN,2,3,H,^FN2^FS
+        ^FO140,170^A0,25,20^FN5^FS
+        ^XZ
+    </string>
+    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2\"x1\" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
+    <string name="import_zpl">Importar ZPL</string>
+    <string name="female">Hembra</string>
+    <string name="male">Macho</string>
+    <string name="delete">Eliminar</string>
+    <string name="delete_all">Eliminar todo</string>
+    <string name="print">Imprimir</string>
+    <string name="none">Ninguno</string>
+    <string name="pattern">Patrón</string>
+    <string name="uuid">UUID</string>
+    <string name="male_parent">Progenitor Macho</string>
+    <string name="female_parent">Progenitor Hembra</string>
+    <string name="crosses">Cruzas</string>
+    <string name="import_file">Importar</string>
     <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name
             must not match wishlist_header_type-->
+    <string name="parents_header_code_id">codigoId</string>
+    <string name="parents_header_readable_name">nombre</string>
+    <string name="parents_header_sex">sexo</string>
     <!-- Wishlist Input File Header's -->
+    <string name="wishlist_header_female_id">hembraDbId</string>
+    <string name="wishlist_header_male_id">machoDbId</string>
+    <string name="wishlist_header_female_name">nombreHembra</string>
+    <string name="wishlist_header_male_name">machoNombre</string>
+    <string name="wishlist_header_type">deseoTipo</string>
+    <string name="wishlist_header_min">deseosMin</string>
+    <string name="wishlist_header_max">deseosMax</string>
+    <string name="parental_navigation">Progenitores</string>
+    <string name="parents_dont_exist">Progenitores no existen en la BD</string>
+    <string name="navigate_to_summary">Ir al resumen</string>
+    <string name="add_female">Agregar Hembra</string>
+    <string name="add_male_group">Agregar Grupo de Machos</string>
+    <string name="add_male">Agregar Macho</string>
+    <string name="wishlist_is_empty">La lista de deseos está vacía, primero importar una lista de deseos.</string>
+    <string name="export">Exportar</string>
+    <string name="about">Acerca de</string>
+    <string name="settings">Ajustes</string>
+    <string name="summary_and_wishlist_empty">Resumen y lista de deseos están vacíos.</string>
+    <string name="parents_table_empty">La tabla de progenitores está vacía.</string>
+    <string name="summary_empty">No se han hecho cruzas.</string>
+    <string name="parent_event_does_not_exist">Progenitor no existe como un evento de cruza.</string>
+    <string name="go">Ir</string>
+    <string name="cancel">Cancelar</string>
+    <string name="qr_code_for_parent">Código QR para progenitor</string>
+    <string name="button_to_scan_next_text">Botón para escanear la siguiente entrada de texto.</string>
+    <string name="button_to_create_wishlist">Botón para crear una nueva lista de deseos.</string>
+    <string name="barcode_preview_image">Vista previa del código de barras.</string>
+    <string name="zxing_scan_mode_single">Modo Simple</string>
+    <string name="zxing_status_single">Simple</string>
+    <string name="zxing_scan_mode_search">Modo de Búsqueda</string>
+    <string name="zxing_scan_mode_continuous">Modo Continuo</string>
+    <string name="choose_a_file_to_import">Elegir un archivo a importar.</string>
+    <string name="choose_an_export_file_path">Elegir ruta de archivo de exportación.</string>
+    <string name="exported_file_name">Nombre de archivo exportado.</string>
+    <string name="default_crosses_export_file_name">cruzas</string>
+    <string name="default_database_export_file_name">intercross</string>
+    <string name="default_database_backup_export_file_name">intercross_backup</string>
+    <string name="ask_for_new_name">Ingrese un nuevo nombre de archivo</string>
+    <string name="crosses_export_mom_header">hembraObsUnitDbId</string>
+    <string name="crosses_export_dad_header">machoObsUnitDbId</string>
+    <string name="crosses_export_name_header">nombre legible</string>
+    <string name="crosses_export_date_header">timestamp</string>
+    <string name="crosses_export_person_header">usuario</string>
+    <string name="crosses_export_experiment_header">experimento</string>
+    <string name="crosses_export_type_header">tipo</string>
+    <string name="crosses_export_sex_header">sexo</string>
+    <string name="crosses_export_fruits_header">frutos</string>
+    <string name="crosses_export_flowers_header">flores</string>
+    <string name="crosses_export_seeds_header">semillas</string>
+    <string name="crosses_export_id_header">cruzaDbId</string>
+    <string name="ask_user_to_append_or_drop_parents">Ya existe una tabla de progenitores.</string>
+    <string name="ask_user_to_append_or_drop_wishlist">Ya existe una tabla de lista de deseos.</string>
+    <string name="start_fresh">Iniciar nuevo</string>
+    <string name="append">Añadir</string>
+    <string name="cross_id_already_exists_as_event">Identificador ya utilizado como un evento de cruza.</string>
+    <string name="cross_id_already_exists_as_parent">Identificador ya utilizado como progenitor.</string>
+    <string name="parent_already_exists">El códigode progenitor ya existe.</string>
+    <string name="search_barcode_description">Buscar por código de barras</string>
+    <string name="single_scan_description">Escanear un solo código de barras</string>
+    <string name="continuous_scan_description">Escanear una secuencia de códigos de barras</string>
+    <string name="delete_cross_entry_title">¿Eliminar esta entrada de cruza?</string>
+    <string name="no_device_paired">Ningún dispositivo vinculado</string>
+    <string name="printer_open">Impresora abierta</string>
+    <string name="printer_paused">Impresora pausada</string>
+    <string name="printer_empty">Impresora vacía</string>
+    <string name="printner_not_connected">Impresora no conectada</string>
+    <string name="unknown">Desconocido</string>
+    <string name="wish_min_complete">Mínimo de deseos completados.</string>
+    <string name="wish_max_complete">Máximo de deseos completado.</string>
+    <string name="wish_min_max_complete">Mínimo y máximo de deseos completado.</string>
+    <string name="you_must_enter_cross_name">Debe introducir un nombre de cruza.</string>
+    <string name="you_must_enter_female_name">Debe introducir un nombre de hembra.</string>
+    <string name="you_must_enter_male_name">Debe introducir un nombre de macho.</string>
+    <string name="person">Usuario</string>
+    <string name="set_person">Establecer Usuario</string>
+    <string name="person_must_be_set">El usuario debe ser establecido antes de que se puedan hacer cruzas.</string>
+    <string name="undo">Deshacer</string>
+    <string name="cross_id_cannot_be_blank">ID Cruza no puede estar en blanco.</string>
+    <string name="minimum_wish_for_fruits_met">El deseo mínimo de frutos se ha cumplido.</string>
+    <string name="minimum_wish_for_seeds_met">El deseo mínimo de semillas se ha cumplido.</string>
+    <string name="minimum_wish_for_flowers_met">El deseo mínimo de flores se ha cumplido.</string>
+    <string name="was_created">fue creado</string>
+    <string name="parents_of_crosses_not_deleted">Los progenitores de las cruzas no se pueden eliminar.</string>
+    <string name="count">Contador</string>
+    <string name="wish">Deseo</string>
+    <string name="no_child_exists">No hay progenie.</string>
+    <string name="click_item_to_open_child">Haga clic para abrir la página de progenie de cruza.</string>
+    <string name="about_title">Acerca de</string>
+    <string name="barcode_scan_label">Escanear Códigos de Barras</string>
+    <string name="events_fragment_label">Eventos</string>
+    <string name="event_detail_label">Evento</string>
+    <string name="parent_label">Progenitores</string>
+    <string name="settings_label">Ajustes</string>
+    <string name="patterns_label">Patrones</string>
+    <string name="import_zpl_label">Importar ZPL</string>
+    <string name="pollen_manager_label">Administrador de Polen</string>
+    <string name="wishlist_label">Resumen de Lista de Deseos</string>
+    <string name="summary_label">Resumen</string>
+    <string name="cross_block_label">Bloque de Cruzas</string>
+    <string name="no_crosses_made">Ninguna</string>
+    <string name="wishlist_less_than_one_third">&lt;=33%</string>
+    <string name="wishlist_less_than_two_third">&lt;=66%</string>
+    <string name="wishlist_more_than_two_third">&gt;=66%</string>
+    <string name="wishlist_achieved_legend_label">Mínimo</string>
+    <string name="wishlist_maximum_met_legend_label">Máximo</string>
+    <string name="delete_all_wishlist_title">¿Eliminar toda la lista de deseos?</string>
+    <string name="missing_headers">Faltan encabezados en el archivo de importación.</string>
     <!-- Brapi strings -->
+    <string name="preferences_brapi_oidc_flow_oauth_implicit">OAuth2 Concesión Implícita</string>
+    <string name="preferences_brapi_oidc_flow_old_custom">Field Book Original Personalizado</string>
+    <string name="preferences_brapi_core_title">Configuración</string>
+    <string name="preferences_brapi_advanced_title">Configuración de Auth Avanzada</string>
+    <string name="preferences_brapi_servers_title">Servidores Comunitarios</string>
+    <string name="preferences_brapi_server_barcode">Escanear código de barras del servidor</string>
+    <string name="preferences_brapi_server_barcode_prompt">Escanear una URL del servidor</string>
+    <string name="preferences_brapi_server_cassavabase">CassavaBase</string>
+    <string name="preferences_brapi_server_t3_wheat">T3 Wheat Sandbox</string>
+    <string name="preferences_brapi_server_t3_oat">T3 Oat Sandbox</string>
+    <string name="preferences_brapi_server_t3_barley">T3 Barley Sandbox</string>
+    <string name="preferences_brapi_server_test">Default Test Server</string>
+    <string name="preferences_brapi_server_add">Enviar un servidor</string>
+    <string name="preferences_brapi_version">Versión BrAPI</string>
+    <string name="preferences_brapi_version_v1">V1</string>
+    <string name="preferences_brapi_version_v2">V2</string>
+    <string name="prefrences_brapi_page_size">Tamaño de Página</string>
+    <string name="preferences_brapi_oidc_flow">Flujo OIDC</string>
+    <string name="brapi_oidc_url">URL de Descubrimiento OIDC</string>
+    <string name="brapi_oidc_url_desc">La ubicación del documento JSON de Descubrimiento OIDC</string>
+    <string name="brapi_oidc_url_default">https://test-server.brapi.org/.well-known/openid-configuration</string>
+    <string name="main_barcode_text">Escanear código de barras</string>
+    <string name="graph_cross_over_time_title">Cruzas en el tiempo</string>
+    <string name="graph_type_title">Tipo</string>
+    <string name="graph_meta_title">Metadatos</string>
+    <string name="graph_no_data_available">No hay datos disponibles</string>
+    <string name="meta">Meta</string>
+    <string name="type">Tipo</string>
+    <string name="sex">Sexo</string>
+    <string name="summary_title">Resumen</string>
+    <string name="cross_type_biparental">Biparental</string>
+    <string name="cross_type_open">Abrir</string>
+    <string name="cross_type_self">Auto</string>
+    <string name="cross_type_unknown">Desconocido</string>
+    <string name="cross_type_poly">Policruza</string>
+    <string name="export_or_import">Exportar o Importar</string>
+    <string name="home">Inicio</string>
+    <string name="import_string">Importar</string>
+    <string name="frag_event_detail_add_new_metadata">Agregar Nuevos Metadatos</string>
+    <string name="submit">Enviar</string>
+    <string name="dialog_confirm_remove_metadata">Pulse OK para eliminar metadatos.</string>
+    <string name="dialog_confirm_remove_for_all">Esto eliminará el campo seleccionado para todas las cruzas.</string>
+    <string name="dialog_metadata_property_hint">Nombre de Propiedad</string>
+    <string name="dialog_metadata_default_hint">Valor Predeterminado</string>
+    <string name="dialog_metadata_title">Creador de Nueva Propiedad</string>
+    <string name="dialog_metadata_manager_title">Administrador de Metadatos</string>
+    <string name="dialog_metadata_value_must_be_integer_or_empty">Por favor ingrese un entero o deje vacío para el valor de la propiedad.</string>
+    <string name="dialog_metadata_property_must_not_be_empty">Por favor ingrese un nombre de propiedad.</string>
+    <string name="frag_manage_metadata_title">Administrar Metadatos</string>
+    <string name="frag_new_metadata_title">Nuevos Metadatos</string>
+    <string name="frag_edit_metadata_title">Editar Metadatos</string>
+    <string name="summary">Resumen</string>
+    <string name="crossblock">Bloque de Cruzas</string>
+    <string name="wishlist">Deseos</string>
+    <string name="cross_count">Conteo Cruzas</string>
+    <string name="crosses_empty">Las cruzas deben ser creadas primero.</string>
+    <string name="delete_all_cross_title">¿Eliminar todas las cruzas?</string>
+    <string name="dialog_metadata_property_must_not_have_comma">Las propiedades de los metadatos no deben contener comas.</string>
+    <string name="fragment_settings_no_metadata_exists">No hay metadatos para actualizar.</string>
+    <string name="preferences_profile_fragment_label">Perfil</string>
+    <string name="preferences_naming_fragment_label">Nombrando</string>
+    <string name="preferences_workflow_fragment_label">Workflow</string>
+    <string name="preferences_printing_fragment_label">Imprimiendo</string>
+    <string name="preferences_database_fragment_label">Base de Datos</string>
+    <string name="preferences_brapi_fragment_label">Brapi</string>
+    <string name="preferences_about_fragment_label">Acerca de</string>
+    <string name="brapi_pref_add_account_title">Agregar Cuenta Android</string>
+    <string name="brapi_auth_account_created">Cuenta creada.</string>
+    <string name="brapi_auth_account_created_failed">La creación de cuenta falló.</string>
+    <string name="dialog_account_creator_username_hint">Nuevo nombre de usuario</string>
+    <string name="dialog_account_creator_password_hint">Contraseña opcional</string>
+    <string name="dialog_brapi_account_creator_title">Creador de Cuenta</string>
+    <string name="dialog_account_creator_username_failed">El nombre de usuario no debe estar en blanco.</string>
+    <string name="dialog_account_creator_summary">Para guardar su cuenta localmente, introduzca las credenciales de usuario.</string>
+    <string name="brapi_auth_fragment_label">Autenticación BrAPI</string>
+    <string name="frag_wf_choose_female_summary">Por favor, comenzar eligiendo un progenitor hembra.</string>
+    <string name="frag_wf_summary">Resumen</string>
+    <string name="wf_must_choose_at_least_one_parent">Debe elegir al menos un progenitor.</string>
+    <string name="wf_no_male_chosen_assuming_self_cross">Ningún macho elegido, asumiendo la auto-cruza.</string>
+    <string name="literal_cross">cruza</string>
+    <string name="metadata_fruits">frutos</string>
+    <string name="metadata_seeds">semillas</string>
+    <string name="metadata_flowers">flores</string>
+    <string name="metadata_null_placeholder">nulo</string>
+    <string name="frag_wf_toolbar_title">Nuevo Elemento en Lista de Deseos</string>
+    <string name="frag_wf_male_choice_summary">Por favor, elegir un macho para emparejar con %s</string>
+    <string name="frag_wf_choose_type_summary">Por favor, elegir un tipo de deseo para la pareja %s y %s.</string>
+    <string name="frag_wf_values_summary">Por favor, elegir un número mínimo y máximo de %s para la pareja %s y %s.</string>
+    <string name="frag_wf_values_min_must_not_be_null">Mínimo debe ser mayor que cero.</string>
+    <string name="frag_wf_values_max_must_not_be_null">Máximo debe ser igual o superior al mínimo.</string>
+    <string name="frag_wf_summary_summary">¿Está bien crear un deseo de un mínimo de %d y un máximo de %d %s de la pareja %s y %s?</string>
+    <string name="minimum_wish_met">Mínimo deseo para %s cumplido.</string>
+    <string name="maximum_wish_met">Se ha cumplido el deseo máximo para %s.</string>
+    <string name="minimum_maximum_wish_met">Se ha cumplido el mínimo y máximo deseo para %s.</string>
+    <string name="frag_wf_a_female_must_be_chosen">Hay que elegir a una hembra.</string>
+    <string name="menu_cross_count_delete_all_title">Eliminar todo</string>
+    <string name="dialog_cross_count_delete_all_message">Esto eliminará irreversiblemente todas las cruzas (%s).</string>
+    <string name="dialog_cross_count_delete_both">planeadas y no planeadas</string>
+    <string name="dialog_cross_count_delete_planned">planeada(s)</string>
+    <string name="dialog_cross_count_delete_unplanned">no planeada(s)</string>
+    <string name="dialog_cross_count_delete_all_message_2">¿Seguro(a)?</string>
+    <string name="menu_cross_count_expand_more">Expandir Columnas</string>
+    <string name="menu_cross_count_expand_less_title">Expandir Menos</string>
+    <string name="menu_cross_count_expand_more_title">Expandir Más</string>
+    <string name="date">Fecha</string>
+    <string name="progress">Progreso</string>
+    <string name="minimum">Mínimo</string>
+    <string name="maximum">Máximo</string>
+    <string name="wishlist_complete_content_description">Lista de deseos completa</string>
+    <string name="frag_parents_parents_not_deleted_reason">Algunos progenitores no pudieron ser eliminados porque son progenitores de alguna cruza.</string>
+    <string name="frag_parents_create_parents_btn">Botón para crear progenitores.</string>
+    <string name="frag_parents_new_parent_title">Nuevo Progenitor</string>
+    <string name="frag_parents_selected_text">%s progenitores son seleccionados</string>
+    <string name="menu_parents_delete_title">Eliminar los progenitores seleccionados.</string>
+    <string name="menu_parents_print_title">Imprimir los progenitores seleccionados.</string>
+    <string name="frag_parent_confirm_delete_message">Esto eliminará los progenitores seleccionados.</string>
+    <string name="frag_parent_delete_selected_title">Eliminar Progenitores</string>
+    <string name="dialog_export_title">Exportar Cruzas</string>
+    <string name="default_value">Valor Predeterminado</string>
+    <string name="nav_frag_metadata_label">Fragmento de Lista de Metadatos</string>
+    <string name="nav_frag_metadata_form_label">Etiqueta Formulario de Metadatos</string>
+    <string name="frag_metadata_list_delete_dialog_title">¿Eliminar estos metadatos?</string>
+    <string name="collect_metadata_label">Colectar Metadatos</string>
+    <string name="collect_metadata_toast_enabled">Colección de metadatos activada</string>
+    <string name="collect_metadata_toast_disabled">Colección de metadatos desactivada</string>
     <!-- Brapi strings -->
+    <string name="brapi_base_url_desc">La URL base para el servidor conectado por BrAPI</string>
+    <string name="brapi_base_url_default">https://test-server.brapi.org/</string>
+    <string name="no_studies_selected_warning">No hay estudios seleccionados.</string>
+    <string name="next">Siguiente</string>
+    <string name="prev">Anterior</string>
+    <string name="page_one_of_one">Página 1 de 1</string>
+    <string name="brapi_auth_needed_title">Inicio de Sesión Necesario</string>
+    <string name="brapi_info_title">Breeding API</string>
+    <string name="brapi_auth_btn">Iniciar Sesión en el Sitio</string>
     <!-- Import dialog -->
+    <string name="import_source_local">Almacenamiento local</string>
+    <string name="import_source_cloud">Almacenamiento en la nube</string>
+    <string name="import_source_brapi">BrAPI</string>
+    <string name="import_source_ask">Preguntar siempre</string>
+    <string name="pref_brapi_server_title">Dirección Servidor BrAPI</string>
     <!-- File Explore Dialog -->
     <!-- Dialogs -->
     <!-- Experiment -->
     <!-- Profile -->
+    <string name="collect_dialog_verify_collector">Es esto aún</string>
+    <string name="collect_dialog_verify_no_button">No</string>
+    <string name="collect_dialog_verify_yes_button">Sí</string>
+    <string name="collect_dialog_neutral_button">Modificar ajustes</string>
+    <string name="collect_dialog_new_collector">¿Quieres guardar el nombre de la persona que colecta datos?</string>
     <!-- PREFERENCES -->
     <!-- Profile Preferences-->
     <!-- Behavior Preferences: Naming and Workflow preferences -->
+    <string name="prefs_behavior_collect_additional_info_title">Colectar información adicional</string>
+    <string name="prefs_behavior_collect_additional_info_summary">Crear y administrar metadatos adicionales.</string>
     <!-- Printing preferences -->
     <!-- Database preferences -->
+    <string name="profile_require_user">Requiere Usuario para Colectar</string>
     <!-- Storage Definer -->
+    <string name="define_button_text">Elegir Carpeta</string>
     <!--  Export  -->
+    <string name="brapi_edit_display_name_default">Servidor de Pruebas BrAPI</string>
     <!-- Permissions  -->
     <!-- Import  -->
+    <string name="add_wishlist_item">Agregar un elemento a lista de deseos</string>
+    <string name="add_new_male_parent">Crear un nuevo progenitor macho</string>
+    <string name="add_new_female_parent">Crear un nuevo progenitor hembra</string>
     <!-- AppIntroActivity -->
+    <string name="app_intro_intro_summary_slide1">Intercross se utiliza para rastrear cruzas en programas de mejoramiento e investigación fitogenética. La aplicación rastrea a los progenitores, IDs de cruzas y metadatos a medida que se crean cruzamientos. Las etiquetas para las cruzas se pueden imprimir con impresoras Bluetooth Zebra y las listas de cruzas pueden ser exportadas. Intercross es parte del proyecto PhenoApps que tiene como objetivo modernizar la recopilación de datos de mejoramiento genetico de plantas a través de herramientas optimizadas para captura de datos.</string>
+    <string name="app_intro_optional_setup_summary">Los ajustes opcionales personalizan la configuración de Intercross para la colección de datos.</string>
     <!-- CrossesTrackerFragment -->
+    <string name="dialog_crosses_by_person_known_message">%d cruzas colectadas por usuarios desconocidos</string>
     <!--  SearchFragment  -->
     <!--  BottomNavBar  -->
 </resources>

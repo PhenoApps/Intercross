@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Intercross</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="drawer_close">Fechar</string>
+    <string name="cross_id">ID de Cruzamento:</string>
+    <string name="save_text">Salvar</string>
     <!-- About dialog -->
     <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name

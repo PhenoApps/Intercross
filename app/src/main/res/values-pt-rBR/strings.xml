@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Intercross</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="drawer_close">Fechar</string>
+    <string name="cross_id">ID de Cruzamento:</string>
+    <string name="save_text">Salvar</string>
     <!-- About dialog -->
+    <string name="zpl_default" formatted="false">        ^XA^DFR:TEMPLATE^FS
+        ^PW406
+        ^LH10,10^FS
+        ^FO0,0^A0,25,20^FN1^FS
+        ^FO140,30^BQN,2,3,H,^FN2^FS
+        ^FO140,170^A0,25,20^FN5^FS
+        ^XZ
+    </string>
+    <string name="print">Imprimir</string>
+    <string name="crosses">Cruzamentos</string>
     <!-- Parents Input File Header's
         Warning: parents_header_code_id and parents_header_readable_name
             must not match wishlist_header_type-->
     <!-- Wishlist Input File Header's -->
+    <string name="default_crosses_export_file_name">cruzamentos</string>
     <!-- Brapi strings -->
     <!-- Brapi strings -->
     <!-- Import dialog -->

@@ -3,7 +3,6 @@ package org.phenoapps.intercross.fragments
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
@@ -77,10 +76,12 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
 
                         when {
                             startFrom -> {
+                                numberEditText.visibility = View.VISIBLE
                                 startFromRadioButton.isChecked = true
                                 autoRadioButton.isChecked = false
                             }
                             isAutoIncrement -> {
+                                numberEditText.visibility = View.GONE
                                 startFromRadioButton.isChecked = false
                                 autoRadioButton.isChecked = true
                             }
@@ -132,12 +133,12 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
         mBinding.apply {
             when (checkedId) {
                 R.id.autoRadioButton -> {
-                    numberEditText.isEnabled = false
+                    numberEditText.visibility = View.GONE
                     mLastUsed = numberEditText.text.toString()
                     numberEditText.setText("0")
                 }
                 else -> {
-                    numberEditText.isEnabled = true
+                    numberEditText.visibility = View.VISIBLE
                     numberEditText.setText(mLastUsed)
                 }
             }
@@ -157,8 +158,8 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
 
     private fun buildSettings() = Settings().apply {
         id = 0
-        var n = mBinding.numberEditText.text.toString().ifEmpty { "0" }
-        var p = mBinding.padEditText.text.toString().ifEmpty { "0" }
+        val n = mBinding.numberEditText.text.toString().ifEmpty { "0" }
+        val p = mBinding.padEditText.text.toString().ifEmpty { "0" }
         isAutoIncrement = mBinding.autoRadioButton.isChecked
         isPattern = mBinding.patternButton.isChecked
         isUUID = mBinding.uuidButton.isChecked

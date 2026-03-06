@@ -8,8 +8,10 @@
     <string name="save_text">Save</string>
     <string name="start_from">Starts From</string>
     <string name="auto">Auto</string>
-    <string name="pad_length">pad length</string>
-    <string name="number">number</string>
+    <string name="pad_length_hint">Number of 0\'s before the ID</string>
+    <string name="pad_length">Pad Length</string>
+    <string name="number">ID</string>
+    <string name="number_hint">Number to start ID\'s from</string>
     <string name="suffix">suffix</string>
     <string name="prefix">prefix</string>
 

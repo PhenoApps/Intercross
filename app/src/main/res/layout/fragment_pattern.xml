@@ -90,20 +90,22 @@
 
             <EditText
                 android:id="@+id/prefixEditText"
-                android:layout_width="140dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:ems="10"
                 android:hint="@string/prefix"
                 android:importantForAutofill="no"
                 android:inputType="textNoSuggestions|textVisiblePassword"
+                app:layout_constraintEnd_toStartOf="@+id/suffixEditText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/suffixEditText"
-                android:layout_width="140dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
@@ -113,66 +115,100 @@
                 android:importantForAutofill="no"
                 android:inputType="textNoSuggestions|textVisiblePassword"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/prefixEditText"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/numberEditText"
+            <!-- Number and Pad Configuration Group -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/numberConfigCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:ems="10"
-                android:hint="@string/number"
-                android:inputType="number"
-                android:text=""
-                android:importantForAutofill="no"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="8dp"
+                app:contentPadding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/radioGroup"
-                app:layout_constraintTop_toTopOf="@+id/radioGroup" />
-
-            <EditText
-                android:id="@+id/padEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:ems="10"
-                android:hint="@string/pad_length"
-                android:inputType="number"
-                android:text=""
-                android:importantForAutofill="no"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/radioGroup"
-                app:layout_constraintTop_toBottomOf="@+id/numberEditText" />
-
-            <RadioGroup
-                android:id="@+id/radioGroup"
-                android:layout_width="147dp"
-                android:layout_height="123dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/prefixEditText">
+                app:layout_constraintTop_toBottomOf="@+id/prefixEditText"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-                <RadioButton
-                    android:id="@+id/autoRadioButton"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="@string/auto" />
+                    android:orientation="vertical">
 
-                <RadioButton
-                    android:id="@+id/startFromRadioButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="@string/start_from" />
-            </RadioGroup>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/number"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <RadioGroup
+                        android:id="@+id/radioGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/autoRadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:layout_weight="1"
+                            android:text="@string/auto" />
+
+                        <RadioButton
+                            android:id="@+id/startFromRadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/start_from" />
+                    </RadioGroup>
+
+                    <EditText
+                        android:id="@+id/numberEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:ems="10"
+                        android:hint="@string/number_hint"
+                        android:inputType="number"
+                        android:text=""
+                        android:importantForAutofill="no"
+                        android:visibility="gone" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="?android:attr/listDivider"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pad_length"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <EditText
+                        android:id="@+id/padEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/pad_length_hint"
+                        android:inputType="number"
+                        android:text=""
+                        android:importantForAutofill="no" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

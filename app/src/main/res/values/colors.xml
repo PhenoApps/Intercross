@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF5722</color>
     <color name="colorAccentTransparent">#42FF5722</color>
     <color name="colorDisabled">#FBE9E7</color>
+    <color name="patternPrefixColor">#E53935</color>
+    <color name="patternSuffixColor">#1E88E5</color>
 
     <color name="progressBlank">#AAAAAAAA</color>
     <color name="progressStart">#90FFFF00</color>

@@ -1,9 +1,14 @@
 package org.phenoapps.intercross.fragments
 
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import com.google.android.material.button.MaterialButtonToggleGroup
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.data.SettingsRepository
@@ -15,28 +20,16 @@ import java.util.UUID
 
 class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.fragment_pattern) {
 
-    data class Pattern(
-        val uuid: Boolean = false,
-        val auto: Boolean = false,
-        val suffix: String = "",
-        val prefix: String = "",
-        val number: Int = 0,
-        val pad: Int = 3
-    ) {
-        val pattern = prefix + number.toString().padStart(pad, '0') + suffix
-    }
-
     private val settingsModel: SettingsViewModel by viewModels {
         SettingsViewModelFactory(SettingsRepository.getInstance(db.settingsDao()))
     }
 
     override fun onPause() {
         super.onPause()
-
         settingsModel.insert(buildSettings())
     }
 
-    private var mLastUsed: String = "0"
+    private var mLastUsed: String = "1"
 
     private var mLastUUID: String = UUID.randomUUID().toString()
 
@@ -55,20 +48,33 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
     }
 
     private fun setupUI() {
-        settingsModel.settings.observeForever { settings ->
-            settings?.let {
-                mBinding.settings = it
-                updateUIBasedOnSettings(it)
-            }
+        settingsModel.settings.observe(viewLifecycleOwner) { settings ->
+            settings?.let { updateUIBasedOnSettings(it) }
         }
     }
 
     private fun updateUIBasedOnSettings(settings: Settings) {
         with(settings) {
+            // Set the toggle group selection without triggering the listener logic
+            val targetButtonId = when {
+                isUUID -> R.id.uuidButton
+                isPattern -> R.id.patternButton
+                else -> R.id.noneButton
+            }
+            if (mBinding.idTypeToggleGroup.checkedButtonId != targetButtonId) {
+                mBinding.idTypeToggleGroup.check(targetButtonId)
+            }
+
             when {
-                isUUID -> mBinding.codeTextView.text = mLastUUID
+                isUUID -> {
+                    mBinding.idPreviewLayout.visibility = View.VISIBLE
+                    mBinding.idPreviewEditText.setText(mLastUUID)
+                    mBinding.fragmentPatternInput.visibility = View.GONE
+                }
                 isPattern -> {
                     mBinding.apply {
+                        idPreviewLayout.visibility = View.VISIBLE
+                        fragmentPatternInput.visibility = View.VISIBLE
                         prefixEditText.setText(prefix)
                         suffixEditText.setText(suffix)
                         numberEditText.setText(number.toString())
@@ -76,31 +82,35 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
 
                         when {
                             startFrom -> {
-                                numberEditText.visibility = View.VISIBLE
+                                numberInputLayout.visibility = View.VISIBLE
                                 startFromRadioButton.isChecked = true
                                 autoRadioButton.isChecked = false
                             }
                             isAutoIncrement -> {
-                                numberEditText.visibility = View.GONE
+                                numberInputLayout.visibility = View.GONE
                                 startFromRadioButton.isChecked = false
                                 autoRadioButton.isChecked = true
                             }
                         }
+                        updatePreview()
                     }
                 }
-                else -> mBinding.codeTextView.text = ""
+                else -> {
+                    mBinding.idPreviewLayout.visibility = View.GONE
+                    mBinding.fragmentPatternInput.visibility = View.GONE
+                }
             }
         }
     }
 
     private fun setupListeners() {
         mBinding.apply {
-            radioGroup2.setOnCheckedChangeListener { _, checkedId ->
-                handleRadioGroup2Change(checkedId)
+            idTypeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked) handleIdTypeChange(checkedId)
             }
 
-            radioGroup.setOnCheckedChangeListener { _, checkedId ->
-                handleRadioGroupChange(checkedId)
+            numberModeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+                handleNumberModeChange(checkedId)
             }
 
             arrayOf(prefixEditText, numberEditText, suffixEditText, padEditText).forEach {
@@ -109,40 +119,42 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
         }
     }
 
-    private fun handleRadioGroup2Change(checkedId: Int) {
+    private fun handleIdTypeChange(checkedId: Int) {
         closeKeyboard()
         mBinding.apply {
             when (checkedId) {
                 R.id.uuidButton -> {
+                    idPreviewLayout.visibility = View.VISIBLE
+                    idPreviewEditText.setText(mLastUUID)
                     fragmentPatternInput.visibility = View.GONE
-                    codeTextView.text = mLastUUID
                 }
                 R.id.patternButton -> {
+                    idPreviewLayout.visibility = View.VISIBLE
                     fragmentPatternInput.visibility = View.VISIBLE
-                    updateCodeTextView()
+                    updatePreview()
                 }
                 R.id.noneButton -> {
+                    idPreviewLayout.visibility = View.GONE
                     fragmentPatternInput.visibility = View.GONE
-                    codeTextView.text = ""
                 }
             }
         }
     }
 
-    private fun handleRadioGroupChange(checkedId: Int) {
+    private fun handleNumberModeChange(checkedId: Int) {
         mBinding.apply {
             when (checkedId) {
                 R.id.autoRadioButton -> {
-                    numberEditText.visibility = View.GONE
-                    mLastUsed = numberEditText.text.toString()
+                    mLastUsed = numberEditText.text.toString().ifEmpty { "1" }
+                    numberInputLayout.visibility = View.GONE
                     numberEditText.setText("0")
                 }
                 else -> {
-                    numberEditText.visibility = View.VISIBLE
+                    numberInputLayout.visibility = View.VISIBLE
                     numberEditText.setText(mLastUsed)
                 }
             }
-            updateCodeTextView()
+            updatePreview()
         }
     }
 
@@ -151,18 +163,18 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                updateCodeTextView()
+                updatePreview()
             }
         }
     }
 
     private fun buildSettings() = Settings().apply {
         id = 0
-        val n = mBinding.numberEditText.text.toString().ifEmpty { "0" }
+        val n = mBinding.numberEditText.text.toString().ifEmpty { "1" }
         val p = mBinding.padEditText.text.toString().ifEmpty { "0" }
         isAutoIncrement = mBinding.autoRadioButton.isChecked
-        isPattern = mBinding.patternButton.isChecked
-        isUUID = mBinding.uuidButton.isChecked
+        isPattern = mBinding.idTypeToggleGroup.checkedButtonId == R.id.patternButton
+        isUUID = mBinding.idTypeToggleGroup.checkedButtonId == R.id.uuidButton
         number = n.toInt()
         pad = p.toInt()
         prefix = mBinding.prefixEditText.text.toString()
@@ -170,20 +182,30 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
         startFrom = mBinding.startFromRadioButton.isChecked
     }
 
-    private fun updateCodeTextView() {
-        mBinding.codeTextView.text = buildPattern().pattern
-    }
-
-    private fun buildPattern(): Pattern {
-        val num = mBinding.numberEditText.text.toString().trim().ifEmpty { "0" }
+    private fun updatePreview() {
+        val num = mBinding.numberEditText.text.toString().trim().ifEmpty { "1" }
         val pad = mBinding.padEditText.text.toString().trim().ifEmpty { "0" }
-        return Pattern(
-            mBinding.uuidButton.isChecked,
-            mBinding.autoRadioButton.isChecked,
-            mBinding.suffixEditText.text.toString(),
-            mBinding.prefixEditText.text.toString(),
-            num.toInt(),
-            pad.toInt()
-        )
+        val prefix = mBinding.prefixEditText.text.toString()
+        val suffix = mBinding.suffixEditText.text.toString()
+        val numberStr = num.toInt().toString().padStart(pad.toInt(), '0')
+        val full = prefix + numberStr + suffix
+
+        val span = SpannableString(full)
+        if (prefix.isNotEmpty()) {
+            span.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.patternPrefixColor)),
+                0, prefix.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        if (suffix.isNotEmpty()) {
+            val start = prefix.length + numberStr.length
+            span.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.patternSuffixColor)),
+                start, full.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        mBinding.idPreviewEditText.setText(span)
     }
 }

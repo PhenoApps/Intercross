@@ -145,43 +145,42 @@ class BluetoothUtil {
         ^XZ"
     """*/
 
+    private fun resolvePrintTemplate(ctx: Context): String {
+        val pref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
+        val keyUtil = KeyUtil(ctx)
+
+        val selectedTemplateName = pref.getString(keyUtil.zplTemplateKey, "")?.trim().orEmpty()
+        val importedZpl = pref.getString(keyUtil.zplCodeKey, "")?.trim().orEmpty()
+
+        val selectedTemplate = if (
+            selectedTemplateName.isNotBlank() &&
+            !selectedTemplateName.equals("None", ignoreCase = true)
+        ) {
+            ZplTemplate.getTemplateByDisplayName(ctx, selectedTemplateName)
+        } else {
+            null
+        }
+
+        return when {
+            selectedTemplate != null -> selectedTemplate.zplCode
+            importedZpl.isNotBlank() -> importedZpl
+            else -> template
+        }
+    }
+
     fun print(ctx: Context, events: Array<Event>) {
 
-        val pref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
-
         choose(ctx) {
-
-            val importedZpl = pref.getString(KeyUtil(ctx).zplCodeKey, "") ?: ""
-
-            if (importedZpl.isNotBlank()) {
-
-                PrintThread(ctx, importedZpl, mBtName).printEvents(events)
-
-            } else {
-
-                PrintThread(ctx, template, mBtName).printEvents(events)
-
-            }
+            val resolvedTemplate = resolvePrintTemplate(ctx)
+            PrintThread(ctx, resolvedTemplate, mBtName).printEvents(events)
         }
     }
 
     fun print(ctx: Context, parents: Array<Parent>) {
 
-        val pref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
-
         choose(ctx) {
-
-            val importedZpl = pref.getString(KeyUtil(ctx).zplCodeKey, "") ?: ""
-
-            if (importedZpl.isNotBlank()) {
-
-                PrintThread(ctx, importedZpl, mBtName).printParents(parents)
-
-            } else {
-
-                PrintThread(ctx, template, mBtName).printParents(parents)
-
-            }
+            val resolvedTemplate = resolvePrintTemplate(ctx)
+            PrintThread(ctx, resolvedTemplate, mBtName).printParents(parents)
         }
     }
 }

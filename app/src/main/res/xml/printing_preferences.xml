@@ -13,5 +13,10 @@
             android:key="@string/key_pref_print_zpl_import"
             android:title="@string/prefs_zebra_import_title"
             android:summary="@string/prefs_zebra_import_summary" />
+        <Preference
+            android:icon="@drawable/ic_connection"
+            android:key="@string/key_pref_print_device_name"
+            android:title="@string/prefs_zebra_device_title"
+            android:summary="@string/prefs_zebra_device_summary" />
 
 </PreferenceScreen>

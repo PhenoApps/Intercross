@@ -7,6 +7,9 @@ import android.content.Context
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceManager
+import androidx.core.content.edit
+import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
 
@@ -24,28 +27,17 @@ class BluetoothUtil {
     //operation that uses the provided context to prompt the user for a paired bluetooth device
     @SuppressLint("MissingPermission")
     private fun choose(ctx: Context, f: () -> Unit) {
+        val pref = PreferenceManager.getDefaultSharedPreferences(ctx)
+        val keyUtil = KeyUtil(ctx)
 
-
-        /*Filter out some classes of bluetooth devices
-        mBluetoothAdapter.bondedDevices.forEach {
-            when(it?.bluetoothClass?.majorDeviceClass) {
-                //BluetoothClass.Device.Major.AUDIO_VIDEO -> Log.d("BTAUDIO_VIDEO", it?.bluetoothClass.toString())
-                BluetoothClass.Device.Major.COMPUTER -> Log.d("BTCOMPUTER", it.bluetoothClass.toString())
-                //BluetoothClass.Device.Major.HEALTH -> Log.d("BTHEALTH", it?.bluetoothClass.toString())
-                BluetoothClass.Device.Major.IMAGING -> Log.d("BTIMAGING", it.bluetoothClass.toString())
-                BluetoothClass.Device.Major.MISC -> Log.d("BTMISC", it.bluetoothClass.toString())
-                BluetoothClass.Device.Major.NETWORKING -> Log.d("BTNETWORKING", it.bluetoothClass.toString())
-                BluetoothClass.Device.Major.PERIPHERAL -> Log.d("BTPERIPHERAL", it.bluetoothClass.toString())
-                BluetoothClass.Device.Major.PHONE -> Log.d("BTPHONE", it.bluetoothClass.toString())
-                //BluetoothClass.Device.Major.TOY -> Log.d("BTTOY", it?.bluetoothClass.toString())
-                BluetoothClass.Device.Major.UNCATEGORIZED -> Log.d("BTUNCATEGORIZED", it.bluetoothClass.toString())
-                BluetoothClass.Device.Major.WEARABLE -> Log.d("BTWEARABLE", it.bluetoothClass.toString())
-            }
-        }*/
-
-        //val btId = pref.getString(SettingsActivity.BT_ID, "")
-
+        // Check if device is already saved
         if (mBtName.isBlank()) {
+            val savedDeviceName = pref.getString(keyUtil.printerDeviceNameKey, "") ?: ""
+            if (savedDeviceName.isNotBlank()) {
+                mBtName = savedDeviceName
+                f()
+                return
+            }
 
             mBluetoothAdapter?.let {
 
@@ -62,29 +54,20 @@ class BluetoothUtil {
                     map[button.id] = t
                 }
 
-                val builder = AlertDialog.Builder(ctx).apply {
-
-                    setTitle("Choose bluetooth device to print from.")
-
-                    setView(input)
-
-                    setNegativeButton("Cancel") { _, _ ->
-
-                    }
-
-                    setPositiveButton("OK") { _, _ ->
-
-                        if (input.checkedRadioButtonId == -1) return@setPositiveButton
-                        else {
-                            //              PreferenceManager.getDefaultSharedPreferences(ctx).edit()
-                            //                    .putString(SettingsActivity.BT_ID, map[input.checkedRadioButtonId]?.name)
-                            //                  .apply()
-                            mBtName = map[input.checkedRadioButtonId]?.name ?: ""
+                val builder = AlertDialog.Builder(ctx)
+                builder.setTitle(ctx.getString(R.string.choose_bluetooth_device_title))
+                builder.setView(input)
+                builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
+                builder.setPositiveButton(android.R.string.ok) { _, _ ->
+                    if (input.checkedRadioButtonId != -1) {
+                        mBtName = map[input.checkedRadioButtonId]?.name ?: ""
+                        // Save the selected device to preferences
+                        pref.edit {
+                            putString(keyUtil.printerDeviceNameKey, mBtName)
                         }
                         f()
                     }
                 }
-
                 builder.show()
             }
 
@@ -145,42 +128,67 @@ class BluetoothUtil {
         ^XZ"
     """*/
 
-    private fun resolvePrintTemplate(ctx: Context): String {
-        val pref = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
+    private fun resolvePrintTemplate(ctx: Context, onComplete: (String) -> Unit) {
+        val pref = PreferenceManager.getDefaultSharedPreferences(ctx)
         val keyUtil = KeyUtil(ctx)
 
-        val selectedTemplateName = pref.getString(keyUtil.zplTemplateKey, "")?.trim().orEmpty()
-        val importedZpl = pref.getString(keyUtil.zplCodeKey, "")?.trim().orEmpty()
+        val selectedTemplateName = pref.getString(keyUtil.zplTemplateKey, "") ?: ""
+        val importedZpl = pref.getString(keyUtil.zplCodeKey, "") ?: ""
 
-        val selectedTemplate = if (
-            selectedTemplateName.isNotBlank() &&
-            !selectedTemplateName.equals("None", ignoreCase = true)
-        ) {
-            ZplTemplate.getTemplateByDisplayName(ctx, selectedTemplateName)
-        } else {
-            null
+        // Check if user has explicitly imported custom ZPL (not just the default template)
+        val hasCustomZpl = importedZpl.isNotBlank() && selectedTemplateName.equals("None", ignoreCase = true)
+
+        // If custom ZPL imported, use it
+        if (hasCustomZpl) {
+            onComplete(importedZpl)
+            return
         }
 
-        return when {
-            selectedTemplate != null -> selectedTemplate.zplCode
-            importedZpl.isNotBlank() -> importedZpl
-            else -> template
+        // If template already selected and it's a valid predefined template, use it
+        if (selectedTemplateName.isNotBlank() && !selectedTemplateName.equals("None", ignoreCase = true)) {
+            ZplTemplate.getTemplateByDisplayName(ctx, selectedTemplateName)?.let {
+                onComplete(it.zplCode)
+                return
+            }
         }
+
+        // If no template selected, show dialog
+        val templates = ZplTemplate.getDefaultTemplates(ctx)
+        val templateNames = templates.map { it.displayName }.toTypedArray()
+
+        val builder = AlertDialog.Builder(ctx)
+        builder.setTitle(ctx.getString(R.string.select_zpl_template_title))
+        builder.setSingleChoiceItems(templateNames, -1) { dialog, which ->
+            val selectedTemplate = templates[which]
+            pref.edit {
+                putString(keyUtil.zplTemplateKey, selectedTemplate.displayName)
+                putString(keyUtil.zplCodeKey, selectedTemplate.zplCode)
+            }
+            onComplete(selectedTemplate.zplCode)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton(android.R.string.cancel) { dialog, _ ->
+            dialog.dismiss()
+            // Use default template if user cancels
+            onComplete(template)
+        }
+
+        builder.show()
     }
 
     fun print(ctx: Context, events: Array<Event>) {
-
-        choose(ctx) {
-            val resolvedTemplate = resolvePrintTemplate(ctx)
-            PrintThread(ctx, resolvedTemplate, mBtName).printEvents(events)
+        resolvePrintTemplate(ctx) { template ->
+            choose(ctx) {
+                PrintThread(ctx, template, mBtName).printEvents(events)
+            }
         }
     }
 
     fun print(ctx: Context, parents: Array<Parent>) {
-
-        choose(ctx) {
-            val resolvedTemplate = resolvePrintTemplate(ctx)
-            PrintThread(ctx, resolvedTemplate, mBtName).printParents(parents)
+        resolvePrintTemplate(ctx) { template ->
+            choose(ctx) {
+                PrintThread(ctx, template, mBtName).printParents(parents)
+            }
         }
     }
 }

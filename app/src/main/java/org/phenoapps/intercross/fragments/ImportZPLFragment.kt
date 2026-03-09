@@ -22,13 +22,6 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
     @Inject
     lateinit var mKeyUtil: KeyUtil
 
-    private val templates by lazy {
-        ZplTemplate.getDefaultTemplates(requireContext())
-    }
-
-    private val templateNames = templates.map { it.displayName }.toMutableList()
-    private val defaultTemplate = templates.firstOrNull { it.name == "template_2x1" } ?: templates.first()
-
     private val importZplFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
 
         uri?.let {
@@ -72,6 +65,11 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
     }
 
     private fun FragmentImportZplBinding.setupTemplateSpinner() {
+
+        val templates = ZplTemplate.getDefaultTemplates(requireContext())
+        val templateNames = templates.map { it.displayName }.toMutableList()
+        val defaultTemplate = templates.firstOrNull { it.name == "template_2x1" } ?: templates.first()
+
         // Add "None" option at the beginning for custom imported templates
         val spinnerItems = mutableListOf("None")
         spinnerItems.addAll(templateNames)
@@ -96,12 +94,8 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
             templateSpinner.setSelection(selectedPosition)
         }
 
-        // Ensure first load has a valid default template persisted.
-        if (savedTemplateName.isBlank() || !spinnerItems.contains(savedTemplateName)) {
-            mPref.edit {
-                putString(mKeyUtil.zplTemplateKey, defaultTemplate.displayName)
-                putString(mKeyUtil.zplCodeKey, defaultTemplate.zplCode)
-            }
+        // Show the default template code in preview if nothing is saved yet
+        if (savedTemplateName.isBlank()) {
             codeTextView.text = defaultTemplate.zplCode
         }
 

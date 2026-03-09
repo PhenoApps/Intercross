@@ -65,6 +65,7 @@ class KeyUtil @Inject constructor(
     val zplImportKey by key(R.string.key_pref_print_zpl_import)
     val zplCodeKey by key(R.string.key_pref_print_zpl_code)
     val zplTemplateKey by key(R.string.key_pref_print_zpl_template)
+    val printerDeviceNameKey by key(R.string.key_pref_print_device_name)
 
     val databaseRoot by key(R.string.root_database)
     val dbStorageDefinerKey by key(R.string.key_pref_storage_definer)

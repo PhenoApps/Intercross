@@ -159,8 +159,8 @@ class PrintThread(private val ctx: Context, private val template: String,
 
         SGD.SET("device.languages", "zpl", connection)
 
-        Toast.makeText(ctx,
-                "$displayPrinterLanguage\nLanguage set to ZPL", Toast.LENGTH_LONG).show()
+        //Toast.makeText(ctx,
+        //        "$displayPrinterLanguage\nLanguage set to ZPL", Toast.LENGTH_LONG).show()
 
     }
 }

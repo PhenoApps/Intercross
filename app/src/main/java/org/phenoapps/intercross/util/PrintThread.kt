@@ -108,7 +108,7 @@ class PrintThread(private val ctx: Context, private val template: String,
 
                                         printer.sendCommand("^XA^XFR:TEMPLATE" +
                                                 "^FN1^FD${it.eventDbId}^FS" +
-                                                "^FN2^FDH, ${it.eventDbId}^FS" +
+                                                "^FN2^FD${it.eventDbId}^FS" +
                                                 "^FN3^FD${it.femaleObsUnitDbId}^FS" +
                                                 "^FN4^FD${it.maleObsUnitDbId}^FS" +
                                                 "^FN5^FD${timestamp}^FS" +
@@ -120,7 +120,7 @@ class PrintThread(private val ctx: Context, private val template: String,
 
                                         printer.sendCommand("^XA^XFR:TEMPLATE" +
                                                 "^FN1^FD${it.codeId}^FS" +
-                                                "^FN2^FDH, ${it.codeId}^FS" +
+                                                "^FN2^FD${it.codeId}^FS" +
                                                 "^XZ")
                                     }
                                 }

@@ -136,7 +136,8 @@ class BluetoothUtil {
         val importedZpl = pref.getString(keyUtil.zplCodeKey, "") ?: ""
 
         // Check if user has explicitly imported custom ZPL (not just the default template)
-        val hasCustomZpl = importedZpl.isNotBlank() && selectedTemplateName.equals("None", ignoreCase = true)
+        val hasCustomZpl = importedZpl.isNotBlank()
+                && selectedTemplateName.equals(ctx.getString(R.string.none), ignoreCase = true)
 
         // If custom ZPL imported, use it
         if (hasCustomZpl) {
@@ -145,7 +146,7 @@ class BluetoothUtil {
         }
 
         // If template already selected and it's a valid predefined template, use it
-        if (selectedTemplateName.isNotBlank() && !selectedTemplateName.equals("None", ignoreCase = true)) {
+        if (selectedTemplateName.isNotBlank() && !selectedTemplateName.equals(ctx.getString(R.string.none), ignoreCase = true)) {
             ZplTemplate.getTemplateByDisplayName(ctx, selectedTemplateName)?.let {
                 onComplete(it.zplCode)
                 return

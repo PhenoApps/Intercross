@@ -33,7 +33,7 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
             mBinding.codeTextView.text = text
 
             mPref.edit {
-                putString(mKeyUtil.zplTemplateKey, "None")
+                putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None")
                 putString(mKeyUtil.zplCodeKey, text)
             }
 
@@ -71,7 +71,7 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
         val defaultTemplate = templates.firstOrNull { it.name == "template_2x1" } ?: templates.first()
 
         // Add "None" option at the beginning for custom imported templates
-        val spinnerItems = mutableListOf("None")
+        val spinnerItems = mutableListOf(context?.getString(R.string.none) ?: "None")
         spinnerItems.addAll(templateNames)
 
         val adapter = ArrayAdapter(
@@ -110,7 +110,7 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
                         putString(mKeyUtil.zplCodeKey, selectedTemplate.zplCode)
                     }
                 } else {
-                    mPref.edit { putString(mKeyUtil.zplTemplateKey, "None") }
+                    mPref.edit { putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None") }
                 }
             }
 

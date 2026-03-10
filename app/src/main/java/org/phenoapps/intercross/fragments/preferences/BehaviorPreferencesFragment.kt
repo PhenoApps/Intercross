@@ -92,9 +92,9 @@ class BehaviorPreferencesFragment : BasePreferenceFragment(R.xml.behavior_prefer
             settings?.let {
                 findPreference<Preference>(mKeyUtil.crossPatternKey)?.apply {
                     summary = when {
-                        settings.isPattern -> "Pattern"
-                        !settings.isUUID && !settings.isPattern -> "None"
-                        else -> "UUID"
+                        settings.isPattern -> context.getString(R.string.pattern)
+                        !settings.isUUID && !settings.isPattern -> context.getString(R.string.none)
+                        else -> context.getString(R.string.uuid)
                     }
                 }
             }

@@ -1,77 +1,79 @@
 package org.phenoapps.intercross.util
 
-import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
+import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import androidx.core.content.edit
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
+import kotlin.collections.forEach
 
 
 //Bluetooth Utility class for printing ZPL code and choosing bluetooth devices to print from.
 class BluetoothUtil {
 
-    private var mBtName: String = String()
+    private fun getDevices(ctx: Context): Map<String, BluetoothDevice>? {
+        val bluetoothManager = ctx.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) return null
+        }
 
-    private val mBluetoothAdapter: BluetoothAdapter? by lazy {
-        BluetoothAdapter.getDefaultAdapter()
+        return bluetoothManager.adapter?.bondedDevices?.associate { it.name to it }
     }
 
     //suppressed false positive lint message, permissions is checked on runtime before thread is launched
     //operation that uses the provided context to prompt the user for a paired bluetooth device
-    @SuppressLint("MissingPermission")
-    private fun choose(ctx: Context, f: () -> Unit) {
+    private fun choose(ctx: Context, f: (BluetoothDevice) -> Unit) {
         val pref = PreferenceManager.getDefaultSharedPreferences(ctx)
         val keyUtil = KeyUtil(ctx)
 
-        // Check if device is already saved
-        if (mBtName.isBlank()) {
-            val savedDeviceName = pref.getString(keyUtil.printerDeviceNameKey, "") ?: ""
-            if (savedDeviceName.isNotBlank()) {
-                mBtName = savedDeviceName
-                f()
-                return
+        val pairedDevices = getDevices(ctx)
+        val savedDeviceName = pref.getString(keyUtil.printerDeviceNameKey, "") ?: ""
+
+        if (savedDeviceName.isNotBlank()) {
+            pairedDevices?.entries?.find { it.key == savedDeviceName }?.value?.let { savedDevice ->
+                f(savedDevice)
             }
+            return
+        }
 
-            mBluetoothAdapter?.let {
+        val map = HashMap<Int, Map.Entry<String, BluetoothDevice>>()
+        val input = RadioGroup(ctx)
 
-                val pairedDevices = it.bondedDevices
+        pairedDevices?.entries?.forEach { entry ->
+            val button = RadioButton(ctx)
+            button.text = entry.key
+            input.addView(button)
+            map[button.id] = entry
+        }
 
-                val map = HashMap<Int, BluetoothDevice>()
-
-                val input = RadioGroup(ctx)
-
-                pairedDevices.forEachIndexed { _, t ->
-                    val button = RadioButton(ctx)
-                    button.text = t.name
-                    input.addView(button)
-                    map[button.id] = t
+        val builder = AlertDialog.Builder(ctx)
+        builder.setTitle(ctx.getString(R.string.choose_bluetooth_device_title))
+        builder.setView(input)
+        builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
+        builder.setPositiveButton(android.R.string.ok) { _, _ ->
+            if (input.checkedRadioButtonId != -1) {
+                val entry = map[input.checkedRadioButtonId] ?: return@setPositiveButton
+                pref.edit {
+                    putString(keyUtil.printerDeviceNameKey, entry.key)
                 }
-
-                val builder = AlertDialog.Builder(ctx)
-                builder.setTitle(ctx.getString(R.string.choose_bluetooth_device_title))
-                builder.setView(input)
-                builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
-                builder.setPositiveButton(android.R.string.ok) { _, _ ->
-                    if (input.checkedRadioButtonId != -1) {
-                        mBtName = map[input.checkedRadioButtonId]?.name ?: ""
-                        // Save the selected device to preferences
-                        pref.edit {
-                            putString(keyUtil.printerDeviceNameKey, mBtName)
-                        }
-                        f()
-                    }
-                }
-                builder.show()
+                f(entry.value)
             }
-
-        } else f()
+        }
+        builder.show()
     }
 
     //new smaller template
@@ -84,49 +86,6 @@ class BluetoothUtil {
         ^FO140,170^A0,25,20^FN5^FS
         ^XZ
     """.trimIndent()
-
-    //qr code with magnification 5 is about 150dots which is <1in
-    //ZQ510 printer is 208 dots/in, 8dots/mm
-    //command to store the template format
-//Old template
-//    private var template = "^XA" +      //start of ZPL command
-//            "^MNA^MMT,N" +              //set as non-continuous label
-//            "^DFR:TEMPLATE.ZPL^FS" +    //download format as TEMPLATE.ZPL
-//            "^FO75,0^BQN,2,4,H^FN1^FS" + //qr code for code id
-//            "^A0N,32,32" +                 //sets font
-//            "^FO250,0" +
-//            "^FB300,1,1,L,0^FN2^FS" +
-//            "^A0N,32,32" +                 //sets font
-//            "^FO250,50" +
-//            "^FB300,1,1,L,0^FN3^FS" +
-//            "^A0N,32,32" +                 //sets font
-//            "^FO250,100" +
-//            "^FB300,1,1,L,0^FN4^FS" +
-//            "^A0N,32,32" +                 //sets font
-//            "^FO250,150" +
-//            "^FB300,1,1,L,0^FN5^FS" +
-//            "^A0N,32,32" +                 //sets font
-//            "^FO250,200" +
-//            "^FB300,1,1,L,0^FN1^FS" +
-//            "^XZ"
-
-    /*var template = """
-        ^XA
-        ^MNA
-        ^MMT,N
-        ^DFR:DEFAULT_INTERCROSS_SAMPLE.GRF^FS
-        ^FWR
-        ^FO50,25
-        ^A0,20,20
-        ^FN1^FS
-        ^FO150,30
-        ^BQ,,5,H
-        ^FN2^FS
-        ^FO400,25
-        ^A0,25,20
-        ^FN3^FS
-        ^XZ"
-    """*/
 
     private fun resolvePrintTemplate(ctx: Context, onComplete: (String) -> Unit) {
         val pref = PreferenceManager.getDefaultSharedPreferences(ctx)
@@ -179,16 +138,16 @@ class BluetoothUtil {
 
     fun print(ctx: Context, events: Array<Event>) {
         resolvePrintTemplate(ctx) { template ->
-            choose(ctx) {
-                PrintThread(ctx, template, mBtName).printEvents(events)
+            choose(ctx) { device ->
+                ZebraPrinterUtil(ctx, template, device).printEvents(events)
             }
         }
     }
 
     fun print(ctx: Context, parents: Array<Parent>) {
         resolvePrintTemplate(ctx) { template ->
-            choose(ctx) {
-                PrintThread(ctx, template, mBtName).printParents(parents)
+            choose(ctx) { device ->
+                ZebraPrinterUtil(ctx, template, device).printParents(parents)
             }
         }
     }

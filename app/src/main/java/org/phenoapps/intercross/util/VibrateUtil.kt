@@ -1,0 +1,32 @@
+package org.phenoapps.intercross.util
+
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+
+class VibrateUtil @Inject constructor(@ApplicationContext context: Context) {
+
+    companion object {
+        const val DEFAULT_TIME = 3000L
+    }
+
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    fun vibrate(duration: Long = DEFAULT_TIME) {
+        if (vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createWaveform(
+                        longArrayOf(1L, 5L, 8L, 5L, 1L),
+                        -1
+                    )
+                )
+            } else {
+                vibrator.vibrate(duration)
+            }
+        }
+    }
+}

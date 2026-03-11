@@ -47,6 +47,7 @@ import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.VibrateUtil
 import org.phenoapps.intercross.util.observeOnce
 import javax.inject.Inject
 
@@ -55,14 +56,14 @@ class EventDetailFragment:
     IntercrossBaseFragment<FragmentEventDetailBinding>(R.layout.fragment_event_detail),
     MetadataManager {
 
+    @Inject
+    lateinit var vibrateUtil: VibrateUtil
+
     private val requestBluetoothPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
 
-        granted?.let { grant ->
+        if (granted.filter { !it.value }.isNotEmpty()) {
 
-            if (grant.filter { it.value == false }.isNotEmpty()) {
-
-                Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -401,7 +402,7 @@ class EventDetailFragment:
     private fun startPrintProcess() {
         context?.let { ctx ->
 
-            var permit = true
+            var permit = false
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
                     && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
@@ -412,7 +413,7 @@ class EventDetailFragment:
                         android.Manifest.permission.BLUETOOTH_CONNECT
                     ))
                 }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else
                 if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
                     && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
                     permit = true
@@ -422,12 +423,12 @@ class EventDetailFragment:
                         android.Manifest.permission.BLUETOOTH_ADMIN
                     ))
                 }
-            }
 
             if (permit) {
 
-                BluetoothUtil().print(requireContext(), arrayOf(mEvent))
+                BluetoothUtil().print(ctx, arrayOf(mEvent))
 
+                vibrateUtil.vibrate()
             }
         }
     }

@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -42,6 +43,7 @@ import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.VibrateUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,12 +52,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private val requestBluetoothPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
 
-        granted?.let { grant ->
+        if (granted.filter { !it.value }.isNotEmpty()) {
 
-            if (grant.filter { it.value == false }.isNotEmpty()) {
-
-                Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -74,6 +73,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     private val parentList: ParentsListViewModel by viewModels {
         ParentsListViewModelFactory(ParentsRepository.getInstance(db.parentsDao()))
     }
+
+    @Inject
+    lateinit var vibrateUtil: VibrateUtil
 
     @Inject
     lateinit var mPref: SharedPreferences
@@ -425,44 +427,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
     }
 
-    private fun checkBluetoothRuntimePermission(): Boolean {
-
-        var permit = true
-
-        context?.let { ctx ->
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    permit = true
-                } else {
-                    requestBluetoothPermissions.launch(
-                        arrayOf(
-                            android.Manifest.permission.BLUETOOTH_SCAN,
-                            android.Manifest.permission.BLUETOOTH_CONNECT
-                        )
-                    )
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
-                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    permit = true
-                } else {
-                    requestBluetoothPermissions.launch(
-                        arrayOf(
-                            android.Manifest.permission.BLUETOOTH,
-                            android.Manifest.permission.BLUETOOTH_ADMIN
-                        )
-                    )
-                }
-            }
-        }
-
-        return permit
-    }
-
     private fun FragmentParentsBinding.setupBottomNavBar() {
 
         bottomNavBar.setOnNavigationItemSelectedListener { item ->
@@ -494,36 +458,64 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
     }
 
-    private fun FragmentParentsBinding.printParents() {
+    private fun FragmentParentsBinding.requestPermissionAndPrintParents() {
 
-        if (tabLayout.getTabAt(0)?.isSelected == true) {
+        context?.let { ctx ->
 
-            val outParents = mFemaleAdapter.currentList.filterIsInstance(Parent::class.java)
+            var permit = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH_SCAN,
+                        android.Manifest.permission.BLUETOOTH_CONNECT
+                    ))
+                }
+            } else
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_ADMIN
+                    ))
+                }
 
-            BluetoothUtil().print(
-                requireContext(),
-                outParents.filter { p -> p.selected }.toTypedArray()
-            )
+            if (permit) {
+                printParents(ctx)
+            }
         }
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//
-//        } else {
-//
-//            val outParents = mMaleAdapter.currentList
-//                .filterIsInstance(Parent::class.java)
-//                .filter { p -> p.selected }
-//
-//            val outAll = outParents + mMaleAdapter.currentList
-//                .filterIsInstance(PollenGroup::class.java)
-//                .filter { p -> p.selected }
-//                .map { group -> Parent(group.codeId, 1, group.name) }
-//
-//            BluetoothUtil().print(requireContext(), outAll.toTypedArray())
-//
-//        }
-//    }
+    private fun FragmentParentsBinding.printParents(ctx: Context) {
+
+        val outParents: List<Parent> = if (tabLayout.getTabAt(0)?.isSelected == true) {
+
+            mFemaleAdapter.currentList.filterIsInstance<Parent>()
+
+        } else {
+
+            val outParents = mMaleAdapter.currentList
+                .filterIsInstance<Parent>()
+
+            outParents + mMaleAdapter.currentList
+                .filterIsInstance<PollenGroup>()
+                .map { group -> Parent(group.codeId, 1, group.name)}
+        }
+
+        if (outParents.isNotEmpty()) {
+
+            BluetoothUtil().print(
+                ctx,
+                outParents.filter { p -> p.selected }.toTypedArray()
+            )
+
+            vibrateUtil.vibrate()
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -545,7 +537,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
             }
 
             R.id.action_parents_print -> {
-                mBinding.printParents()
+                mBinding.requestPermissionAndPrintParents()
             }
 
             android.R.id.home -> {

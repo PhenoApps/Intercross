@@ -517,7 +517,7 @@
     <string name="prefs_behavior_sound_notifications_summary">Notification sound when a cross is made.</string>
     <string name="prefs_behavior_open_cross_title">Open Cross After Creating</string>
     <string name="prefs_behavior_open_cross_summary">Opens the cross immediately after creating.</string>
-    <string name="prefs_behavior_commutative_crossing_title">Commutative Crossing</string>
+    <string name="prefs_behavior_commutative_crossing_title">Reciprocal Crossing</string>
     <string name="prefs_behavior_commutative_crossing_summary">When enabled, cross AxB and cross BxA are considered the same.</string>
 
     <!-- Printing preferences -->

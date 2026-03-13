@@ -678,4 +678,19 @@
     <string name="manual_cross_search_required">Please enter a cross ID.</string>
     <string name="manual_cross_search_not_found">No cross found for that ID.</string>
     <string name="manual_cross_search_no_data">No saved crosses are available to search.</string>
+
+    <!-- Person management strings -->
+    <string name="profile_manage_persons">Manage Persons</string>
+    <string name="profile_show_person_input">Show person field on Events screen</string>
+    <string name="profile_person_select_title">Select Person</string>
+    <string name="profile_person_manage_title">Manage Persons</string>
+    <string name="profile_person_input_hint">Person name</string>
+    <string name="profile_person_manage_summary">Type a name to add/update, or tap Remove to pick from your saved persons list.</string>
+    <string name="profile_person_remove">Remove</string>
+    <string name="profile_person_manage">Manage</string>
+    <string name="profile_person_name_required">Please enter a person name.</string>
+    <string name="profile_person_removed">Person removed.</string>
+    <string name="profile_person_not_found">Person not found in list.</string>
+    <string name="events_person_hint">Person</string>
+    <string name="add">Add</string>
 </resources>

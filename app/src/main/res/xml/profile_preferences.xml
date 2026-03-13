@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     android:key="pref_key_profile_settings"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         android:key="@string/key_pref_profile_person"
@@ -21,5 +20,16 @@
         android:entryValues="@array/preferences_profile_verification_interval_values"
         android:defaultValue="0"
         android:icon="@drawable/ic_hours_24" />
+
+    <Preference
+        android:key="@string/key_pref_profile_manage_persons"
+        android:title="@string/profile_manage_persons"
+        android:icon="@drawable/account_group_outline" />
+
+    <androidx.preference.SwitchPreferenceCompat
+        android:key="@string/key_pref_profile_show_person_input"
+        android:title="@string/profile_show_person_input"
+        android:defaultValue="false"
+        android:icon="@drawable/form_dropdown" />
 
 </PreferenceScreen>

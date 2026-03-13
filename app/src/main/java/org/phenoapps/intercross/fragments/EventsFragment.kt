@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -105,6 +106,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
     private var mFocused: View? = null
 
+    private var mPersons: List<String> = emptyList()
+
     private val scope = CoroutineScope(Dispatchers.IO)
 
     @Inject
@@ -183,6 +186,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         setupUI()
 
+        setupPersonInput()
     }
 
     override fun onResume() {
@@ -193,6 +197,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         mBinding.bottomNavBar.selectedItemId = R.id.action_nav_home
 
+        setupPersonInput()
     }
 
     private fun setMenuItems() {
@@ -320,8 +325,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             it?.let {
 
                 if (it.isNotBlank()) {
-
-                    //Log.d("IntercrossNextScan", mFocused?.id.toString())
 
                     when (mFocused?.id) {
 
@@ -532,6 +535,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             }
         }
 
+        if (mBinding.personTextHolder.isVisible) {
+            mBinding.personText.setText(selectedPersonFromPrefs(), false)
+        }
+
         mBinding.firstText.requestFocus()
     }
 
@@ -574,6 +581,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         secondText.addTextChangedListener(emptyGuard)
         firstText.addTextChangedListener(emptyGuard)
         editTextCross.addTextChangedListener(emptyGuard)
+
+        personText.addTextChangedListener(emptyGuard)
 
         firstText.onFocusChangeListener = focusListener
         secondText.onFocusChangeListener = focusListener
@@ -619,6 +628,18 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                     afterThirdText(value)
 
                 }
+
+                return@OnEditorActionListener true
+            }
+
+            false
+        })
+
+        personText.setOnEditorActionListener(TextView.OnEditorActionListener { _, i, _ ->
+
+            if (i == EditorInfo.IME_ACTION_DONE) {
+
+                askUserNewExperimentName()
 
                 return@OnEditorActionListener true
             }
@@ -841,6 +862,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         if (value.isNotBlank() && (male.isNotBlank() || blank) && female.isNotBlank()) {
 
+            persistPersonSelectionFromInput()
+
             if (male.isBlank()) male = "blank"
 
             val crossIds = mEvents.map { event -> event.eventDbId }
@@ -982,5 +1005,77 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     
     override fun onEventClick(eventId: Long) {
         findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
+    }
+
+    private fun setupPersonInput() {
+        val showPersonInput = mPref.getBoolean(mKeyUtil.profileShowPersonInputKey, false)
+        mBinding.personTextHolder.isVisible = showPersonInput
+
+        if (!showPersonInput) {
+            return
+        }
+
+        mPersons = loadPersons()
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mPersons)
+        mBinding.personText.setAdapter(adapter)
+        mBinding.personText.threshold = 0
+        mBinding.personText.setOnClickListener { mBinding.personText.showDropDown() }
+
+        val selectedPerson = selectedPersonFromPrefs()
+        if (selectedPerson.isNotBlank()) {
+            mBinding.personText.setText(selectedPerson, false)
+        }
+    }
+
+    private fun loadPersons(): List<String> {
+        return mPref.getStringSet(mKeyUtil.profilePersonListKey, emptySet())
+            .orEmpty()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinctBy { it.lowercase(Locale.getDefault()) }
+            .sortedBy { it.lowercase(Locale.getDefault()) }
+    }
+
+    private fun selectedPersonFromPrefs(): String {
+        val selected = mPref.getString(mKeyUtil.profileSelectedPersonKey, "").orEmpty().trim()
+        if (selected.isNotBlank()) {
+            return selected
+        }
+
+        val first = mPref.getString(mKeyUtil.personFirstNameKey, "").orEmpty().trim()
+        val last = mPref.getString(mKeyUtil.personLastNameKey, "").orEmpty().trim()
+        return "$first $last".trim()
+    }
+
+    private fun persistPersonSelectionFromInput() {
+        if (!mBinding.personTextHolder.isVisible) {
+            return
+        }
+
+        val entered = mBinding.personText.text?.toString()?.trim().orEmpty()
+        if (entered.isBlank()) {
+            return
+        }
+
+        val updatedPersons = mPersons.toMutableList()
+        if (updatedPersons.none { it.equals(entered, ignoreCase = true) }) {
+            updatedPersons.add(entered)
+            updatedPersons.sortBy { it.lowercase(Locale.getDefault()) }
+            mPref.edit {
+                putStringSet(mKeyUtil.profilePersonListKey, updatedPersons.toSet())
+            }
+            mPersons = updatedPersons
+        }
+
+        val tokens = entered.split("\\s+".toRegex(), limit = 2)
+        val first = tokens.firstOrNull().orEmpty()
+        val last = if (tokens.size > 1) tokens[1] else ""
+
+        mPref.edit {
+            putString(mKeyUtil.profileSelectedPersonKey, entered)
+            putString(mKeyUtil.personFirstNameKey, first)
+            putString(mKeyUtil.personLastNameKey, last)
+        }
     }
 }

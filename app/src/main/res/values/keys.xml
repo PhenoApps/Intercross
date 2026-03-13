@@ -43,7 +43,11 @@
 
     <!-- Profile preference keys -->
     <string name="key_pref_profile_person">&package;PROFILE_PERSON</string>
+    <string name="key_pref_profile_manage_persons">&package;PROFILE_MANAGE_PERSONS</string>
+    <string name="key_pref_profile_show_person_input">&package;PROFILE_SHOW_PERSON_INPUT</string>
     <string name="key_pref_profile_reset">&package;PROFILE_RESET</string>
+    <string name="key_pref_profile_person_list">&package;PROFILE_PERSON_LIST</string>
+    <string name="key_pref_profile_selected_person">&package;PROFILE_SELECTED_PERSON</string>
     <string name="key_pref_person_first_name">&package;FIRST_NAME</string>
     <string name="key_pref_person_last_name">&package;LAST_NAME</string>
     <string name="key_pref_experiment_name">&package;EXPERIMENT_NAME</string>

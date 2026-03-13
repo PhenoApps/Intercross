@@ -1,9 +1,9 @@
 package org.phenoapps.intercross.adapters
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.phenoapps.intercross.R
@@ -15,7 +15,8 @@ import org.phenoapps.intercross.data.viewmodels.PollenGroupListViewModel
 import org.phenoapps.intercross.databinding.ListItemSelectableParentRowBinding
 
 class ParentsAdapter(private val listModel: ParentsListViewModel,
-                    private val groupModel: PollenGroupListViewModel)
+                    private val groupModel: PollenGroupListViewModel,
+                    private val crossCountProvider: (BaseParent) -> Int = { 0 })
     : ListAdapter<BaseParent, ParentsAdapter.ViewHolder>(BaseParent.Companion.DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,25 +47,36 @@ class ParentsAdapter(private val listModel: ParentsListViewModel,
         fun bind(p: BaseParent) {
 
             with(binding) {
-
-                if (p is Parent) {
-
-                    name = p.name
-
-                    checked = p.selected
-
-                } else if (p is PollenGroup) {
-
-                    this.textField.setBackgroundColor(Color.parseColor("#42FF5722"))
-
-                    name = p.name
-
-                    checked = p.selected
+                val context = root.context
+                val isPollenGroup = p is PollenGroup
+                val crossCount = crossCountProvider(p)
+                val isSelected = when (p) {
+                    is Parent -> p.selected
+                    is PollenGroup -> p.selected
+                    else -> false
                 }
 
-                linearLayout.setOnClickListener {
+                name = when (p) {
+                    is Parent -> p.name
+                    is PollenGroup -> p.name
+                    else -> ""
+                }
 
-                    doneCheckBox.isChecked=!doneCheckBox.isChecked
+                code = when (p) {
+                    is Parent -> p.codeId
+                    is PollenGroup -> p.codeId
+                    else -> null
+                }
+
+                checked = isSelected
+
+                doneCheckBox.isChecked = isSelected
+                pollenGroupChip.isVisible = isPollenGroup
+                pollenGroupChip.text = context.getString(R.string.parent_pollen_group_chip)
+                crossCountChip.text = crossCount.toString()
+
+                parentCard.setOnClickListener {
+                    doneCheckBox.isChecked = !doneCheckBox.isChecked
 
                     if (p is Parent) {
 
@@ -82,6 +94,8 @@ class ParentsAdapter(private val listModel: ParentsListViewModel,
                         })
                     }
                 }
+
+                executePendingBindings()
             }
         }
     }

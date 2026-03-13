@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
@@ -16,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -82,6 +81,8 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     lateinit var mKeyUtil: KeyUtil
 
     private var mCrosses: List<Event> = ArrayList()
+    private var femaleCrossCounts: Map<String, Int> = emptyMap()
+    private var maleCrossCounts: Map<String, Int> = emptyMap()
 
     private lateinit var mMaleAdapter: ParentsAdapter
 
@@ -126,6 +127,19 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
    //     }
    // }
 
+    private fun updateCrossCounts(events: List<Event>) {
+        femaleCrossCounts = events.groupingBy { it.femaleObsUnitDbId }.eachCount()
+        maleCrossCounts = events.groupingBy { it.maleObsUnitDbId }.eachCount()
+
+        if (::mFemaleAdapter.isInitialized) {
+            mFemaleAdapter.notifyDataSetChanged()
+        }
+
+        if (::mMaleAdapter.isInitialized) {
+            mMaleAdapter.notifyDataSetChanged()
+        }
+    }
+
     override fun FragmentParentsBinding.afterCreateView() {
 
         val ctx = requireContext()
@@ -137,8 +151,20 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         viewModel.updateSelection(0)
         groupList.updateSelection(0)
 
-        mMaleAdapter = ParentsAdapter(viewModel, groupList)
-        mFemaleAdapter = ParentsAdapter(viewModel, groupList)
+        mMaleAdapter = ParentsAdapter(viewModel, groupList) { parent ->
+            when (parent) {
+                is Parent -> maleCrossCounts[parent.codeId] ?: 0
+                is PollenGroup -> maleCrossCounts[parent.codeId] ?: 0
+                else -> 0
+            }
+        }
+        mFemaleAdapter = ParentsAdapter(viewModel, groupList) { parent ->
+            when (parent) {
+                is Parent -> femaleCrossCounts[parent.codeId] ?: 0
+                is PollenGroup -> femaleCrossCounts[parent.codeId] ?: 0
+                else -> 0
+            }
+        }
 
         femaleRecycler.adapter = mFemaleAdapter
         femaleRecycler.layoutManager = LinearLayoutManager(ctx)
@@ -146,57 +172,40 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         maleRecycler.adapter = mMaleAdapter
         maleRecycler.layoutManager = LinearLayoutManager(ctx)
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-                tab?.let {
-
-                    when(it.text) {
-
-                        //TODO string resources
-                        "Female" -> {
-                            femaleRecycler.visibility=View.VISIBLE
-                            maleRecycler.visibility=View.GONE
-                            fragParentsSelectAllCb.isChecked = !mNextFemaleSelection
-                        }
-                        "Male" -> {
-                            maleRecycler.visibility=View.VISIBLE
-                            femaleRecycler.visibility=View.GONE
-                            fragParentsSelectAllCb.isChecked = !mNextMaleSelection
-                        }
-                    }
-
-                    viewModel.parents.observe(viewLifecycleOwner) { parents ->
-
-                        groupList.groups.observe(viewLifecycleOwner) { groups ->
-
-                            mBinding.updateSelectionText(
-                                parents.filter { it.selected },
-                                groups.filter { it.selected })
-
-                        }
-                    }
+        filterChipGroup.setOnCheckedStateChangeListener { _: ChipGroup, checkedIds: List<Int> ->
+            when (checkedIds.firstOrNull()) {
+                R.id.filter_female -> {
+                    femaleRecycler.visibility = View.VISIBLE
+                    maleRecycler.visibility = View.GONE
+                    fragParentsSelectAllCb.isChecked = !mNextFemaleSelection
+                }
+                R.id.filter_male -> {
+                    maleRecycler.visibility = View.VISIBLE
+                    femaleRecycler.visibility = View.GONE
+                    fragParentsSelectAllCb.isChecked = !mNextMaleSelection
                 }
             }
-        })
+            viewModel.parents.observe(viewLifecycleOwner) { parents ->
+                groupList.groups.observe(viewLifecycleOwner) { groups ->
+                    mBinding.updateSelectionText(
+                        parents.filter { it.selected },
+                        groups.filter { it.selected })
+                }
+            }
+            updateNoDataVisibility()
+        }
 
         /*
-        On startup, read arguments and determine the tab
+        On startup, select the chip matching the tabFocus argument (0 = female, 1 = male)
          */
-        tabLayout.getTabAt(tabFocus)?.select()
+        if (tabFocus == 1) filterMale.isChecked = true
 
         eventsModel.events.observe(viewLifecycleOwner) { parents ->
 
             parents?.let {
 
                 mCrosses = it
+                updateCrossCounts(it)
 
             }
         }
@@ -232,12 +241,22 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
             mBinding.updateSelectionText(parents.filter { it.selected })
 
+            updateNoDataVisibility()
+
         }
 
         fragParentsNewParentBtn.setOnClickListener {
 
             showAddParentsDialog()
 
+        }
+
+        fragParentsDeleteFab.setOnClickListener {
+            mBinding.deleteParents()
+        }
+
+        fragParentsPrintFab.setOnClickListener {
+            mBinding.printParents()
         }
 
         fragParentsSelectAllCb.setOnClickListener {
@@ -275,7 +294,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private fun FragmentParentsBinding.updateSelectionText(parents: List<Parent>, groups: List<PollenGroup>? = null) {
 
-        val selectedSex = if (tabLayout.getTabAt(0)?.isSelected != false) 0 else 1
+        val selectedSex = if (filterFemale.isChecked) 0 else 1
 
         var count = parents.count { it.sex == selectedSex }
         if (selectedSex == 1) count += groups?.count() ?: 0
@@ -297,21 +316,28 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private fun updateMenuButtons(expanded: Boolean = false) {
         arrayOf(R.id.action_parents_delete, R.id.action_parents_print).forEach {
-            mBinding.fragParentsTb.menu?.findItem(it)?.isVisible = expanded
-            mBinding.fragParentsTb.invalidateMenu()
+            mBinding.fragParentsTb.menu?.findItem(it)?.isVisible = false
         }
+        mBinding.fragParentsTb.invalidateMenu()
+        mBinding.fragParentsDeleteFab.visibility = if (expanded) View.VISIBLE else View.GONE
+        mBinding.fragParentsPrintFab.visibility = if (expanded) View.VISIBLE else View.GONE
     }
 
     private fun FragmentParentsBinding.swipeLeft() {
-
-        tabLayout.getTabAt(1)?.select()
-
+        filterMale.isChecked = true
     }
 
     private fun FragmentParentsBinding.swipeRight() {
+        filterFemale.isChecked = true
+    }
 
-        tabLayout.getTabAt(0)?.select()
-
+    private fun FragmentParentsBinding.updateNoDataVisibility() {
+        val currentListEmpty = if (filterFemale.isChecked) {
+            mFemaleAdapter.currentList.isEmpty()
+        } else {
+            mMaleAdapter.currentList.isEmpty()
+        }
+        noDataText.visibility = if (currentListEmpty) View.VISIBLE else View.GONE
     }
 
     /**
@@ -319,7 +345,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
      */
     private fun FragmentParentsBinding.selectAll() {
 
-        if (tabLayout.getTabAt(0)?.isSelected == true) {
+        if (filterFemale.isChecked) {
 
             parentList.update(
                 *(mFemaleAdapter.currentList
@@ -375,7 +401,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 getString(R.string.frag_parent_confirm_delete_message)
             ) {
 
-                if (tabLayout.getTabAt(0)?.isSelected == true) {
+                if (filterFemale.isChecked) {
 
                     val out: List<Parent> =
                         mFemaleAdapter.currentList.filterIsInstance<Parent>()
@@ -496,7 +522,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private fun FragmentParentsBinding.printParents() {
 
-        if (tabLayout.getTabAt(0)?.isSelected == true) {
+        if (!checkBluetoothRuntimePermission()) return
+
+        if (filterFemale.isChecked) {
 
             val outParents = mFemaleAdapter.currentList.filterIsInstance(Parent::class.java)
 
@@ -504,26 +532,20 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 requireContext(),
                 outParents.filter { p -> p.selected }.toTypedArray()
             )
+        } else {
+
+            val outParents = mMaleAdapter.currentList
+                .filterIsInstance<Parent>()
+                .filter { p -> p.selected }
+
+            val outAll = outParents + mMaleAdapter.currentList
+                .filterIsInstance<PollenGroup>()
+                .filter { p -> p.selected }
+                .map { group -> Parent(group.codeId, 1, group.name) }
+
+            BluetoothUtil().print(requireContext(), outAll.toTypedArray())
         }
     }
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//
-//        } else {
-//
-//            val outParents = mMaleAdapter.currentList
-//                .filterIsInstance(Parent::class.java)
-//                .filter { p -> p.selected }
-//
-//            val outAll = outParents + mMaleAdapter.currentList
-//                .filterIsInstance(PollenGroup::class.java)
-//                .filter { p -> p.selected }
-//                .map { group -> Parent(group.codeId, 1, group.name) }
-//
-//            BluetoothUtil().print(requireContext(), outAll.toTypedArray())
-//
-//        }
-//    }
 
     override fun onResume() {
         super.onResume()

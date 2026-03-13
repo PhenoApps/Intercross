@@ -10,10 +10,14 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.addTextChangedListener
@@ -697,6 +701,11 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         }
 
+        fragmentEventsSearchButton.setOnLongClickListener {
+            showManualCrossSearchDialog()
+            true
+        }
+
         saveButton.setOnClickListener {
 
             askUserNewExperimentName()
@@ -712,6 +721,66 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
             if (person.isNotBlank()) firstText.requestFocus()
         }
+    }
+
+    private fun showManualCrossSearchDialog() {
+
+        if (mEvents.isEmpty()) {
+            mSnackbar.push(SnackbarQueue.SnackJob(mBinding.root, getString(R.string.manual_cross_search_no_data)))
+            return
+        }
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_manual_cross_search, null)
+
+        val inputLayout = dialogView.findViewById<TextInputLayout>(R.id.manual_cross_search_input_layout)
+        val inputView = dialogView.findViewById<AutoCompleteTextView>(R.id.manual_cross_search_input)
+
+        val crossIds = mEvents.map { it.eventDbId }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, crossIds)
+        inputView.setAdapter(adapter)
+        inputView.threshold = 0
+        inputView.setOnClickListener { inputView.showDropDown() }
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.manual_cross_search_title)
+            .setView(dialogView)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.go, null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val enteredCrossId = inputView.text?.toString()?.trim().orEmpty()
+
+                if (enteredCrossId.isBlank()) {
+                    inputLayout.error = getString(R.string.manual_cross_search_required)
+                    return@setOnClickListener
+                }
+
+                val eventId = mEvents.firstOrNull {
+                    it.eventDbId.equals(enteredCrossId, ignoreCase = true)
+                }?.id
+
+                if (eventId == null) {
+                    inputLayout.error = getString(R.string.manual_cross_search_not_found)
+                    return@setOnClickListener
+                }
+
+                inputLayout.error = null
+                dialog.dismiss()
+                findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
+            }
+        }
+
+        inputView.setOnItemClickListener { _, _, _, _ ->
+            inputLayout.error = null
+        }
+
+        dialog.show()
     }
 
     private fun FragmentEventsBinding.isInputValid(): Boolean {

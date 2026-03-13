@@ -2,6 +2,8 @@ package org.phenoapps.intercross.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import org.phenoapps.intercross.data.models.Wishlist
@@ -52,4 +54,7 @@ interface WishlistDao : BaseDao<Wishlist> {
     @Transaction
     @Query("DELETE FROM wishlist")
     fun drop()
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    override fun insert(vararg items: Wishlist)
 }

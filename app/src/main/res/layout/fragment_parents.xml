@@ -51,7 +51,9 @@
                 android:text="@string/female"
                 android:checked="true"
                 app:chipIcon="@drawable/ic_female_black_24dp"
-                app:chipIconSize="18dp"/>
+                app:chipIconSize="18dp"
+                app:chipIconVisible="true"
+                style="@style/Widget.MaterialComponents.Chip.Choice"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/filter_male"
@@ -59,7 +61,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/male"
                 app:chipIcon="@drawable/ic_male_black_24dp"
-                app:chipIconSize="18dp"/>
+                app:chipIconSize="18dp"
+                app:chipIconVisible="true"
+                style="@style/Widget.MaterialComponents.Chip.Choice"/>
 
         </com.google.android.material.chip.ChipGroup>
 

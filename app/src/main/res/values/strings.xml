@@ -6,12 +6,15 @@
 
     <string name="cross_id">Cross ID:</string>
     <string name="save_text">Save</string>
-    <string name="start_from">Starts From</string>
-    <string name="auto">Auto</string>
-    <string name="pad_length">pad length</string>
-    <string name="number">number</string>
-    <string name="suffix">suffix</string>
-    <string name="prefix">prefix</string>
+    <string name="start_from">Manual start value</string>
+    <string name="auto">Automatic (starts at 1)</string>
+    <string name="pad_length">Padding Length</string>
+    <string name="pad_length_hint">Total length of numeric identifier</string>
+    <string name="number">Identifier Sequence</string>
+    <string name="number_hint">Starting value for identifiers</string>
+    <string name="suffix">Suffix</string>
+    <string name="prefix">Prefix</string>
+    <string name="cross_id_preview">Cross ID Preview</string>
 
     <!-- About dialog -->
     <string name="about_version_title">Version</string>
@@ -188,7 +191,11 @@
     <string name="event_detail_label">Event</string>
     <string name="parent_label">Parents</string>
     <string name="settings_label">Settings</string>
-    <string name="patterns_label">Patterns</string>
+    <string name="patterns_label">Cross ID Pattern</string>
+    <string name="template">Template</string>
+    <string name="reset_cross_id_counter">Reset Counter</string>
+    <string name="dialog_reset_cross_id_title">Reset Cross ID Counter</string>
+    <string name="dialog_reset_cross_id_message">Reset the automatic cross ID counter back to 1?</string>
     <string name="import_zpl_label">Import ZPL</string>
     <string name="pollen_manager_label">Pollen Manager</string>
     <string name="wishlist_label">Wishlist Summary</string>

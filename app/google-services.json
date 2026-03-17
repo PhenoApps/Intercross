@@ -13,12 +13,7 @@
           "package_name": "org.phenoapps.intercross"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "459655994230-en4uibg8itqirmu6b3ude1jnge6p7hfo.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyB41NNp2PewL2R0Tqd4NU9mP8p4JuE-eTo"
@@ -26,12 +21,26 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "459655994230-en4uibg8itqirmu6b3ude1jnge6p7hfo.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459655994230:android:57e490a15e9dafebc77857",
+        "android_client_info": {
+          "package_name": "org.phenoapps.intercross.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB41NNp2PewL2R0Tqd4NU9mP8p4JuE-eTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

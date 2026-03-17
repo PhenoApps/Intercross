@@ -60,6 +60,13 @@ android {
 
     buildTypes {
 
+        debug {
+            clean
+            debuggable true
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
+            applicationIdSuffix ".debug"
+        }
+
         release {
             clean
             minifyEnabled true
@@ -71,14 +78,6 @@ android {
             zipAlignEnabled true
             shrinkResources true
         }
-
-        debug {
-            clean
-            debuggable true
-            manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
     }
 
     compileOptions {

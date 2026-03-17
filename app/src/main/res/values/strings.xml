@@ -697,4 +697,8 @@
     <string name="add">Add</string>
     <string name="Bulk">Bulk</string>
     <string name="press_back_again_to_exit">Press back again to exit</string>
+    <string name="sort_name">Name</string>
+    <string name="sort_id">Id</string>
+    <string name="sort_crosses"># Crosses</string>
+    <string name="sort_by">Sort by</string>
 </resources>

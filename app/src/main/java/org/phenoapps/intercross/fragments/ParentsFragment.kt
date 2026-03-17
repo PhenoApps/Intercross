@@ -89,10 +89,15 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     private lateinit var mFemaleAdapter: ParentsAdapter
 
     private var mNextMaleSelection = true
-
     private var mNextFemaleSelection = true
 
     private val PERMISSIONS_REQUEST_STORAGE = 102
+
+    private enum class SortType {
+        NAME, ID, CROSSES
+    }
+
+    private var currentSortType = SortType.NAME
 
     //simple gesture listener to detect left and right swipes,
     //on a detected swipe the viewed gender will change
@@ -200,6 +205,20 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
          */
         if (tabFocus == 1) filterMale.isChecked = true
 
+        sortChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            currentSortType = when (checkedIds.firstOrNull()) {
+                R.id.sort_id -> SortType.ID
+                R.id.sort_crosses -> SortType.CROSSES
+                else -> SortType.NAME
+            }
+            // Re-submit the lists with new sort
+            viewModel.parents.value?.let { parents ->
+                groupList.groups.value?.let { groups ->
+                    updateLists(parents, groups)
+                }
+            }
+        }
+
         eventsModel.events.observe(viewLifecycleOwner) { parents ->
 
             parents?.let {
@@ -212,37 +231,15 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         viewModel.parents.observe(viewLifecycleOwner) { parents ->
 
-            val addedMales = ArrayList<BaseParent>()
-
             groupList.groups.observe(viewLifecycleOwner) { groups ->
 
-                addedMales.clear()
+                updateLists(parents, groups)
 
-                addedMales.addAll(groups.distinctBy { it.codeId })
+                mBinding.updateSelectionText(parents.filter { it.selected }, groups.filter { it.selected })
 
-                mMaleAdapter.submitList(addedMales + (parents
-                    .filter { p -> p.sex == 1 }
-                    .distinctBy { p -> p.codeId }
-                    .sortedBy { p -> p.name })
-                )
+                updateNoDataVisibility()
 
             }
-
-            mMaleAdapter.submitList(addedMales + (parents
-                .filter { p -> p.sex == 1 }
-                .distinctBy { p -> p.codeId }
-                .sortedBy { p -> p.name })
-            )
-
-            mFemaleAdapter.submitList(parents
-                .filter { p -> p.sex == 0 }
-                .distinctBy { p -> p.codeId }
-                .sortedBy { p -> p.name })
-
-            mBinding.updateSelectionText(parents.filter { it.selected })
-
-            updateNoDataVisibility()
-
         }
 
         fragParentsNewParentBtn.setOnClickListener {
@@ -347,13 +344,11 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         if (filterFemale.isChecked) {
 
-            parentList.update(
-                *(mFemaleAdapter.currentList
-                    .filterIsInstance<Parent>()
-                    .map { mom -> mom.apply { mom.selected = mNextFemaleSelection } }
-                    .sortedBy { mom -> mom.name }
-                    .toTypedArray())
-            )
+            val updatedParents = mFemaleAdapter.currentList
+                .filterIsInstance<Parent>()
+                .map { mom -> mom.apply { mom.selected = mNextFemaleSelection } }
+
+            parentList.update(*getSortedParents(updatedParents, femaleCrossCounts).toTypedArray())
 
             mNextFemaleSelection = !mNextFemaleSelection
 
@@ -362,19 +357,17 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         } else {
 
-            parentList.update(
-                *(mMaleAdapter.currentList
-                    .filterIsInstance(Parent::class.java)
-                    .map { dad -> dad.apply { dad.selected = mNextMaleSelection } }
-                    .toTypedArray())
-            )
+            val updatedParents = mMaleAdapter.currentList
+                .filterIsInstance<Parent>()
+                .map { dad -> dad.apply { dad.selected = mNextMaleSelection } }
 
-            groupList.update(
-                *(mMaleAdapter.currentList
-                    .filterIsInstance(PollenGroup::class.java)
-                    .map { g -> g.apply { selected = mNextMaleSelection } }
-                    .toTypedArray())
-            )
+            parentList.update(*getSortedParents(updatedParents, maleCrossCounts).toTypedArray())
+
+            val updatedGroups = mMaleAdapter.currentList
+                .filterIsInstance<PollenGroup>()
+                .map { g -> g.apply { selected = mNextMaleSelection } }
+
+            groupList.update(*getSortedGroups(updatedGroups, maleCrossCounts).toTypedArray())
 
             mNextMaleSelection = !mNextMaleSelection
 
@@ -526,7 +519,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         if (filterFemale.isChecked) {
 
-            val outParents = mFemaleAdapter.currentList.filterIsInstance(Parent::class.java)
+            val outParents = mFemaleAdapter.currentList.filterIsInstance<Parent>()
 
             BluetoothUtil().print(
                 requireContext(),
@@ -544,6 +537,39 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 .map { group -> Parent(group.codeId, 1, group.name) }
 
             BluetoothUtil().print(requireContext(), outAll.toTypedArray())
+        }
+    }
+
+    private fun getSortedParents(parents: List<Parent>, crossCounts: Map<String, Int>): List<Parent> {
+        return when (currentSortType) {
+            SortType.ID -> parents.sortedBy { it.codeId.lowercase() }
+            SortType.CROSSES -> parents.sortedByDescending { crossCounts[it.codeId] ?: 0 }
+            else -> parents.sortedBy { it.name.lowercase() }
+        }
+    }
+
+    private fun getSortedGroups(groups: List<PollenGroup>, crossCounts: Map<String, Int>): List<PollenGroup> {
+        return when (currentSortType) {
+            SortType.ID -> groups.sortedBy { it.codeId.lowercase() }
+            SortType.CROSSES -> groups.sortedByDescending { crossCounts[it.codeId] ?: 0 }
+            else -> groups.sortedBy { it.name.lowercase() }
+        }
+    }
+
+    private fun updateLists(parents: List<Parent>, groups: List<PollenGroup>) {
+        val addedMales = ArrayList<BaseParent>()
+        addedMales.addAll(getSortedGroups(groups.distinctBy { it.codeId }, maleCrossCounts))
+        
+        val maleParents = getSortedParents(parents.filter { p -> p.sex == 1 }.distinctBy { p -> p.codeId }, maleCrossCounts)
+        mMaleAdapter.submitList(addedMales + maleParents)
+        mBinding.maleRecycler.post {
+            mBinding.maleRecycler.scrollToPosition(0)
+        }
+
+        val femaleParents = getSortedParents(parents.filter { p -> p.sex == 0 }.distinctBy { p -> p.codeId }, femaleCrossCounts)
+        mFemaleAdapter.submitList(femaleParents)
+        mBinding.femaleRecycler.post {
+            mBinding.femaleRecycler.scrollToPosition(0)
         }
     }
 

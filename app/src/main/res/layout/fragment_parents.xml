@@ -84,7 +84,7 @@
             android:textSize="16sp"
             android:visibility="gone"
             android:textColor="?android:attr/textColorSecondary"
-            app:layout_constraintTop_toBottomOf="@id/filter_chip_group"
+            app:layout_constraintTop_toBottomOf="@id/sort_chip_group"
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -100,7 +100,7 @@
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter_chip_group"
+            app:layout_constraintTop_toBottomOf="@id/sort_chip_group"
             tools:listitem="@layout/list_item_selectable_parent_row" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -114,8 +114,54 @@
             app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter_chip_group"
+            app:layout_constraintTop_toBottomOf="@id/sort_chip_group"
             tools:listitem="@layout/list_item_selectable_parent_row" />
+
+        <TextView style="@style/TextAppearance.AppCompat.Caption"
+            android:id="@+id/sort_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="2dp"
+            android:text="@string/sort_by"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/filter_chip_group"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sort_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:layout_constraintTop_toBottomOf="@id/sort_label"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sort_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sort_name"
+                android:checked="true"
+                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sort_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sort_id"
+                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sort_crosses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sort_crosses"
+                style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/frag_parents_delete_fab"

@@ -186,7 +186,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         setupUI()
 
-        setupPersonInput()
     }
 
     override fun onResume() {
@@ -582,7 +581,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         firstText.addTextChangedListener(emptyGuard)
         editTextCross.addTextChangedListener(emptyGuard)
 
-        personText.addTextChangedListener(emptyGuard)
+        setupPersonInput()
 
         firstText.onFocusChangeListener = focusListener
         secondText.onFocusChangeListener = focusListener
@@ -1019,7 +1018,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mPersons)
         mBinding.personText.setAdapter(adapter)
-        mBinding.personText.threshold = 0
+        mBinding.personText.threshold = 255
         mBinding.personText.setOnClickListener { mBinding.personText.showDropDown() }
 
         val selectedPerson = selectedPersonFromPrefs()
@@ -1058,14 +1057,15 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             return
         }
 
-        val updatedPersons = mPersons.toMutableList()
-        if (updatedPersons.none { it.equals(entered, ignoreCase = true) }) {
-            updatedPersons.add(entered)
-            updatedPersons.sortBy { it.lowercase(Locale.getDefault()) }
+        val currentPersons = loadPersons().toMutableList()
+        var isNewPerson = false
+        if (currentPersons.none { it.equals(entered, ignoreCase = true) }) {
+            currentPersons.add(entered)
+            currentPersons.sortBy { it.lowercase(Locale.getDefault()) }
             mPref.edit {
-                putStringSet(mKeyUtil.profilePersonListKey, updatedPersons.toSet())
+                putStringSet(mKeyUtil.profilePersonListKey, currentPersons.toSet())
             }
-            mPersons = updatedPersons
+            isNewPerson = true
         }
 
         val tokens = entered.split("\\s+".toRegex(), limit = 2)
@@ -1076,6 +1076,13 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             putString(mKeyUtil.profileSelectedPersonKey, entered)
             putString(mKeyUtil.personFirstNameKey, first)
             putString(mKeyUtil.personLastNameKey, last)
+        }
+
+        // Reload persons from preferences and update adapter if new person was added
+        if (isNewPerson) {
+            mPersons = loadPersons()
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mPersons)
+            mBinding.personText.setAdapter(adapter)
         }
     }
 }

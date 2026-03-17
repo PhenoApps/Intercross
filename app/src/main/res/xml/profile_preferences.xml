@@ -22,6 +22,11 @@
         android:icon="@drawable/ic_hours_24" />
 
     <Preference
+        android:key="@string/key_pref_profile_add_person"
+        android:title="@string/profile_add_person"
+        android:icon="@drawable/ic_add_black_24dp" />
+
+    <Preference
         android:key="@string/key_pref_profile_manage_persons"
         android:title="@string/profile_manage_persons"
         android:icon="@drawable/account_group_outline" />

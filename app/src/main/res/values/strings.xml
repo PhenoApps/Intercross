@@ -682,7 +682,7 @@
     <string name="manual_cross_search_no_data">No saved crosses are available to search.</string>
 
     <!-- Person management strings -->
-    <string name="profile_manage_persons">Manage Persons</string>
+    <string name="profile_manage_persons">Manage People</string>
     <string name="profile_show_person_input">Show person field on Events screen</string>
     <string name="profile_person_select_title">Select Person</string>
     <string name="profile_person_manage_title">Manage Persons</string>
@@ -701,4 +701,5 @@
     <string name="sort_id">Id</string>
     <string name="sort_crosses"># Crosses</string>
     <string name="sort_by">Sort by</string>
+    <string name="profile_add_person">Add Person</string>
 </resources>

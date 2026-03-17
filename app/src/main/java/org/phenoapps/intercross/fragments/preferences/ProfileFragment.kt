@@ -16,10 +16,9 @@ import java.util.Locale
 class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
 
     private var profilePerson: Preference? = null
+    private var profileAddPerson: Preference? = null
     private var profileManagePersons: Preference? = null
     private var profileReset: Preference? = null
-
-    private var personDialog: AlertDialog? = null
 
     override fun onResume() {
         super.onResume()
@@ -32,6 +31,7 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
         mPrefs.edit { putLong(mKeyUtil.lastTimeAskedKey, System.nanoTime()) }
 
         profilePerson = findPreference(mKeyUtil.profilePersonKey)
+        profileAddPerson = findPreference(mKeyUtil.profileAddPersonKey)
         profileManagePersons = findPreference(mKeyUtil.profileManagePersonsKey)
         profileReset = findPreference(mKeyUtil.profileResetKey)
 
@@ -51,6 +51,11 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
             true
         }
 
+        profileAddPerson?.setOnPreferenceClickListener {
+            showAddPersonDialog()
+            true
+        }
+
         profileManagePersons?.setOnPreferenceClickListener {
             showManagePersonsDialog()
             true
@@ -66,21 +71,38 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
         val persons = loadPersons()
 
         if (persons.isEmpty()) {
-            showManagePersonsDialog()
+            showAddPersonDialog()
             return
         }
 
         val current = selectedPerson()
         var selectedIndex = persons.indexOfFirst { it.equals(current, ignoreCase = true) }
 
-        val builder = AlertDialog.Builder(context)
+        val listView = ListView(requireContext()).apply {
+            choiceMode = ListView.CHOICE_MODE_SINGLE
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        val listAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_single_choice, persons.toMutableList())
+        listView.adapter = listAdapter
+
+        if (selectedIndex >= 0) {
+            listView.setItemChecked(selectedIndex, true)
+        }
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            selectedIndex = position
+        }
+
+        val dialog = AlertDialog.Builder(context)
             .setTitle(R.string.profile_person_select_title)
-            .setSingleChoiceItems(persons.toTypedArray(), selectedIndex) { _, which ->
-                selectedIndex = which
-            }
-            .setNegativeButton(getString(R.string.dialog_cancel)) { dialog, _ -> dialog.dismiss() }
-            .setNeutralButton(getString(R.string.profile_person_manage)) { _, _ ->
-                showManagePersonsDialog()
+            .setView(listView)
+            .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
+            .setNeutralButton(getString(R.string.add)) { _, _ ->
+                showAddPersonDialog()
             }
             .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
                 if (selectedIndex in persons.indices) {
@@ -88,110 +110,53 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
                 }
                 updatePersonSummary()
             }
+            .create()
 
-        personDialog = builder.create()
-        personDialog?.show()
+        dialog.show()
 
-        val params = personDialog?.window?.attributes
+        val params = dialog.window?.attributes
         params?.width = LinearLayout.LayoutParams.MATCH_PARENT
-        personDialog?.window?.attributes = params
+        dialog.window?.attributes = params
     }
 
     private fun showManagePersonsDialog() {
         val persons = loadPersons().toMutableList()
 
-        val container = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(32, 24, 32, 24)
-        }
-
-        val input = AutoCompleteTextView(requireContext()).apply {
-            hint = getString(R.string.profile_person_input_hint)
-            isSingleLine = true
+        val listView = ListView(requireContext()).apply {
+            choiceMode = ListView.CHOICE_MODE_SINGLE
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
 
-        val listView = ListView(requireContext()).apply {
-            choiceMode = ListView.CHOICE_MODE_SINGLE
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                420
-            )
-        }
-
-        val inputAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, persons.toMutableList())
         val listAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_single_choice, persons.toMutableList())
-        input.setAdapter(inputAdapter)
-        input.threshold = 0
-        input.setOnClickListener { input.showDropDown() }
         listView.adapter = listAdapter
-
-        container.addView(input)
-        container.addView(listView)
 
         var selectedIndex = persons.indexOfFirst { it.equals(selectedPerson(), ignoreCase = true) }
         if (selectedIndex >= 0) {
             listView.setItemChecked(selectedIndex, true)
-            input.setText(persons[selectedIndex])
-            input.setSelection(persons[selectedIndex].length)
         }
 
         listView.setOnItemClickListener { _, _, position, _ ->
             selectedIndex = position
-            val selected = persons[position]
-            input.setText(selected)
-            input.setSelection(selected.length)
         }
 
         val dialog = AlertDialog.Builder(context)
             .setTitle(R.string.profile_person_manage_title)
-            .setMessage(R.string.profile_person_manage_summary)
-            .setView(container)
+            .setView(listView)
             .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
             .setNeutralButton(getString(R.string.profile_person_remove), null)
-            .setPositiveButton(getString(R.string.add), null)
             .create()
 
-        fun refreshAdapters() {
+        fun refreshAdapter() {
             val snapshot = persons.toList()
-
-            inputAdapter.clear()
-            inputAdapter.addAll(snapshot)
-            inputAdapter.notifyDataSetChanged()
-
             listAdapter.clear()
             listAdapter.addAll(snapshot)
             listAdapter.notifyDataSetChanged()
         }
 
         dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val entered = input.text?.toString()?.trim().orEmpty()
-                if (entered.isBlank()) {
-                    input.error = getString(R.string.profile_person_name_required)
-                    return@setOnClickListener
-                }
-
-                val existingIndex = persons.indexOfFirst { it.equals(entered, ignoreCase = true) }
-                if (existingIndex == -1) {
-                    persons.add(entered)
-                    persons.sortBy { it.lowercase(Locale.getDefault()) }
-                    savePersons(persons)
-                    refreshAdapters()
-                }
-
-                selectedIndex = persons.indexOfFirst { it.equals(entered, ignoreCase = true) }
-                if (selectedIndex >= 0) {
-                    listView.setItemChecked(selectedIndex, true)
-                    setSelectedPerson(persons[selectedIndex])
-                }
-
-                updatePersonSummary()
-            }
-
             dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
                 if (selectedIndex !in persons.indices) {
                     Toast.makeText(requireContext(), getString(R.string.profile_person_not_found), Toast.LENGTH_SHORT).show()
@@ -205,22 +170,54 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
                     setSelectedPerson(persons.firstOrNull().orEmpty())
                 }
 
-                refreshAdapters()
+                refreshAdapter()
 
                 if (persons.isNotEmpty()) {
                     selectedIndex = selectedIndex.coerceAtMost(persons.lastIndex)
                     listView.setItemChecked(selectedIndex, true)
-                    input.setText(persons[selectedIndex])
-                    input.setSelection(persons[selectedIndex].length)
                 } else {
                     selectedIndex = -1
-                    input.setText("")
                 }
 
                 updatePersonSummary()
                 Toast.makeText(requireContext(), getString(R.string.profile_person_removed), Toast.LENGTH_SHORT).show()
             }
         }
+
+        dialog.show()
+    }
+
+    private fun showAddPersonDialog() {
+        val input = AutoCompleteTextView(requireContext()).apply {
+            hint = getString(R.string.profile_person_input_hint)
+            isSingleLine = true
+        }
+
+        val persons = loadPersons()
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, persons)
+        input.setAdapter(adapter)
+        input.threshold = 0
+        input.setOnClickListener { input.showDropDown() }
+
+        val dialog = AlertDialog.Builder(context)
+            .setTitle(R.string.profile_add_person)
+            .setView(input)
+            .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
+            .setPositiveButton(getString(R.string.add)) { _, _ ->
+                val entered = input.text?.toString()?.trim().orEmpty()
+                if (entered.isBlank()) {
+                    Toast.makeText(requireContext(), getString(R.string.profile_person_name_required), Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                val currentPersons = loadPersons().toMutableList()
+                if (currentPersons.none { it.equals(entered, ignoreCase = true) }) {
+                    currentPersons.add(entered)
+                    currentPersons.sortBy { it.lowercase(Locale.getDefault()) }
+                    savePersons(currentPersons)
+                }
+            }
+            .create()
 
         dialog.show()
     }

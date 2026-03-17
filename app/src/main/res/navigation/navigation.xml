@@ -199,7 +199,7 @@
         tools:layout="@layout/fragment_parents">
 
         <action android:id="@+id/action_parents_to_create_event"
-            app:destination="@id/pollen_manager_fragment"
+            app:destination="@id/parent_creator_fragment"
             app:popUpTo="@id/parents_fragment">
             <argument android:name="mode"
                 app:argType="integer"
@@ -213,24 +213,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/pattern_fragment"
-        android:name="org.phenoapps.intercross.fragments.PatternFragment"
-        android:label="@string/patterns_label"
-        tools:layout="@layout/fragment_pattern">
-    </fragment>
-
-    <fragment
-        android:id="@+id/import_zpl_fragment"
-        android:name="org.phenoapps.intercross.fragments.ImportZPLFragment"
-        android:label="@string/import_zpl_label"
-        tools:layout="@layout/fragment_import_zpl">
-    </fragment>
-
-    <fragment
-        android:id="@+id/pollen_manager_fragment"
-        android:name="org.phenoapps.intercross.fragments.PollenManagerFragment"
-        android:label="@string/pollen_manager_label"
-        tools:layout="@layout/fragment_pollen_manager">
+        android:id="@+id/parent_creator_fragment"
+        android:name="org.phenoapps.intercross.fragments.ParentCreatorFragment"
+        android:label="@string/parent_creator_label"
+        tools:layout="@layout/fragment_parent_creator">
 
         <argument
             android:name="mode"
@@ -246,6 +232,61 @@
                 android:defaultValue="1"/>
         </action>
 
+        <action
+            android:id="@+id/action_to_pollen_manager_fragment"
+            app:destination="@+id/pollen_manager_fragment">
+            <argument android:name="codeId"
+                app:argType="string"
+                android:defaultValue=""/>
+            <argument android:name="readableName"
+                app:argType="string"
+                android:defaultValue=""/>
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/pollen_manager_fragment"
+        android:name="org.phenoapps.intercross.fragments.PollenManagerFragment"
+        android:label="@string/pollen_manager_label"
+        tools:layout="@layout/fragment_pollen_manager">
+
+        <argument android:name="codeId"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument android:name="readableName"
+            app:argType="string"
+            android:defaultValue=""/>
+
+        <action
+            android:id="@+id/action_return_to_parents_fragment"
+            app:destination="@+id/parents_fragment"
+            app:popUpTo="@id/events_fragment">
+            <argument android:name="malesFirst"
+                app:argType="integer"
+                android:defaultValue="1"/>
+        </action>
+
+        <action
+            android:id="@+id/action_return_to_parent_creator_fragment"
+            app:destination="@+id/parent_creator_fragment"
+            app:popUpTo="@id/parent_creator_fragment">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/pattern_fragment"
+        android:name="org.phenoapps.intercross.fragments.PatternFragment"
+        android:label="@string/patterns_label"
+        tools:layout="@layout/fragment_pattern">
+    </fragment>
+
+    <fragment
+        android:id="@+id/import_zpl_fragment"
+        android:name="org.phenoapps.intercross.fragments.ImportZPLFragment"
+        android:label="@string/import_zpl_label"
+        tools:layout="@layout/fragment_import_zpl">
     </fragment>
 
     <!-- Summary, Cross Block, and Wishlist Fragment Definitions !-->

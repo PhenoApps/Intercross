@@ -192,6 +192,7 @@
     <string name="patterns_label">Patterns</string>
     <string name="import_zpl_label">Import ZPL</string>
     <string name="pollen_manager_label">Pollen Manager</string>
+    <string name="parent_creator_label">Parent Creator</string>
     <string name="wishlist_label">Wishlist Summary</string>
     <string name="summary_label">Summary</string>
     <string name="cross_block_label">Cross Block</string>
@@ -694,4 +695,6 @@
     <string name="profile_person_not_found">Person not found in list.</string>
     <string name="events_person_hint">Person</string>
     <string name="add">Add</string>
+    <string name="Bulk">Bulk</string>
+    <string name="press_back_again_to_exit">Press back again to exit</string>
 </resources>

@@ -680,7 +680,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 }
 
                 doubleBackToExitPressedOnce = true
-                Toast.makeText(this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity,
+                    getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
 
                 Handler(Looper.getMainLooper()).postDelayed(
                     { doubleBackToExitPressedOnce = false },

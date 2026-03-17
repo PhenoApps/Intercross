@@ -192,6 +192,10 @@
     <string name="parent_label">Parents</string>
     <string name="settings_label">Settings</string>
     <string name="patterns_label">Cross ID Pattern</string>
+    <string name="template">Template</string>
+    <string name="reset_cross_id_counter">Reset Counter</string>
+    <string name="dialog_reset_cross_id_title">Reset Cross ID Counter</string>
+    <string name="dialog_reset_cross_id_message">Reset the automatic cross ID counter back to 1?</string>
     <string name="import_zpl_label">Import ZPL</string>
     <string name="pollen_manager_label">Pollen Manager</string>
     <string name="wishlist_label">Wishlist Summary</string>

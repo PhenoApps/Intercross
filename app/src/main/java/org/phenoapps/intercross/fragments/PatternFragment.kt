@@ -1,11 +1,16 @@
 package org.phenoapps.intercross.fragments
 
 import android.text.Editable
+import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.google.android.material.button.MaterialButtonToggleGroup
@@ -16,6 +21,7 @@ import org.phenoapps.intercross.data.models.Settings
 import org.phenoapps.intercross.data.viewmodels.SettingsViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.SettingsViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentPatternBinding
+import org.phenoapps.intercross.util.Dialogs
 import java.util.UUID
 
 class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.fragment_pattern) {
@@ -30,8 +36,47 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
     }
 
     private var mLastUsed: String = "1"
+    private var mAutoNumber: Int = 1
 
     private var mLastUUID: String = UUID.randomUUID().toString()
+    private var mMenu: Menu? = null
+
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_pattern_toolbar, menu)
+        mMenu = menu
+        menu.findItem(R.id.action_reset_cross_id)?.isVisible = false
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun updateResetMenuVisibility(visible: Boolean) {
+        mMenu?.findItem(R.id.action_reset_cross_id)?.isVisible = visible
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_reset_cross_id) {
+            context?.let { ctx ->
+                Dialogs.onOk(
+                    AlertDialog.Builder(ctx),
+                    getString(R.string.dialog_reset_cross_id_title),
+                    getString(android.R.string.cancel),
+                    getString(android.R.string.ok),
+                    getString(R.string.dialog_reset_cross_id_message)
+                ) {
+                    mAutoNumber = 1
+                    if (mBinding.autoRadioButton.isChecked) {
+                        mBinding.numberEditText.setText("1")
+                    }
+                }
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun FragmentPatternBinding.afterCreateView() {
         setupToolbar()
@@ -70,11 +115,13 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                     mBinding.idPreviewLayout.visibility = View.VISIBLE
                     mBinding.idPreviewEditText.setText(mLastUUID)
                     mBinding.fragmentPatternInput.visibility = View.GONE
+                    updateResetMenuVisibility(false)
                 }
                 isPattern -> {
                     mBinding.apply {
                         idPreviewLayout.visibility = View.VISIBLE
                         fragmentPatternInput.visibility = View.VISIBLE
+                        updateResetMenuVisibility(true)
                         prefixEditText.setText(prefix)
                         suffixEditText.setText(suffix)
                         numberEditText.setText(number.toString())
@@ -87,6 +134,7 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                                 autoRadioButton.isChecked = false
                             }
                             isAutoIncrement -> {
+                                mAutoNumber = number
                                 numberInputLayout.visibility = View.GONE
                                 startFromRadioButton.isChecked = false
                                 autoRadioButton.isChecked = true
@@ -98,6 +146,7 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                 else -> {
                     mBinding.idPreviewLayout.visibility = View.GONE
                     mBinding.fragmentPatternInput.visibility = View.GONE
+                    updateResetMenuVisibility(false)
                 }
             }
         }
@@ -113,6 +162,10 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                 handleNumberModeChange(checkedId)
             }
 
+            val lengthFilter = arrayOf(InputFilter.LengthFilter(7))
+            numberEditText.filters = lengthFilter
+            padEditText.filters = lengthFilter
+
             arrayOf(prefixEditText, numberEditText, suffixEditText, padEditText).forEach {
                 it.addTextChangedListener(createTextWatcher())
             }
@@ -127,15 +180,18 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                     idPreviewLayout.visibility = View.VISIBLE
                     idPreviewEditText.setText(mLastUUID)
                     fragmentPatternInput.visibility = View.GONE
+                    updateResetMenuVisibility(false)
                 }
                 R.id.patternButton -> {
                     idPreviewLayout.visibility = View.VISIBLE
                     fragmentPatternInput.visibility = View.VISIBLE
+                    updateResetMenuVisibility(true)
                     updatePreview()
                 }
                 R.id.noneButton -> {
                     idPreviewLayout.visibility = View.GONE
                     fragmentPatternInput.visibility = View.GONE
+                    updateResetMenuVisibility(false)
                 }
             }
         }
@@ -147,7 +203,7 @@ class PatternFragment : IntercrossBaseFragment<FragmentPatternBinding>(R.layout.
                 R.id.autoRadioButton -> {
                     mLastUsed = numberEditText.text.toString().ifEmpty { "1" }
                     numberInputLayout.visibility = View.GONE
-                    numberEditText.setText("0")
+                    numberEditText.setText(mAutoNumber.toString())
                 }
                 else -> {
                     numberInputLayout.visibility = View.VISIBLE

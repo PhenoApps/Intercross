@@ -1,11 +1,14 @@
 package org.phenoapps.intercross.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.sqlite.throwSQLiteException
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.BaseParent
 import org.phenoapps.intercross.data.models.Parent
@@ -74,6 +77,13 @@ class ParentsAdapter(private val listModel: ParentsListViewModel,
                 pollenGroupChip.isVisible = isPollenGroup
                 pollenGroupChip.text = context.getString(R.string.parent_pollen_group_chip)
                 crossCountChip.text = crossCount.toString()
+
+                crossCountChip.visibility = if (crossCount > 0) View.VISIBLE else View.GONE
+
+                parentTypeChip.chipIcon = when((p as? Parent)?.sex) {
+                    0 -> AppCompatResources.getDrawable(context, R.drawable.ic_female_black_24dp)
+                    else -> AppCompatResources.getDrawable(context, R.drawable.ic_male_black_24dp)
+                }
 
                 parentCard.setOnClickListener {
                     doneCheckBox.isChecked = !doneCheckBox.isChecked

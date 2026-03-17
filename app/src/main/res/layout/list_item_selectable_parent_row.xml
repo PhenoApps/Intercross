@@ -110,7 +110,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                app:constraint_referenced_ids="pollenGroupChip,crossCountChip"
+                app:constraint_referenced_ids="parentTypeChip,pollenGroupChip,crossCountChip"
                 app:flow_horizontalAlign="start"
                 app:flow_horizontalBias="0"
                 app:flow_horizontalGap="6dp"
@@ -119,6 +119,17 @@
                 app:layout_constraintEnd_toEndOf="@id/headerLayout"
                 app:layout_constraintStart_toStartOf="@id/headerLayout"
                 app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/parentTypeChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipMinHeight="28dp"
+                app:chipIconSize="18dp"
+                app:chipStartPadding="16dp"
+                app:chipIcon="@drawable/ic_female_black_24dp"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/pollenGroupChip"
@@ -142,7 +153,7 @@
                 app:chipMinHeight="28dp"
                 app:chipIcon="@drawable/ic_cross"
                 app:chipIconSize="18dp"
-                tools:text="4" />
+                tools:text="4"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -49,6 +49,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import androidx.core.content.edit
+import org.phenoapps.utils.SoftKeyboardUtil
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
@@ -773,6 +774,11 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             .create()
 
         dialog.setOnShowListener {
+
+            inputView.requestFocus()
+
+            SoftKeyboardUtil.showKeyboard(requireContext(), inputView)
+
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val enteredCrossId = inputView.text?.toString()?.trim().orEmpty()
 

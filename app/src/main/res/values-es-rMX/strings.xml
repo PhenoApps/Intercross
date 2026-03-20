@@ -5,12 +5,6 @@
     <string name="drawer_close">Cerrar</string>
     <string name="cross_id">ID Cruza:</string>
     <string name="save_text">Guardar</string>
-    <string name="start_from">Empieza De</string>
-    <string name="auto">Auto</string>
-    <string name="pad_length">largo del pad</string>
-    <string name="number">número</string>
-    <string name="suffix">sufijo</string>
-    <string name="prefix">prefijo</string>
     <!-- About dialog -->
     <string name="about_version_title">Versión</string>
     <string name="about_title_other_apps">PhenoApps</string>
@@ -172,7 +166,6 @@
     <string name="event_detail_label">Evento</string>
     <string name="parent_label">Progenitores</string>
     <string name="settings_label">Ajustes</string>
-    <string name="patterns_label">Patrones</string>
     <string name="import_zpl_label">Importar ZPL</string>
     <string name="pollen_manager_label">Administrador de Polen</string>
     <string name="wishlist_label">Resumen de Lista de Deseos</string>

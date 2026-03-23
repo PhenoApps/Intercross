@@ -7,7 +7,126 @@
     app:startDestination="@+id/events_fragment">
 
     <include app:graph="@navigation/preferences"/>
-    <include app:graph="@navigation/wish_factory"/>
+
+    <fragment android:id="@+id/wf_female_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.FemaleChoiceFragment">
+        <action android:id="@+id/action_from_females_to_males_fragment"
+            app:destination="@+id/wf_male_fragment"
+            app:launchSingleTop="true">
+            <argument android:name="id"
+                app:argType="string"/>
+            <argument android:name="name"
+                app:argType="string"/>
+        </action>
+        <action android:id="@+id/action_from_females_to_barcode_scan_fragment"
+            app:destination="@id/wf_barcode_scan_fragment"
+            app:popUpTo="@id/wf_female_fragment"
+            app:launchSingleTop="true"/>
+    </fragment>
+
+    <fragment android:id="@+id/wf_male_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.MaleChoiceFragment">
+        <action android:id="@+id/action_from_males_to_types_fragment"
+            app:destination="@+id/wf_type_fragment"
+            app:popUpTo="@id/wf_female_fragment"
+            app:launchSingleTop="true">
+            <argument android:name="femaleId"
+                app:argType="string"/>
+            <argument android:name="femaleName"
+                app:argType="string"/>
+            <argument android:name="maleId"
+                app:argType="string"
+                android:defaultValue="-1"/>
+            <argument android:name="maleName"
+                app:argType="string"
+                android:defaultValue="blank"/>
+        </action>
+        <action android:id="@+id/action_from_males_to_barcode_scan_fragment"
+            app:destination="@id/wf_barcode_scan_fragment"
+            app:popUpTo="@id/wf_male_fragment"
+            app:launchSingleTop="true">
+            <argument android:name="femaleId"
+                app:argType="string"/>
+            <argument android:name="femaleName"
+                app:argType="string"/>
+        </action>
+    </fragment>
+
+    <fragment android:id="@+id/wf_type_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.TypeChoiceFragment">
+        <action
+            android:id="@+id/action_from_types_to_values_fragment"
+            app:destination="@id/wf_values_fragment"
+            app:popUpTo="@id/wf_male_fragment"
+            app:launchSingleTop="true" >
+            <argument android:name="femaleId"
+                app:argType="string"/>
+            <argument android:name="femaleName"
+                app:argType="string"/>
+            <argument android:name="maleId"
+                app:argType="string"/>
+            <argument android:name="maleName"
+                app:argType="string"/>
+            <argument android:name="typeName"
+                app:argType="string"/>
+        </action>
+        <action android:id="@+id/action_from_types_to_wishlist_back"
+            app:popUpTo="@id/events_fragment"
+            app:launchSingleTop="true"
+            app:destination="@id/cross_tracker_fragment"/>
+    </fragment>
+
+    <fragment android:id="@+id/wf_values_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.ValuesChoiceFragment">
+        <action
+            android:id="@+id/action_from_values_to_summary_fragment"
+            app:destination="@id/wf_summary_fragment"
+            app:popUpTo="@id/wf_type_fragment"
+            app:launchSingleTop="true" >
+            <argument android:name="femaleId"
+                app:argType="string"/>
+            <argument android:name="femaleName"
+                app:argType="string"/>
+            <argument android:name="maleId"
+                app:argType="string"/>
+            <argument android:name="maleName"
+                app:argType="string"/>
+            <argument android:name="typeName"
+                app:argType="string"/>
+            <argument android:name="min"
+                app:argType="integer"
+                android:defaultValue="1"/>
+            <argument android:name="max"
+                app:argType="integer"
+                android:defaultValue="10"/>
+        </action>
+    </fragment>
+
+    <fragment android:id="@+id/wf_summary_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.SummaryFragment">
+        <action android:id="@+id/action_from_wf_to_wishlist_back"
+            app:popUpTo="@id/events_fragment"
+            app:launchSingleTop="true"
+            app:destination="@id/cross_tracker_fragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/wf_barcode_scan_fragment"
+        android:name="org.phenoapps.intercross.fragments.wish_factory.BarcodeScanFragment"
+        android:label="@string/barcode_scan_label">
+        <action android:id="@+id/action_to_females_fragment_from_scan"
+            app:destination="@id/wf_female_fragment"
+            app:popUpTo="@id/wf_female_fragment">
+            <argument android:name="barcode" app:argType="string"/>
+        </action>
+        <action android:id="@+id/action_to_males_fragment_from_scan"
+            app:popUpTo="@id/wf_male_fragment"
+            app:destination="@id/wf_male_fragment">
+            <argument android:name="barcode" app:argType="string"/>
+            <argument android:name="id" app:argType="string"/>
+            <argument android:name="name" app:argType="string"/>
+        </action>
+    </fragment>
 
     <!-- Events Fragment is the main entry fragment that shows the entire crossing table -->
     <fragment android:id="@+id/events_fragment"
@@ -315,7 +434,7 @@
             app:destination="@+id/summary_fragment"
             app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_from_wishlist_to_wish_factory"
-            app:destination="@id/wish_factory"
+            app:destination="@id/wf_female_fragment"
             app:popUpTo="@id/wishlist_fragment"/>
     </fragment>
 
@@ -357,8 +476,15 @@
             app:destination="@+id/summary_fragment"
             app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_from_cross_tracker_to_wish_factory"
-            app:destination="@id/wish_factory"
+            app:destination="@id/wf_female_fragment"
             app:popUpTo="@id/cross_tracker_fragment"/>
+        <action android:id="@+id/action_from_cross_tracker_to_type_choice"
+            app:destination="@id/wf_type_fragment">
+            <argument android:name="femaleId" app:argType="string"/>
+            <argument android:name="femaleName" app:argType="string"/>
+            <argument android:name="maleId" app:argType="string"/>
+            <argument android:name="maleName" app:argType="string"/>
+        </action>
     </fragment>
 
     <fragment
@@ -388,7 +514,7 @@
             app:destination="@+id/summary_fragment"
             app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_from_crossblock_to_wish_factory"
-            app:destination="@id/wish_factory"
+            app:destination="@id/wf_female_fragment"
             app:popUpTo="@id/crossblock_fragment"/>
     </fragment>
 

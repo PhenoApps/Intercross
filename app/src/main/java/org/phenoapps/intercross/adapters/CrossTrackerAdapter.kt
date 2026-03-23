@@ -1,6 +1,7 @@
 package org.phenoapps.intercross.adapters
 
 import android.content.Context
+import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -45,19 +46,31 @@ class CrossTrackerAdapter(
 
         init {
             val crossCardView: CardView = view.findViewById(R.id.cross_card)
-            var isLongPress = false
+
+            val gestureDetector = GestureDetector(view.context, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                    view.performClick()
+                    handleClick(layoutPosition)
+                    return true
+                }
+
+                override fun onLongPress(e: MotionEvent) {
+                    handleLongClick(layoutPosition)
+                }
+            })
 
             // intercept touch events to prevent person, date and wishlist progress chip ripple
             crossCardView.setOnTouchListener{ _, event ->
-                if (event.action == MotionEvent.ACTION_UP) {
-                    if (!isLongPress) {
-                        view.performClick()
-                        handleClick(layoutPosition)
-                    }
-                    isLongPress = false
-                }
+                gestureDetector.onTouchEvent(event)
                 true
             }
+        }
+    }
+
+    private fun handleLongClick(position: Int) {
+        if (position != RecyclerView.NO_POSITION) {
+            val item = currentList[position]
+            crossController.onCrossLongClicked(item.male, item.female, item.maleId, item.femaleId)
         }
     }
 

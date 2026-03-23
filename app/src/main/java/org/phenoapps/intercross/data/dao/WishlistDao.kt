@@ -15,6 +15,9 @@ interface WishlistDao : BaseDao<Wishlist> {
     @Query("SELECT * FROM wishlist ORDER BY wishlist.wishMin DESC")
     fun getAll(): LiveData<List<Wishlist>>
 
+    @Query("SELECT * FROM wishlist WHERE femaleDbId = :femaleId AND maleDbId = :maleId")
+    fun getByParents(femaleId: String, maleId: String): LiveData<List<Wishlist>>
+
     @Query("SELECT * FROM wishlistView ORDER BY wishlistView.wishProgress DESC")
     fun getAllCounts(): LiveData<List<WishlistView>>
 
@@ -55,6 +58,6 @@ interface WishlistDao : BaseDao<Wishlist> {
     @Query("DELETE FROM wishlist")
     fun drop()
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     override fun insert(vararg items: Wishlist)
 }

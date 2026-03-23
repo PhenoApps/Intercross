@@ -10,12 +10,17 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -44,6 +49,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import androidx.core.content.edit
+import org.phenoapps.utils.SoftKeyboardUtil
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
@@ -100,6 +106,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     private var mWishlistProgress: List<WishlistView> = ArrayList()
 
     private var mFocused: View? = null
+
+    private var mPersons: List<String> = emptyList()
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -189,6 +197,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         mBinding.bottomNavBar.selectedItemId = R.id.action_nav_home
 
+        setupPersonInput()
     }
 
     private fun setMenuItems() {
@@ -316,8 +325,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             it?.let {
 
                 if (it.isNotBlank()) {
-
-                    //Log.d("IntercrossNextScan", mFocused?.id.toString())
 
                     when (mFocused?.id) {
 
@@ -528,6 +535,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             }
         }
 
+        if (mBinding.personTextHolder.isVisible) {
+            mBinding.personText.setText(selectedPersonFromPrefs(), false)
+        }
+
         mBinding.firstText.requestFocus()
     }
 
@@ -570,6 +581,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         secondText.addTextChangedListener(emptyGuard)
         firstText.addTextChangedListener(emptyGuard)
         editTextCross.addTextChangedListener(emptyGuard)
+
+        setupPersonInput()
 
         firstText.onFocusChangeListener = focusListener
         secondText.onFocusChangeListener = focusListener
@@ -615,6 +628,18 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                     afterThirdText(value)
 
                 }
+
+                return@OnEditorActionListener true
+            }
+
+            false
+        })
+
+        personText.setOnEditorActionListener(TextView.OnEditorActionListener { _, i, _ ->
+
+            if (i == EditorInfo.IME_ACTION_DONE) {
+
+                askUserNewExperimentName()
 
                 return@OnEditorActionListener true
             }
@@ -697,6 +722,11 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         }
 
+        fragmentEventsSearchButton.setOnLongClickListener {
+            showManualCrossSearchDialog()
+            true
+        }
+
         saveButton.setOnClickListener {
 
             askUserNewExperimentName()
@@ -712,6 +742,71 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
             if (person.isNotBlank()) firstText.requestFocus()
         }
+    }
+
+    private fun showManualCrossSearchDialog() {
+
+        if (mEvents.isEmpty()) {
+            mSnackbar.push(SnackbarQueue.SnackJob(mBinding.root, getString(R.string.manual_cross_search_no_data)))
+            return
+        }
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_manual_cross_search, null)
+
+        val inputLayout = dialogView.findViewById<TextInputLayout>(R.id.manual_cross_search_input_layout)
+        val inputView = dialogView.findViewById<AutoCompleteTextView>(R.id.manual_cross_search_input)
+
+        val crossIds = mEvents.map { it.eventDbId }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, crossIds)
+        inputView.setAdapter(adapter)
+        inputView.threshold = 0
+        inputView.setOnClickListener { inputView.showDropDown() }
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.manual_cross_search_title)
+            .setView(dialogView)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.go, null)
+            .create()
+
+        dialog.setOnShowListener {
+
+            inputView.requestFocus()
+
+            SoftKeyboardUtil.showKeyboard(requireContext(), inputView)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val enteredCrossId = inputView.text?.toString()?.trim().orEmpty()
+
+                if (enteredCrossId.isBlank()) {
+                    inputLayout.error = getString(R.string.manual_cross_search_required)
+                    return@setOnClickListener
+                }
+
+                val eventId = mEvents.firstOrNull {
+                    it.eventDbId.equals(enteredCrossId, ignoreCase = true)
+                }?.id
+
+                if (eventId == null) {
+                    inputLayout.error = getString(R.string.manual_cross_search_not_found)
+                    return@setOnClickListener
+                }
+
+                inputLayout.error = null
+                dialog.dismiss()
+                findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
+            }
+        }
+
+        inputView.setOnItemClickListener { _, _, _, _ ->
+            inputLayout.error = null
+        }
+
+        dialog.show()
     }
 
     private fun FragmentEventsBinding.isInputValid(): Boolean {
@@ -771,6 +866,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         }
 
         if (value.isNotBlank() && (male.isNotBlank() || blank) && female.isNotBlank()) {
+
+            persistPersonSelectionFromInput()
 
             if (male.isBlank()) male = "blank"
 
@@ -913,5 +1010,85 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     
     override fun onEventClick(eventId: Long) {
         findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))
+    }
+
+    private fun setupPersonInput() {
+        val showPersonInput = mPref.getBoolean(mKeyUtil.profileShowPersonInputKey, false)
+        mBinding.personTextHolder.isVisible = showPersonInput
+
+        if (!showPersonInput) {
+            return
+        }
+
+        mPersons = loadPersons()
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mPersons)
+        mBinding.personText.setAdapter(adapter)
+        mBinding.personText.threshold = 255
+        mBinding.personText.setOnClickListener { mBinding.personText.showDropDown() }
+
+        val selectedPerson = selectedPersonFromPrefs()
+        if (selectedPerson.isNotBlank()) {
+            mBinding.personText.setText(selectedPerson, false)
+        }
+    }
+
+    private fun loadPersons(): List<String> {
+        return mPref.getStringSet(mKeyUtil.profilePersonListKey, emptySet())
+            .orEmpty()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinctBy { it.lowercase(Locale.getDefault()) }
+            .sortedBy { it.lowercase(Locale.getDefault()) }
+    }
+
+    private fun selectedPersonFromPrefs(): String {
+        val selected = mPref.getString(mKeyUtil.profileSelectedPersonKey, "").orEmpty().trim()
+        if (selected.isNotBlank()) {
+            return selected
+        }
+
+        val first = mPref.getString(mKeyUtil.personFirstNameKey, "").orEmpty().trim()
+        val last = mPref.getString(mKeyUtil.personLastNameKey, "").orEmpty().trim()
+        return "$first $last".trim()
+    }
+
+    private fun persistPersonSelectionFromInput() {
+        if (!mBinding.personTextHolder.isVisible) {
+            return
+        }
+
+        val entered = mBinding.personText.text?.toString()?.trim().orEmpty()
+        if (entered.isBlank()) {
+            return
+        }
+
+        val currentPersons = loadPersons().toMutableList()
+        var isNewPerson = false
+        if (currentPersons.none { it.equals(entered, ignoreCase = true) }) {
+            currentPersons.add(entered)
+            currentPersons.sortBy { it.lowercase(Locale.getDefault()) }
+            mPref.edit {
+                putStringSet(mKeyUtil.profilePersonListKey, currentPersons.toSet())
+            }
+            isNewPerson = true
+        }
+
+        val tokens = entered.split("\\s+".toRegex(), limit = 2)
+        val first = tokens.firstOrNull().orEmpty()
+        val last = if (tokens.size > 1) tokens[1] else ""
+
+        mPref.edit {
+            putString(mKeyUtil.profileSelectedPersonKey, entered)
+            putString(mKeyUtil.personFirstNameKey, first)
+            putString(mKeyUtil.personLastNameKey, last)
+        }
+
+        // Reload persons from preferences and update adapter if new person was added
+        if (isNewPerson) {
+            mPersons = loadPersons()
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mPersons)
+            mBinding.personText.setAdapter(adapter)
+        }
     }
 }

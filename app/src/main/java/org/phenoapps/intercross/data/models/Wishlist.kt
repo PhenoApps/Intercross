@@ -2,9 +2,13 @@ package org.phenoapps.intercross.data.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "wishlist")
+@Entity(tableName = "wishlist",
+    indices = [
+        Index(value = ["femaleDbId", "maleDbId", "wishType"], unique = true)
+    ])
 data class Wishlist(var femaleDbId: String,
                     var maleDbId: String,
                     var femaleName: String=femaleDbId,

@@ -30,6 +30,8 @@ class WishlistRepository private constructor(
 
     fun getAll() = wishlistDao.getAll()
 
+    fun getByParents(femaleId: String, maleId: String) = wishlistDao.getByParents(femaleId, maleId)
+
     fun getWishes() = wishlistDao.getWishes()
 
     fun getAllCounts() = wishlistDao.getAllCounts()

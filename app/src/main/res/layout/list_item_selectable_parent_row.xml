@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <data>
 
-        <import type="android.view.View"/>
+    <data>
 
         <variable
             name="name"
+            type="String" />
+
+        <variable
+            name="code"
             type="String" />
 
         <variable
@@ -16,27 +19,143 @@
 
     </data>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/parentCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:orientation="horizontal">
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
 
-        <CheckBox
-            android:id="@+id/doneCheckBox"
-            android:clickable="false"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
-            android:checked="@{checked}"/>
-
-        <TextView style="@style/ParentCellText"
-            android:id="@+id/textField"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            tools:text="13RPN00042"
-            android:text="@{name}" />
-    </LinearLayout>
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
+
+            <CheckBox
+                android:id="@+id/doneCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{checked}"
+                android:clickable="false"
+                android:focusable="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/headerLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:gravity="top"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/doneCheckBox"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/textContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@{name}"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textStyle="bold"
+                        tools:text="13RPN00042" />
+
+                    <TextView
+                        android:id="@+id/codeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@{code}"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="?android:attr/textColorSecondary"
+                        tools:text="parent-code-13RPN00042" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/barcodePreview"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/barcode_preview_image"
+                    android:importantForAccessibility="no"
+                    android:scaleType="fitCenter"
+                    app:setQRCode="@{code}"
+                    tools:src="@android:drawable/sym_def_app_icon" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/chipsFlow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:constraint_referenced_ids="parentTypeChip,pollenGroupChip,crossCountChip"
+                app:flow_horizontalAlign="start"
+                app:flow_horizontalBias="0"
+                app:flow_horizontalGap="6dp"
+                app:flow_horizontalStyle="packed"
+                app:flow_wrapMode="chain"
+                app:layout_constraintEnd_toEndOf="@id/headerLayout"
+                app:layout_constraintStart_toStartOf="@id/headerLayout"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/parentTypeChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipMinHeight="28dp"
+                app:chipIconSize="18dp"
+                app:chipStartPadding="16dp"
+                app:chipIcon="@drawable/ic_female_black_24dp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/pollenGroupChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:visibility="gone"
+                app:chipMinHeight="28dp"
+                app:chipIcon="@drawable/ic_account_tree_black_24dp"
+                app:chipIconSize="18dp"
+                tools:text="Pollen group"
+                tools:visibility="visible" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/crossCountChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipMinHeight="28dp"
+                app:chipIcon="@drawable/ic_cross"
+                app:chipIconSize="18dp"
+                tools:text="4"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 </layout>

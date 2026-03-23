@@ -13,14 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.phenoapps.intercross.R
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.net.toUri
 
-class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope() {
+class FileExploreDialogFragment : DialogFragment() {
 
     companion object {
         const val TAG = "FileExploreDialogFragment"
@@ -150,14 +148,22 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
         progressBar?.visibility = View.VISIBLE
         mainListView?.visibility = View.INVISIBLE
 
+        val upDirName = getString(R.string.activity_file_explorer_up_directory_name)
+
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                loadFileList(path)
+            val loadedList = try {
+                loadFileList(path, upDirName)
             } catch (e: Exception) {
                 e.printStackTrace()
+                emptyList<Item>()
             }
 
             withContext(Dispatchers.Main) {
+                if (!isAdded) return@withContext
+
+                fileList.clear()
+                fileList.addAll(loadedList)
+
                 progressBar?.visibility = View.GONE
                 mainListView?.visibility = View.VISIBLE
                 (mainListView?.adapter as? FileAdapter)?.apply {
@@ -169,7 +175,8 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
     }
 
 
-    private fun loadFileList(path: DocumentFile?) {
+    private fun loadFileList(path: DocumentFile?, upDirName: String): List<Item> {
+        val list = mutableListOf<Item>()
         if (path?.exists() == true) {
             val files = path.listFiles()
             val excludedExtensions = exclude?.toList() ?: emptyList()
@@ -194,22 +201,23 @@ class FileExploreDialogFragment : DialogFragment(), CoroutineScope by MainScope(
                         file.isDirectory -> R.drawable.ic_file_directory
                         else -> R.drawable.ic_file_generic
                     }
-                    fileList.add(Item(name, file.isDirectory, icon))
+                    list.add(Item(name, file.isDirectory, icon))
                 }
             }
 
-            fileList.sortWith(mComparator)
+            list.sortWith(mComparator)
 
             if (!firstLvl) {
-                fileList.add(
+                list.add(
                     0, Item(
-                        getString(R.string.activity_file_explorer_up_directory_name),
+                        upDirName,
                         true,
                         R.drawable.ic_file_up_dir
                     )
                 )
             }
         }
+        return list
     }
 
     fun setOnFileSelectedListener(listener: (Uri) -> Unit) {

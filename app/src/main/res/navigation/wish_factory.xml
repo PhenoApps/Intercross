@@ -66,6 +66,10 @@
             <argument android:name="typeName"
                 app:argType="string"/>
         </action>
+        <action android:id="@+id/action_from_types_to_wishlist_back"
+            app:popUpTo="@id/events_fragment"
+            app:launchSingleTop="true"
+            app:destination="@id/cross_tracker_fragment"/>
     </fragment>
 
     <fragment android:id="@+id/wf_values_fragment"

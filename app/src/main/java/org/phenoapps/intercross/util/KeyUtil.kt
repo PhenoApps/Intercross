@@ -50,7 +50,12 @@ class KeyUtil @Inject constructor(
     // person and experiment preferences
     val profileRootKey by key(R.string.root_profile)
     val profilePersonKey by key(R.string.key_pref_profile_person)
+    val profileAddPersonKey by key(R.string.key_pref_profile_add_person)
+    val profileManagePersonsKey by key(R.string.key_pref_profile_manage_persons)
+    val profileShowPersonInputKey by key(R.string.key_pref_profile_show_person_input)
     val profileResetKey by key(R.string.key_pref_profile_reset)
+    val profilePersonListKey by key(R.string.key_pref_profile_person_list)
+    val profileSelectedPersonKey by key(R.string.key_pref_profile_selected_person)
     val personFirstNameKey by key(R.string.key_pref_person_first_name)
     val personLastNameKey by key(R.string.key_pref_person_last_name)
     val experimentNameKey by key(R.string.key_pref_experiment_name)

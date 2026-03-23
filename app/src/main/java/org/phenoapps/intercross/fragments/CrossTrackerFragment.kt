@@ -186,7 +186,9 @@ class CrossTrackerFragment :
         override var count: String,
         override var persons: List<PersonCount> = emptyList(),
         override var dates: List<DateCount> = emptyList(),
-    ) : ListEntry(male, female, count, persons, dates)
+        override var maleId: String = "",
+        override var femaleId: String = "",
+    ) : ListEntry(male, female, count, persons, dates, maleId, femaleId)
 
     // for wishlist crosses
     data class PlannedCrossData(
@@ -399,7 +401,9 @@ class CrossTrackerFragment :
                     normalizedParents.mom,
                     parentRow.count.toString(),
                     personCount,
-                    dateCount
+                    dateCount,
+                    parentRow.dad,
+                    parentRow.mom
                 )
             } else { // parents are in the wishlist
                 val firstWish = wishList.first()
@@ -723,6 +727,12 @@ class CrossTrackerFragment :
 
     override fun onCrossClicked(male: String, female: String) {
         mShowChildrenDialogUtil.showChildren(mEvents, male, female)
+    }
+
+    override fun onCrossLongClicked(male: String, female: String, maleId: String, femaleId: String) {
+        findNavController().navigate(CrossTrackerFragmentDirections.actionFromCrossTrackerToTypeChoice(
+            femaleId = femaleId, femaleName = female, maleId = maleId, maleName = male
+        ))
     }
 
     override fun onPersonChipClicked(persons: List<PersonCount>, crossCount: Int) {

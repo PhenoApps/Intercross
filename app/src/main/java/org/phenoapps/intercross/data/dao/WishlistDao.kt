@@ -2,6 +2,8 @@ package org.phenoapps.intercross.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import org.phenoapps.intercross.data.models.Wishlist
@@ -12,6 +14,9 @@ interface WishlistDao : BaseDao<Wishlist> {
 
     @Query("SELECT * FROM wishlist ORDER BY wishlist.wishMin DESC")
     fun getAll(): LiveData<List<Wishlist>>
+
+    @Query("SELECT * FROM wishlist WHERE femaleDbId = :femaleId AND maleDbId = :maleId")
+    fun getByParents(femaleId: String, maleId: String): LiveData<List<Wishlist>>
 
     @Query("SELECT * FROM wishlistView ORDER BY wishlistView.wishProgress DESC")
     fun getAllCounts(): LiveData<List<WishlistView>>
@@ -52,4 +57,7 @@ interface WishlistDao : BaseDao<Wishlist> {
     @Transaction
     @Query("DELETE FROM wishlist")
     fun drop()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    override fun insert(vararg items: Wishlist)
 }

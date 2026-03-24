@@ -2,7 +2,10 @@ package org.phenoapps.intercross.util
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.zebra.sdk.comm.BluetoothConnection
 import com.zebra.sdk.comm.ConnectionException
 import com.zebra.sdk.printer.SGD
@@ -31,6 +34,22 @@ class ZebraPrinterUtil(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private var progressDialog: AlertDialog? = null
+
+    private suspend fun showProgress() = withContext(Dispatchers.Main) {
+        val view = LayoutInflater.from(ctx).inflate(R.layout.dialog_export_progress, null)
+        view.findViewById<TextView>(R.id.message).text = ctx.getString(R.string.printing)
+        progressDialog = AlertDialog.Builder(ctx)
+            .setView(view)
+            .setCancelable(false)
+            .show()
+    }
+
+    private suspend fun hideProgress() = withContext(Dispatchers.Main) {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
     fun printEvents(events: Array<Event>) {
         scope.launch {
             runPrint(printMode = PrintMode.Events, events = events)
@@ -55,6 +74,7 @@ class ZebraPrinterUtil(
         events: Array<Event> = emptyArray(),
         parents: Array<Parent> = emptyArray()
     ) {
+        showProgress()
         var connection: BluetoothConnection? = null
 
         try {
@@ -121,6 +141,7 @@ class ZebraPrinterUtil(
             e.printStackTrace()
         } finally {
             connection?.close()
+            hideProgress()
         }
     }
 

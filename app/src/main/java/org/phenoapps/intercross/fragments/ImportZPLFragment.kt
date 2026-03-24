@@ -1,14 +1,12 @@
 package org.phenoapps.intercross.fragments
 
 import android.content.SharedPreferences
-import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.databinding.FragmentImportZplBinding
 import org.phenoapps.intercross.util.KeyUtil
-import org.phenoapps.intercross.util.ZplTemplate
 import java.io.InputStreamReader
 import javax.inject.Inject
 import androidx.core.content.edit
@@ -48,9 +46,6 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
             show()
         }
 
-        // Setup template spinner
-        setupTemplateSpinner()
-
         //import a file when button is pressed
         importButton.setOnClickListener {
 
@@ -62,61 +57,5 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
         val code = mPref.getString(mKeyUtil.zplCodeKey, "") ?: ""
 
         if (code.isNotBlank()) codeTextView.text = code
-    }
-
-    private fun FragmentImportZplBinding.setupTemplateSpinner() {
-
-        val templates = ZplTemplate.getDefaultTemplates(requireContext())
-        val templateNames = templates.map { it.displayName }.toMutableList()
-        val defaultTemplate = templates.firstOrNull { it.name == "template_2x1" } ?: templates.first()
-
-        // Add "None" option at the beginning for custom imported templates
-        val spinnerItems = mutableListOf(context?.getString(R.string.none) ?: "None")
-        spinnerItems.addAll(templateNames)
-
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            spinnerItems
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        templateSpinner.adapter = adapter
-
-        val savedTemplateName = mPref.getString(mKeyUtil.zplTemplateKey, "")?.trim().orEmpty()
-        val resolvedTemplateName = when {
-            savedTemplateName.isBlank() -> defaultTemplate.displayName
-            spinnerItems.contains(savedTemplateName) -> savedTemplateName
-            else -> defaultTemplate.displayName
-        }
-
-        val selectedPosition = spinnerItems.indexOf(resolvedTemplateName)
-        if (selectedPosition >= 0) {
-            templateSpinner.setSelection(selectedPosition)
-        }
-
-        // Show the default template code in preview if nothing is saved yet
-        if (savedTemplateName.isBlank()) {
-            codeTextView.text = defaultTemplate.zplCode
-        }
-
-        // Handle template selection
-        templateSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                if (position > 0) {
-                    val selectedTemplate = templates[position - 1]
-                    codeTextView.text = selectedTemplate.zplCode
-                    mPref.edit {
-                        putString(mKeyUtil.zplTemplateKey, selectedTemplate.displayName)
-                        putString(mKeyUtil.zplCodeKey, selectedTemplate.zplCode)
-                    }
-                } else {
-                    mPref.edit { putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None") }
-                }
-            }
-
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
-                // Do nothing
-            }
-        }
     }
 }

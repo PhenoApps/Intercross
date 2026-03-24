@@ -14,8 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.navigation.fragment.findNavController
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.util.ZplTemplate
 import androidx.core.net.toUri
 
 class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
@@ -66,6 +68,44 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
             updateDevicePreferenceSummary(it)
             it.setOnPreferenceClickListener {
                 checkBluetoothPermissionsAndShowDialog()
+                true
+            }
+        }
+
+        setupTemplatePreference()
+    }
+
+    private fun setupTemplatePreference() {
+        val templatePref = findPreference<ListPreference>(getString(R.string.key_pref_print_zpl_template))
+        templatePref?.let { pref ->
+            val templates = ZplTemplate.getDefaultTemplates(requireContext())
+            val templateNames = templates.map { it.displayName }.toTypedArray()
+
+            // Add "None" option at the beginning
+            val entries = arrayOf(context?.getString(R.string.none) ?: "None", *templateNames)
+            val entryValues = arrayOf(context?.getString(R.string.none) ?: "None", *templateNames)
+
+            pref.entries = entries
+            pref.entryValues = entryValues
+
+            val savedTemplateName = mPrefs.getString(mKeyUtil.zplTemplateKey, "")?.trim().orEmpty()
+            if (savedTemplateName.isNotBlank() && entries.contains(savedTemplateName)) {
+                pref.value = savedTemplateName
+            }
+
+            pref.setOnPreferenceChangeListener { _, newValue ->
+                val selectedName = newValue as String
+                if (selectedName != context?.getString(R.string.none)) {
+                    val selectedTemplate = templates.find { it.displayName == selectedName }
+                    selectedTemplate?.let { template ->
+                        mPrefs.edit {
+                            putString(mKeyUtil.zplTemplateKey, template.displayName)
+                            putString(mKeyUtil.zplCodeKey, template.zplCode)
+                        }
+                    }
+                } else {
+                    mPrefs.edit { putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None") }
+                }
                 true
             }
         }

@@ -8,10 +8,20 @@
             android:key="@string/key_pref_print_connect"
             android:title="@string/prefs_zebra_print_connect_title"
             android:summary="@string/prefs_zebra_print_connect_summary"/>
+        <ListPreference
+            android:icon="@drawable/ic_setting_import_zpl"
+            android:key="@string/key_pref_print_zpl_template"
+            android:title="@string/select_zpl_template_title"
+            android:summary="%s" />
         <Preference
             android:icon="@drawable/ic_setting_import_zpl"
             android:key="@string/key_pref_print_zpl_import"
             android:title="@string/prefs_zebra_import_title"
             android:summary="@string/prefs_zebra_import_summary" />
+        <Preference
+            android:icon="@drawable/ic_connection"
+            android:key="@string/key_pref_print_device_name"
+            android:title="@string/prefs_zebra_device_title"
+            android:summary="@string/prefs_zebra_device_summary" />
 
 </PreferenceScreen>

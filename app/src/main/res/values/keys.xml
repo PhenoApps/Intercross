@@ -70,6 +70,8 @@
     <string name="key_pref_print_connect">&package;PRINTER_CONNECT</string>
     <string name="key_pref_print_zpl_import">&package;ZPL_IMPORT</string>
     <string name="key_pref_print_zpl_code">&package;ZPL_CODE</string>
+    <string name="key_pref_print_zpl_template">&package;ZPL_TEMPLATE</string>
+    <string name="key_pref_print_device_name">&package;PRINTER_DEVICE_NAME</string>
 
     <!-- Database preference keys -->
     <string name="key_pref_storage_definer">&package;STORAGE_DEFINER</string>

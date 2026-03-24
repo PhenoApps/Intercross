@@ -9,6 +9,7 @@ import org.phenoapps.intercross.databinding.FragmentImportZplBinding
 import org.phenoapps.intercross.util.KeyUtil
 import java.io.InputStreamReader
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.layout.fragment_import_zpl) {
@@ -29,7 +30,10 @@ class ImportZPLFragment : IntercrossBaseFragment<FragmentImportZplBinding>(R.lay
 
             mBinding.codeTextView.text = text
 
-            mPref.edit().putString(mKeyUtil.zplCodeKey, text).apply()
+            mPref.edit {
+                putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None")
+                putString(mKeyUtil.zplCodeKey, text)
+            }
 
         }
     }

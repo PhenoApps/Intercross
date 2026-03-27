@@ -13,7 +13,7 @@
     <string name="number_hint">Valor inicial para identificadores</string>
     <string name="suffix">Sufijo</string>
     <string name="prefix">Prefijo</string>
-    <string name="cross_id_preview">Vista previa de ID de Cruza</string>
+    <string name="cross_id_preview">Vista previa de ID Cruza</string>
     <!-- About dialog -->
     <string name="about_version_title">Versión</string>
     <string name="about_title_other_apps">PhenoApps</string>
@@ -175,11 +175,11 @@
     <string name="event_detail_label">Evento</string>
     <string name="parent_label">Progenitores</string>
     <string name="settings_label">Ajustes</string>
-    <string name="patterns_label">Patrón de ID de Cruza</string>
+    <string name="patterns_label">Patrón de ID Cruza</string>
     <string name="template">Plantilla</string>
     <string name="reset_cross_id_counter">Restablecer Contador</string>
-    <string name="dialog_reset_cross_id_title">Restablecer Contador de ID de Cruza</string>
-    <string name="dialog_reset_cross_id_message">¿Restablecer el contador automático de ID de Cruza a 1?</string>
+    <string name="dialog_reset_cross_id_title">Restablecer Contador de ID Cruza</string>
+    <string name="dialog_reset_cross_id_message">¿Restablecer el contador automático de ID Cruza a 1?</string>
     <string name="import_zpl_label">Importar ZPL</string>
     <string name="pollen_manager_label">Administrador de Polen</string>
     <string name="wishlist_label">Resumen de Lista de Deseos</string>
@@ -465,7 +465,7 @@ para sincronizar tus datos.
     <!-- Behavior Preferences: Naming and Workflow preferences -->
     <string name="prefs_behavior_naming_category">Nombrando</string>
     <string name="prefs_behavior_allow_blank_male_title">Permitir ID del macho en blanco</string>
-    <string name="prefs_behavior_allow_blank_male_summary">Mantener el IDdel Macho como opcional mientras se crea una cruza.</string>
+    <string name="prefs_behavior_allow_blank_male_summary">Mantener el ID del Macho como opcional mientras se crea una cruza.</string>
     <string name="prefs_behavior_scan_male_first_title">Escanear macho primero</string>
     <string name="prefs_behavior_scan_male_first_summary">Introduzca primero el ID del Macho mientras se crea una cruza.</string>
     <string name="prefs_behavior_create_cross_id_pattern_title">Crear patrón de ID cruza</string>

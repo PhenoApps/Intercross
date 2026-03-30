@@ -335,19 +335,19 @@
     <string name="brapi_btn_auth_summary">Brapi está actualmente autorizado con %1$s</string>
     <string name="brapi_base_url_default">https://test-server.brapi.org/</string>
     <string name="brapi_load_data_button">Cargar Campos</string>
-    <string name="brapi_load_traits_button">Cargar Variables</string>
+    <string name="brapi_load_traits_button">Cargar Rasgos</string>
     <string name="brapi_save_data_button">Guardar Campo</string>
     <string name="brapi_study_name">Nombre</string>
     <string name="brapi_study_description">Descripción</string>
     <string name="brapi_study_location">Ubicación</string>
     <string name="brapi_study_num_plots"> Parcelas</string>
-    <string name="brapi_study_num_traits"> Variables</string>
+    <string name="brapi_study_num_traits"> Rasgos</string>
     <string name="brapi_not_found">ERROR: El sistema de destino no admite esta operación vía BrAPI.</string>
     <string name="brapi_studies_error">Error al cargar los estudios.</string>
     <string name="brapi_study_detail_error">Error al cargar los detalles del estudio. Estudio no guardado.</string>
     <string name="brapi_plot_detail_error">Error al cargar las parcelas del estudio. Estudio no guardado.</string>
-    <string name="brapi_study_traits_error">Error al cargar las variables del estudio. Estudio no guardado.</string>
-    <string name="brapi_ontology_error">Error al cargar variables desde BrAPI.</string>
+    <string name="brapi_study_traits_error">Error al cargar los rasgos del estudio. Estudio no guardado.</string>
+    <string name="brapi_ontology_error">Error al cargar rasgos desde BrAPI.</string>
     <string name="brapi_save_field_error">Error al Guardar el Campo</string>
     <string name="brapi_field_not_selected">El Campo Seleccionado Debe Importarse Desde BrAPI.</string>
     <string name="brapi_fields_filter_by_program">Filtrar por programa</string>
@@ -358,7 +358,7 @@
     <string name="brapi_trials_load">Cargar ensayos</string>
     <string name="brapi_trials_select">Seleccionar ensayo</string>
     <string name="brapi_trials_error">Error al cargar los ensayos.</string>
-    <string name="brapi_save_trait">Guardar Variables</string>
+    <string name="brapi_save_trait">Guardar Rasgos</string>
     <string name="brapi_must_configure_url">Debe configurar una URL de BrAPI válida en Ajustes antes de continuar</string>
     <string name="brapi_warning_select_program">Por favor, seleccionar un programa</string>
     <string name="brapi_warning_select_trial">Por favor, seleccionar un ensayo</string>
@@ -374,21 +374,21 @@
     <string name="brapi_saving_indicator">Guardando Observaciones…</string>
     <string name="brapi_field_non_matching_sources">No se pueden sincronizar datos. Los datos de campo se originan en %1$s, la url de BrAPI  establecida actualmente en %2$s. Los origenes deben coincidir.</string>
     <string name="brapi_trait_already_exists">La variable ya existe: %1$s. No guardado.</string>
-    <string name="brapi_error_saving_all_traits">Error al guardar las variables. No se guardaron variables.</string>
-    <string name="brapi_error_saving_some_traits">Error al guardar algunas variables. Algunas variables no se guardaron</string>
-    <string name="brapi_traits_saved_success">Variables seleccionadas guardadas con éxito.</string>
+    <string name="brapi_error_saving_all_traits">Error al guardar las rasgos. No se guardaron rasgos.</string>
+    <string name="brapi_error_saving_some_traits">Error al guardar algunos rasgos. Algunos rasgos no se guardaron</string>
+    <string name="brapi_traits_saved_success">Rasgos seleccionadas guardadas con éxito.</string>
     <string name="device_offline_warning">Dispositivo sin conexión: conéctese a una red e intente nuevamente</string>
     <string name="no_studies_selected_warning">No hay estudios seleccionados.</string>
     <string name="next">Siguiente</string>
     <string name="prev">Anterior</string>
     <string name="page_one_of_one">Página 1 de 1</string>
     <string name="brapi_auth_needed_title">Inicio de Sesión Necesario</string>
-    <string name="brapi_auth_needed">Debe iniciar sesión en el sistema con el que está intentando sincronizar datos para poder
-para sincronizar tus datos.
+    <string name="brapi_auth_needed">    Debe iniciar sesión en el sistema con el que está intentando sincronizar datos para poder
+        para sincronizar tus datos.
 
-¿Desea autenticarse ahora?</string>
-    <string name="brapi_info_message">        Las variables y los campos importados vía BrAPI podrán exportar sus observaciones a través de la exportación BrAPI.
-       Las variables y los campos creados manualmente o importados a través de CSV deberán exportarse a través de formato CSV.
+    ¿Desea autenticarse ahora?</string>
+    <string name="brapi_info_message">        Los rasgos y los campos importados vía BrAPI podrán exportar sus observaciones a través de la exportación BrAPI.
+       Los rasgos y los campos creados manualmente o importados a través de CSV deberán exportarse a través de formato CSV.
     </string>
     <string name="brapi_info_title">Breeding API</string>
     <string name="brapi_auth_btn">Iniciar Sesión en el Sitio</string>
@@ -398,7 +398,7 @@ para sincronizar tus datos.
     <string name="import_source_brapi">BrAPI</string>
     <string name="import_source_ask">Preguntar siempre</string>
     <string name="import_dialog_title_fields">Importar campo</string>
-    <string name="import_dialog_title_traits">Importar variables</string>
+    <string name="import_dialog_title_traits">Importar rasgos</string>
     <string name="import_dialog_unique">Identificador único</string>
     <string name="import_dialog_primary">Orden primario</string>
     <string name="import_dialog_secondary">Orden secundario</string>
@@ -470,7 +470,7 @@ para sincronizar tus datos.
     <string name="prefs_behavior_scan_male_first_summary">Introduzca primero el ID del Macho mientras se crea una cruza.</string>
     <string name="prefs_behavior_create_cross_id_pattern_title">Crear patrón de ID cruza</string>
     <string name="prefs_behavior_create_cross_id_pattern_summary">UUID</string>
-    <string name="prefs_behavior_workflow_category">Workflow</string>
+    <string name="prefs_behavior_workflow_category">Flujo de trabajo</string>
     <string name="prefs_behavior_collect_additional_info_title">Colectar información adicional</string>
     <string name="prefs_behavior_collect_additional_info_summary">Crear y administrar metadatos adicionales.</string>
     <string name="prefs_behavior_create_metadata_title">Crear Metadatos</string>
@@ -576,7 +576,7 @@ para sincronizar tus datos.
     <string name="app_intro_required_setup_title">Configuración Requerida</string>
     <string name="app_intro_required_setup_summary">Para empezar a usar Intercross, otorgar los permisos necesarios para la aplicación y luego definir una carpeta donde sus datos serán almacenados.</string>
     <string name="app_intro_permissions_title">Permisos</string>
-    <string name="app_intro_permissions_summary">Por favor, otorga los permisos necesarios</string>
+    <string name="app_intro_permissions_summary">Por favor, otorgar los permisos necesarios</string>
     <string name="app_intro_storage_title">Definir Almacenamiento</string>
     <string name="app_intro_storage_summary">Defina una carpeta donde se almacenarán sus datos.</string>
     <string name="app_intro_permissions_warning">Permisos no otorgados</string>

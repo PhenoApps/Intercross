@@ -123,9 +123,8 @@ class PreferencesFragment : BasePreferenceFragment(R.xml.preferences) {
         with(findPreference<PreferenceScreen>(getString(R.string.root_brapi))) {
             this?.let { it ->
                 it.setOnPreferenceClickListener {
-                    //TODO
-//                    findNavController().navigate(SettingsFragmentDirections
-//                        .actionFromSettingsToBrapiFragment())
+                    findNavController().navigate(PreferencesFragmentDirections
+                        .actionFromSettingsToBrapiFragment())
 
                     true
                 }

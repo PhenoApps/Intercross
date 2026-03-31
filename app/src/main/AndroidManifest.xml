@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -23,14 +24,6 @@
 
         <!-- opt out of adaptive layouts -->
         <property android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY" android:value="true" />
-<!--        <service android:name="org.phenoapps.services.BrapiAccountAuthenticatorService"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.accounts.AccountAuthenticator" />-->
-<!--            </intent-filter>-->
-<!--            <meta-data android:name="android.accounts.AccountAuthenticator"-->
-<!--                android:resource="@xml/authenticator" />-->
-<!--        </service>-->
 
         <provider
             android:authorities="${applicationId}.fileprovider"
@@ -64,14 +57,36 @@
         <activity android:name=".activities.AppIntroActivity"
             android:label="@style/AppTheme" />
 
-<!--        <activity android:name="org.phenoapps.activities.BrapiAuthActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW"/>-->
-<!--                <category android:name="android.intent.category.DEFAULT"/>-->
-<!--                <category android:name="android.intent.category.BROWSABLE"/>-->
-<!--                <data android:scheme="fieldbook"/>-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+        <activity
+            android:name=".activities.BrapiAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|locale"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host=""
+                    android:scheme="fieldbook"
+                    tools:ignore="AppLinkUrlError" /> <!-- https://stackoverflow.com/questions/48093833/deeplink-empty-path-error-androidpath-cannot-be-empty -->
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="phenoapps.org/field-book"
+                    android:scheme="https"
+                    tools:ignore="AppLinkUrlError" /> <!-- https://stackoverflow.com/questions/48093833/deeplink-empty-path-error-androidpath-cannot-be-empty -->
+            </intent-filter>
+        </activity> <!-- Handles BrAPI server authentication, shows a progress circle -->
 
         <!--- This is required or the LibBuilder class will crash the app -->
 <!--        https://github.com/mikepenz/AboutLibraries/issues/279-->

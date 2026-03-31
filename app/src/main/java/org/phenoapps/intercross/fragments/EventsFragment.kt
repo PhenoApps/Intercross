@@ -204,10 +204,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                         true
                     }
                     R.id.action_export -> {
-                        // (activity as MainActivity).showExportDialog {
-                        //
-                        // }
-                        showCrossesExport()
+                         (activity as MainActivity).showExportDialog {
+
+                         }
+                        //showCrossesExport()
                         true
                     }
                     else -> false

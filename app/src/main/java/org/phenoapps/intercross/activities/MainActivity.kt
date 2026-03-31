@@ -604,12 +604,11 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
     fun showExportDialog(onDismiss: () -> Unit) {
 
-        //TODO
-        //val tokenCheck = mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null)
+        val tokenCheck = mPref.getString(mKeyUtil.brapiToken, null)
         val importCheck = mPref.getString(mKeyUtil.brapiHasBeenImported, null)
         val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
 
-        if (importCheck != null) { //(tokenCheck != null || importCheck != null) {
+        if (tokenCheck != null || importCheck != null) {
 
             AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_export_title)

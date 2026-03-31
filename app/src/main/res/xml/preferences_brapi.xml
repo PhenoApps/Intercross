@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:icon="@drawable/ic_adv_brapi"
+        android:key="@string/key_pref_brapi_enabled"
+        android:summary="@string/preferences_brapi_enable_summary"
+        android:title="@string/preferences_brapi_enable_title" />
+
+    <PreferenceCategory
+        android:key="brapi_server"
+        android:title="@string/preferences_brapi_server_title"
+        app:iconSpaceReserved="false">
+
+        <EditTextPreference
+            android:defaultValue="@string/brapi_base_url_default"
+            android:dialogMessage="@string/brapi_base_url_desc"
+            android:dialogTitle="@string/brapi_base_url"
+            android:icon="@drawable/ic_adv_brapi_base"
+            android:key="@string/key_pref_brapi_url"
+            android:summary="%s"
+            android:title="@string/brapi_base_url" />
+
+        <EditTextPreference
+            android:defaultValue="@string/brapi_edit_display_name_default"
+            android:dialogTitle="@string/brapi_edit_display_name"
+            android:icon="@drawable/ic_pref_brapi_name"
+            android:key="@string/key_pref_brapi_display_name"
+            android:summary="%s"
+            android:title="@string/brapi_display_name" />
+
+        <Preference
+            android:icon="@drawable/ic_pref_brapi_logout"
+            android:key="revokeBrapiAuth"
+            android:title="@string/brapi_revoke_auth" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="brapi_oidc_settings"
+        android:title="@string/preferences_brapi_authorization_title"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:defaultValue="@string/preferences_brapi_oidc_flow_oauth_implicit"
+            android:entries="@array/pref_brapi_oidc_flow"
+            android:entryValues="@array/pref_brapi_oidc_flow"
+            android:icon="@drawable/ic_pref_brapi_version"
+            android:key="@string/key_pref_brapi_oidc_flow"
+            android:summary="%s"
+            android:title="@string/preferences_brapi_oidc_flow" />
+
+        <EditTextPreference
+            android:defaultValue="@string/brapi_oidc_url_default"
+            android:dialogMessage="@string/brapi_oidc_url_desc"
+            android:dialogTitle="@string/brapi_oidc_url"
+            android:icon="@drawable/ic_adv_brapi_base"
+            android:key="@string/key_pref_brapi_oidc"
+            android:summary="@string/brapi_oidc_url_desc"
+            android:title="@string/brapi_oidc_url"
+            app:negativeButtonText="@android:string/cancel"
+            app:positiveButtonText="@string/dialog_save" />
+
+        <EditTextPreference
+            android:defaultValue="@string/brapi_oidc_clientid_default"
+            android:dialogMessage="@string/brapi_oidc_clientid_desc"
+            android:dialogTitle="@string/brapi_oidc_clientid"
+            android:icon="@drawable/ic_pref_brapi_client_id"
+            android:key="@string/key_pref_brapi_client"
+            android:summary="@string/brapi_oidc_clientid_desc"
+            android:title="@string/brapi_oidc_clientid" />
+
+        <EditTextPreference
+            android:defaultValue="@string/brapi_oidc_scope_default"
+            android:dialogMessage="@string/brapi_oidc_scope_desc"
+            android:dialogTitle="@string/brapi_oidc_scope"
+            android:icon="@drawable/ic_pref_brapi_scope"
+            android:key="@string/key_pref_brapi_scope"
+            android:summary="@string/brapi_oidc_scope_desc"
+            android:title="@string/brapi_oidc_scope" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="brapi_advanced"
+        android:title="@string/preferences_brapi_advanced_title"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:defaultValue="@string/preferences_brapi_version_v2"
+            android:entries="@array/pref_brapi_version"
+            android:entryValues="@array/pref_brapi_version"
+            android:icon="@drawable/ic_pref_brapi_version"
+            android:key="BRAPI_VERSION"
+            android:summary="%s"
+            android:title="@string/preferences_brapi_version" />
+
+        <EditTextPreference
+            android:defaultValue="50"
+            android:icon="@drawable/ic_pref_brapi_pagination"
+            android:inputType="number"
+            android:key="BRAPI_PAGE_SIZE"
+            android:selectAllOnFocus="true"
+            android:summary="%s"
+            android:title="@string/brapi_pagination" />
+
+        <EditTextPreference
+            android:defaultValue="500"
+            android:icon="@drawable/ic_transfer"
+            android:inputType="number"
+            android:key="BRAPI_CHUNK_SIZE"
+            android:selectAllOnFocus="true"
+            android:summary="%s"
+            android:title="@string/brapi_chunk_size" />
+
+        <EditTextPreference
+            android:defaultValue="120"
+            android:icon="@drawable/ic_pref_brapi_timeout"
+            android:inputType="number"
+            android:key="BRAPI_TIMEOUT"
+            android:selectAllOnFocus="true"
+            android:summary="%s"
+            android:title="@string/brapi_timeout" />
+
+        <EditTextPreference
+            android:defaultValue="5"
+            android:icon="@drawable/transfer_down"
+            android:inputType="number"
+            android:key="BRAPI_MAX_CONCURRENT_OBSERVATION_TRANSFER"
+            android:selectAllOnFocus="true"
+            android:summary="%s"
+            android:title="@string/brapi_max_concurrent_observation_transfer" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

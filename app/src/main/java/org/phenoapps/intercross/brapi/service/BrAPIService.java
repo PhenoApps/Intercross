@@ -170,7 +170,7 @@ public interface BrAPIService {
     public static String getBrapiUrl(Context context) {
         KeyUtil keyUtil = new KeyUtil(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String baseURL = ""; //TODO prefs.getString(keyUtil.getBrapiKeys().getBrapiUrlKey(), "https://test-server.brapi.org");
+        String baseURL = prefs.getString(keyUtil.getBrapiUrl(), "https://test-server.brapi.org");
         String path = Constants.BRAPI_PATH_V2;
         return baseURL + path;
     }

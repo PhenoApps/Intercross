@@ -490,7 +490,7 @@ class BrapiExportFragment: IntercrossBaseFragment<FragmentBrapiImportBinding>(R.
 
                         }
 
-                    }, { success ->
+                    }, { _ ->
 
                         activity?.runOnUiThread {
 
@@ -508,8 +508,8 @@ class BrapiExportFragment: IntercrossBaseFragment<FragmentBrapiImportBinding>(R.
 
                             Toast.makeText(
                                 context,
-                                getString(org.phenoapps.intercross.R.string.fragment_brapi_export_crosses_failed),
-                                android.widget.Toast.LENGTH_SHORT
+                                getString(R.string.fragment_brapi_export_crosses_failed),
+                                Toast.LENGTH_SHORT
                             ).show()
 
                         }

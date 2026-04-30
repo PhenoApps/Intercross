@@ -7,10 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.brapi.v2.model.BrAPIPagination;
 import org.phenoapps.intercross.R;
 import org.phenoapps.intercross.util.KeyUtil;
 
 public class BrapiPaginationManager {
+
+    private static String TAG = "BrAPI Pager";
 
     private Integer currentPage = 0;
     private Integer totalPages = 1;
@@ -83,9 +86,18 @@ public class BrapiPaginationManager {
         return pageSize;
     }
 
-    public void updatePageInfo(Integer totalPages) {
+    public Integer getTotalPages() {
+        return totalPages;
+    }
+
+    public void update(BrAPIPagination pagination) {
         //BrAPI metadata was setting totalPages to 0. PageMan. default should be 1.
-        this.totalPages = Math.max(1, totalPages);
+        this.totalPages = 1;
+        try {
+            this.totalPages = Math.max(1, pagination.getTotalPages());
+        } catch (Exception e) {
+            Log.e(TAG, "Pagination update failed.", e);
+        }
         refreshPageIndicator();
     }
 

@@ -576,7 +576,12 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 when (position) {
                     0 -> { // import parents
                         context?.let {
-                            ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
+                            ImportUtil(
+                                it,
+                                R.string.dir_parents_import,
+                                getString(R.string.dialog_import_parents_title),
+                                ImportUtil.BRAPI_MODE_PARENTS
+                            )
                                 .showImportDialog(this)
                         }
                     }

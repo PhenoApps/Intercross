@@ -57,6 +57,13 @@
         <activity android:name=".activities.AppIntroActivity"
             android:label="@style/AppTheme" />
 
+        <!--- This is required or the LibBuilder class will crash the app -->
+<!--        https://github.com/mikepenz/AboutLibraries/issues/279-->
+        <activity
+            android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:exported="false"/>
+
         <activity
             android:name=".activities.BrapiAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|locale"
@@ -88,13 +95,24 @@
             </intent-filter>
         </activity> <!-- Handles BrAPI server authentication, shows a progress circle -->
 
-        <!--- This is required or the LibBuilder class will crash the app -->
-<!--        https://github.com/mikepenz/AboutLibraries/issues/279-->
         <activity
-            android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar"
-            android:exported="false"/>
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|locale"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app"
+                    android:path="/auth"
+                    android:scheme="fieldbook" />
+            </intent-filter>
+        </activity>
     </application>
-
 </manifest>

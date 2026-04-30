@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -21,13 +20,11 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
-import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.EndSessionRequest
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.BrapiAuthActivity
-import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.OpenAuthConfigurationUtil
 import org.phenoapps.sharedpreferences.dialogs.NeutralButtonEditTextDialog
 import org.phenoapps.sharedpreferences.dialogs.NeutralButtonEditTextDialogFragmentCompat.Companion.newInstance
@@ -46,16 +43,13 @@ import kotlin.jvm.java
  * Auth token is saved in the preferences, or set to null when logging out.
  */
 @AndroidEntryPoint
-class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
-
-    @Inject
-    lateinit var keyUtil: KeyUtil
-
-    @Inject
-    lateinit var preferences: SharedPreferences
+class BrapiFragment : BasePreferenceFragment(R.xml.preferences_brapi), Preference.OnPreferenceChangeListener {
 
     @Inject
     lateinit var authUtil: OpenAuthConfigurationUtil
+
+    private val preferences get() = mPrefs
+    private val keyUtil get() = mKeyUtil
 
     private var context: Context? = null
     private var brapiServerPrefCategory: PreferenceCategory? = null
@@ -83,6 +77,8 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        super.onCreatePreferences(savedInstanceState, rootKey)
+
         mBrapiHttpWarningDialog = AlertDialog.Builder(context)
             .setTitle(R.string.act_brapi_auth_http_warning_title)
             .setMessage(R.string.act_brapi_auth_http_warning_message)
@@ -94,31 +90,29 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
             }.create()
 
         //remove old custom fb auth if it is being used
-        if (preferences?.getString(
-                keyUtil.brapiFlow,
+        if (mPrefs.getString(
+                mKeyUtil.brapiFlow,
                 getString(R.string.preferences_brapi_oidc_flow_oauth_implicit)
             )
             == getString(R.string.preferences_brapi_oidc_flow_old_custom)
         ) {
-            preferences.edit {
+            mPrefs.edit {
                 putString(
-                    keyUtil.brapiFlow,
+                    mKeyUtil.brapiFlow,
                     getString(R.string.preferences_brapi_oidc_flow_oauth_implicit)
                 )
             }
         }
 
-        setPreferencesFromResource(R.xml.preferences_brapi, rootKey)
-
         // Show/hide preferences and category titles based on the BRAPI_ENABLED value
-        val brapiEnabledPref = findPreference<CheckBoxPreference?>(keyUtil.brapiEnabled ?: "")
+        val brapiEnabledPref = findPreference<CheckBoxPreference?>(mKeyUtil.brapiEnabled)
         if (brapiEnabledPref != null) {
             brapiEnabledPref.onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { _, newValue ->
                     val isChecked = newValue as Boolean
                     if (!isChecked) { // on disable, reset default sources if they were set to brapi
                         // remove brapi auth token when brapi is disabled
-                        preferences?.edit { remove(keyUtil.brapiToken) }
+                        mPrefs.edit { remove(mKeyUtil.brapiToken) }
                     }
                     updatePreferencesVisibility(isChecked)
                     true
@@ -132,9 +126,9 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         brapiServerPrefCategory = findPreference("brapi_server")
         brapiLogoutButton = findPreference("revokeBrapiAuth")
 
-        brapiClientIdPreference = findPreference(keyUtil.brapiClient)
-        brapiURLPreference = findPreference(keyUtil.brapiUrl)
-        brapiDisplayName = findPreference(keyUtil.brapiDisplayName)
+        brapiClientIdPreference = findPreference(mKeyUtil.brapiClient)
+        brapiURLPreference = findPreference(mKeyUtil.brapiUrl)
+        brapiDisplayName = findPreference(mKeyUtil.brapiDisplayName)
         
         if (brapiURLPreference != null) {
             brapiURLPreference!!.onPreferenceChangeListener = this
@@ -143,7 +137,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
             brapiDisplayName!!.onPreferenceChangeListener = this
         }
 
-        brapiOIDCURLPreference = findPreference(keyUtil.brapiOidc)
+        brapiOIDCURLPreference = findPreference(mKeyUtil.brapiOidc)
         brapiOIDCFlow = findPreference(keyUtil.brapiFlow)
         
         if (brapiOIDCFlow != null) {
@@ -152,15 +146,15 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
         //set saved urls, default to the test server
         val url = preferences!!.getString(
-            keyUtil.brapiUrl,
+            mKeyUtil.brapiUrl,
             getString(R.string.brapi_base_url_default)
         )
         val displayName = preferences!!.getString(
-            keyUtil.brapiDisplayName,
+            mKeyUtil.brapiDisplayName,
             getString(R.string.brapi_edit_display_name_default)
         )
         val oidcUrl = preferences!!.getString(
-            keyUtil.brapiOidc,
+            mKeyUtil.brapiOidc,
             getString(R.string.brapi_oidc_url_default)
         )
         oldBaseUrl = url
@@ -171,12 +165,12 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         //set logout button
         if (brapiLogoutButton != null) {
             brapiLogoutButton!!.setOnPreferenceClickListener { _: Preference? ->
-                val idToken = preferences!!.getString(keyUtil.brapiId, null)
+                val idToken = mPrefs.getString(mKeyUtil.brapiId, null)
                 if (idToken != null) {
                     Toast.makeText(context, R.string.logging_out_please_wait, Toast.LENGTH_SHORT)
                         .show()
 
-                    authUtil!!.getAuthServiceConfiguration({ config, ex ->
+                    authUtil.getAuthServiceConfiguration({ config, ex ->
                         config?.let {
                             val endSessionRequest =
                                 EndSessionRequest.Builder(config)
@@ -193,7 +187,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
                         }
                     })
                 } else {
-                    preferences!!.edit { remove(keyUtil.brapiToken) }
+                    mPrefs.edit { remove(mKeyUtil.brapiToken) }
 
                     setButtonView()
                 }
@@ -213,7 +207,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     }
 
     private fun updatePreferencesVisibility(isChecked: Boolean) {
-        val preferenceScreen = getPreferenceScreen()
+        val preferenceScreen = preferenceScreen
         for (i in 0..<preferenceScreen.preferenceCount) {
             val preferenceItem = preferenceScreen.getPreference(i)
             if (preferenceItem.key == keyUtil.brapiEnabled) { // Skip the checkbox preference itself
@@ -224,10 +218,10 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
         // Also show/hide the BrAPI toolbar authentication option
         if (mMenu != null) {
-            val brapiAutoConfigureItem = mMenu!!.findItem(R.id.action_menu_brapi_auto_configure)
-            if (brapiAutoConfigureItem != null) {
-                brapiAutoConfigureItem.isVisible = isChecked
-            }
+//            val brapiAutoConfigureItem = mMenu!!.findItem(R.id.action_menu_brapi_auto_configure)
+//            if (brapiAutoConfigureItem != null) {
+//                brapiAutoConfigureItem.isVisible = isChecked
+//            }
             val brapiPrefAuthItem = mMenu!!.findItem(R.id.action_menu_brapi_pref_auth)
             if (brapiPrefAuthItem != null) {
                 brapiPrefAuthItem.isVisible = isChecked
@@ -279,7 +273,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
         builder.setItems(
             extendedServerNames
-        ) { dialog: DialogInterface?, which: Int ->
+        ) { _: DialogInterface?, which: Int ->
             if (which == serverNames.size) {
                 // Handle the "Submit a server" option
                 val browserIntent = Intent(
@@ -308,10 +302,10 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == R.id.action_menu_brapi_pref_auth) {
-//            brapiAuth()
-//            return true
-//        }
+        if (item.itemId == R.id.action_menu_brapi_pref_auth) {
+            brapiAuth()
+            return true
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -376,8 +370,8 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
                     brapiDisplayName!!.setText(text)
                     onPreferenceChange(brapiDisplayName!!, text)
                 } else {
-                    preferences?.edit {
-                        putBoolean(keyUtil.brapiExplicitOidcUrl, true)
+                    mPrefs?.edit {
+                        putBoolean(mKeyUtil.brapiExplicitOidcUrl, true)
                     }
                     //startBarcodeScan(REQUEST_BARCODE_SCAN_OIDC_URL)
                 }
@@ -400,8 +394,8 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
                 } else if (preference.key == brapiClientIdPreference!!.key) {
                     //pass to ensure oidc isn't updated as well, client id is automatically handled by xml definition
                 } else {
-                    preferences?.edit {
-                        putBoolean(keyUtil.brapiExplicitOidcUrl, true)
+                    mPrefs.edit {
+                        putBoolean(mKeyUtil.brapiExplicitOidcUrl, true)
                     }
                     brapiOIDCURLPreference!!.setText(text!!)
                 }
@@ -425,22 +419,16 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
     }
 
     private fun setupToolbar() {
-//        val act: Activity? = activity
-//        if (act != null) {
-//            val bar: ActionBar? = (this.activity as PreferencesActivity).getSupportActionBar()
-//            if (bar != null) {
-//                bar.title = getString(R.string.brapi_info_title)
-//            }
-//        }
+        setToolbar(getString(R.string.brapi_info_title))
     }
 
     private fun setBaseURLSummary() {
-        val url: String = preferences!!.getString(
-            keyUtil.brapiUrl,
+        val url: String = preferences.getString(
+            mKeyUtil.brapiUrl,
             "https://test-server.brapi.org"
         )!!
-        val displayName: String = preferences!!.getString(
-            keyUtil.brapiDisplayName,
+        val displayName: String = preferences.getString(
+            mKeyUtil.brapiDisplayName,
             getString(R.string.brapi_edit_display_name_default)
         )!!
         brapiURLPreference!!.setSummary(url)
@@ -449,7 +437,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
 
     //should only be called from brapi auth or the warning dialog
     private fun startAuth() {
-        val brapiHost = preferences!!.getString(keyUtil.brapiUrl, null)
+        val brapiHost = preferences.getString(mKeyUtil.brapiUrl, null)
         if (brapiHost != null) {
             val intent = Intent()
             intent.setClassName(requireContext(), BrapiAuthActivity::class.java.name)
@@ -482,7 +470,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         brapiURLPreference!!.setText(url)
         brapiDisplayName!!.setText(displayName)
         brapiOIDCURLPreference!!.setText(oidcUrl)
-        preferences.edit { putString(keyUtil.brapiOidc, oidcUrl) }
+        preferences.edit { putString(mKeyUtil.brapiOidc, oidcUrl) }
         if (oidcFlow != null) brapiOIDCFlow!!.setValue(oidcFlow)
 
         setOidcFlowUi()
@@ -494,14 +482,14 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
      * @param newValue the newly changed url
      */
     private fun updateUrls(newValue: String) {
-        val oldOidcUrl: String = preferences!!.getString(keyUtil.brapiOidc, "")!!
+        val oldOidcUrl: String = preferences!!.getString(mKeyUtil.brapiOidc, "")!!
 
         // remove scheme and subdomain for initial display name
         val displayName = newValue.replace("https?://(?:www\\.)?(.*?)(?:/.*)?$".toRegex(), "$1")
 
         Log.d(TAG, "$oldBaseUrl to $oldOidcUrl")
 
-        if (!preferences!!.getBoolean(keyUtil.brapiExplicitOidcUrl, false)) {
+        if (!mPrefs!!.getBoolean(mKeyUtil.brapiExplicitOidcUrl, false)) {
             //regex replace old base within oidc to new value
             //this might lead to invalid urls if the user forgets a '/' and other cases
             //where oidc is explicitly changed first (fixed with preference flag)
@@ -523,7 +511,7 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
      */
     fun setButtonView() {
         val brapiToken = preferences.getString(keyUtil.brapiToken, null)
-        val brapiHost = preferences.getString(keyUtil.brapiUrl, null)
+        val brapiHost = preferences.getString(mKeyUtil.brapiUrl, null)
 
         if (brapiHost != null) {  // && !brapiHost.equals(getString(R.string.brapi_base_url_default))) {
 
@@ -542,8 +530,8 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         val preferenceCategory = findPreference<PreferenceCategory?>("brapi_oidc_settings")
 
         if (preferenceCategory != null) {
-            if (preferences.getString(
-                    keyUtil.brapiFlow,
+            if (mPrefs.getString(
+                    mKeyUtil.brapiFlow,
                     getString(R.string.preferences_brapi_oidc_flow_oauth_implicit)
                 )
                 != getString(R.string.preferences_brapi_oidc_flow_old_custom)
@@ -601,8 +589,8 @@ class BrapiFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeL
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
            if (requestCode == BrapiAuthActivity.END_SESSION_REQUEST_CODE) {
-                preferences?.edit {remove(keyUtil.brapiId) }
-                preferences?.edit { remove(keyUtil.brapiToken) }
+               preferences.edit {remove(keyUtil.brapiId) }
+               mPrefs.edit { remove(mKeyUtil.brapiToken) }
                 setButtonView()
             }
 

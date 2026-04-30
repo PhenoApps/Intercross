@@ -8,8 +8,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
@@ -19,23 +22,24 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.InsetHandler
 import org.phenoapps.intercross.util.OpenAuthConfigurationUtil
 import javax.inject.Inject
-import androidx.core.content.edit
 import androidx.core.net.toUri
+import org.phenoapps.intercross.util.KeyUtil
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class BrapiAuthActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var keyUtil: KeyUtil
 
     @Inject
     lateinit var preferences: SharedPreferences
 
     @Inject
     lateinit var authUtil: OpenAuthConfigurationUtil
+
+    @Inject
+    lateinit var keyUtil: KeyUtil
 
     private var activityStarting = false
 
@@ -44,34 +48,36 @@ class BrapiAuthActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_brapi_auth)
 
-//        val toolbar: Toolbar? = findViewById(R.id.toolbar)
-//        setSupportActionBar(toolbar)
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().setTitle(null)
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true)
-//            getSupportActionBar().setHomeButtonEnabled(true)
-//        }
+        val toolbar: Toolbar? = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        if (supportActionBar != null) {
+            supportActionBar?.title = null
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setHomeButtonEnabled(true)
+        }
 
-//        val rootView: View? = findViewById(R.id.content)
-//        InsetHandler.INSTANCE.setupStandardInsets(rootView, toolbar)
+        val rootView: View = findViewById(android.R.id.content)
+        InsetHandler.setupStandardInsets(rootView, toolbar)
 
         activityStarting = true
 
         // Start our login process
         //when coming back from deep link this check keeps app from auto-re-authenticating
-        if (intent != null && intent.data == null) {
-            val flow: String = preferences!!.getString(keyUtil.brapiOidc, "")!!
+        if (intent?.data == null) {
+            val flow: String = preferences.getString(keyUtil.brapiFlow, "") ?: ""
             if (flow == getString(R.string.preferences_brapi_oidc_flow_old_custom)) {
-                authorizeBrAPI_OLD(preferences!!, this)
+                authorizeBrAPI_OLD(preferences, this)
             } else {
-                authorizeBrAPI(preferences!!, this)
+                authorizeBrAPI(preferences, this)
             }
         }
 
-        //getOnBackPressedDispatcher().addCallback(this, standardBackCallback())
+        onBackPressedDispatcher.addCallback(this) {
+            finish()
+        }
     }
 
-    protected override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         //getIntent() should always return the last received intent
@@ -84,12 +90,12 @@ class BrapiAuthActivity : AppCompatActivity() {
             // If the activity has just started, ignore the onResume code
             activityStarting = false
         } else {
-            val ex = AuthorizationException.fromIntent(intent)
+            val ex: AuthorizationException? = AuthorizationException.fromIntent(intent)
             val data: Uri? = intent.data
 
             if (data != null) {
                 // authorization completed
-                val flow: String = preferences.getString(keyUtil.brapiOidc, "")!!
+                val flow: String = preferences.getString(keyUtil.brapiFlow, "") ?: ""
                 if (flow == getString(R.string.preferences_brapi_oidc_flow_old_custom)) {
                     checkBrapiAuth_OLD(data)
                 } else {
@@ -115,14 +121,14 @@ class BrapiAuthActivity : AppCompatActivity() {
             putString(keyUtil.brapiToken, null)
         }
 
-        val flow: String = sharedPreferences.getString(keyUtil.brapiFlow, "")!!
-        val responseType =
+        val flow: String = sharedPreferences.getString(keyUtil.brapiFlow, "") ?: ""
+        val responseType: String =
             if (flow == getString(R.string.preferences_brapi_oidc_flow_oauth_implicit)) ResponseTypeValues.TOKEN else ResponseTypeValues.CODE
 
         try {
             val clientId: String =
-                sharedPreferences.getString(keyUtil.brapiClient, "fieldbook")!!
-            val scope: String = sharedPreferences.getString(keyUtil.brapiScope, "")!!
+                sharedPreferences.getString(keyUtil.brapiClient, "fieldbook") ?: "fieldbook"
+            val scope: String = sharedPreferences.getString(keyUtil.brapiScope, "") ?: ""
 
             // Authorization code flow works better with custom URL scheme fieldbook://app/auth
             // https://github.com/openid/AppAuth-Android/issues?q=is%3Aissue+intent+null
@@ -131,16 +137,16 @@ class BrapiAuthActivity : AppCompatActivity() {
                     "https://phenoapps.org/field-book".toUri()
                 else "fieldbook://app/auth".toUri()
 
-            authUtil.getAuthServiceConfiguration({ authorizationServiceConfiguration, ex ->
+            authUtil?.getAuthServiceConfiguration { authorizationServiceConfiguration, ex ->
                 if (ex != null) {
                     Log.e("BrAPIService", "failed to fetch configuration", ex)
                     authError(ex)
                     finish()
                 }
                 try {
-                    authorizationServiceConfiguration?.let { config ->
+                    authorizationServiceConfiguration?.let {
                         requestAuthorization(
-                            config,
+                            it,
                             clientId,
                             responseType,
                             redirectURI,
@@ -148,18 +154,19 @@ class BrapiAuthActivity : AppCompatActivity() {
                             context
                         )
                     }
+
                 } catch (e: IllegalArgumentException) {
                     e.printStackTrace()
 
-//                    Toast.makeText(
-//                        context,
-//                        R.string.oauth_configured_incorrectly,
-//                        Toast.LENGTH_LONG
-//                    ).show()
+                    Toast.makeText(
+                        context,
+                        R.string.oauth_configured_incorrectly,
+                        Toast.LENGTH_LONG
+                    ).show()
 
                     finish()
                 }
-            })
+            }
         } catch (ex: Exception) {
             authError(ex)
         }
@@ -173,7 +180,7 @@ class BrapiAuthActivity : AppCompatActivity() {
         scope: String,
         context: Context?
     ) {
-        val authRequestBuilder =
+        val authRequestBuilder: AuthorizationRequest.Builder =
             AuthorizationRequest.Builder(
                 serviceConfig,  // the authorization service configuration
                 clientId,  // the client ID, typically pre-registered and static
@@ -187,9 +194,9 @@ class BrapiAuthActivity : AppCompatActivity() {
             authRequestBuilder.setScopes("openid")
         }
 
-        val authRequest = authRequestBuilder.setPrompt("login").build()
+        val authRequest: AuthorizationRequest = authRequestBuilder.setPrompt("login").build()
 
-        val authService = this.authorizationService
+        val authService: AuthorizationService = this.authorizationService
 
         val responseIntent = Intent(context, BrapiAuthActivity::class.java)
         responseIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -207,7 +214,7 @@ class BrapiAuthActivity : AppCompatActivity() {
         }
 
         try {
-            val url = sharedPreferences.getString(
+            val url: String = sharedPreferences.getString(
                 keyUtil.brapiUrl,
                 ""
             ) + "/brapi/authorize?display_name=Field Book&return_url=fieldbook://"
@@ -241,7 +248,7 @@ class BrapiAuthActivity : AppCompatActivity() {
     }
 
     private fun authSuccess(accessToken: String?, idToken: String?) {
-        val editor = preferences!!.edit()
+        val editor: SharedPreferences.Editor = preferences.edit()
         editor.putString(keyUtil.brapiToken, accessToken)
         editor.putString(keyUtil.brapiId, idToken).apply()
         editor.apply()
@@ -285,16 +292,16 @@ class BrapiAuthActivity : AppCompatActivity() {
          * @return Configured auth service
          */
         get() {
-            val builder = AppAuthConfiguration.Builder()
-            builder.setConnectionBuilder(authUtil!!.getConnectionBuilder())
+            val builder: AppAuthConfiguration.Builder = AppAuthConfiguration.Builder()
+            builder.setConnectionBuilder(authUtil.getConnectionBuilder())
             return AuthorizationService(this, builder.build())
         }
 
     fun checkBrapiAuth(data: Uri) {
         var data = data
-        val authService = this.authorizationService
-        val ex = AuthorizationException.fromIntent(intent)
-        val response = AuthorizationResponse.fromIntent(intent)
+        val authService: AuthorizationService = this.authorizationService
+        val ex: AuthorizationException? = AuthorizationException.fromIntent(intent)
+        val response: AuthorizationResponse? = AuthorizationResponse.fromIntent(intent)
 
         if (ex != null) {
             authError(ex)

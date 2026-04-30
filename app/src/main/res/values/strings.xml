@@ -69,7 +69,7 @@
         ^FO140,170^A0,25,20^FN5^FS
         ^XZ
     </string>
-    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2"x1" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
+    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2\"x1\" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
     <string name="import_zpl">Import ZPL</string>
     <string name="female">Female</string>
     <string name="male">Male</string>
@@ -597,13 +597,54 @@
     <string name="dialog_cross_project_load_title">Cross Project Creator</string>
     <string name="dialog_cross_project_summary">%1$s created with id: %2$s</string>
     <string name="brapi_export">BrAPI Export</string>
-    <string name="fragment_brapi_import_no_planned_crosses_found">No planned crosses found in the chosen cross project.</string>
+    <string name="brapi_export_summary_title">Export Summary</string>
+    <string name="brapi_export_crosses">Export Crosses</string>
+    <string name="brapi_export_ready_count">%1$d crosses ready to export</string>
+    <string name="brapi_exported_crosses">Successfully exported %1$d crosses</string>
+    <string name="brapi_error_forbidden">BrAPI export forbidden (403). Please check your permissions or login again.</string>
+    <string name="fragment_brapi_import_no_planned_crosses_found">No crosses were found in the selected crossing project.</string>
+    <string name="brapi_warning_select_crossing_project">Please select a crossing project.</string>
+    <string name="brapi_cross_projects_title">Cross Projects</string>
+    <string name="brapi_import_selected">Review Selected</string>
+    <string name="brapi_review_parents">Review Parents</string>
+    <string name="brapi_planned_crosses_title">Planned Crosses</string>
+    <string name="brapi_potential_parents_title">Potential Parents</string>
+    <string name="brapi_selected_project">Selected Project</string>
+    <string name="brapi_project_description_unavailable">No project description was provided by the BrAPI server.</string>
+    <string name="brapi_project_value_unavailable">Unavailable</string>
+    <string name="brapi_project_id_unavailable">No ID</string>
+    <string name="brapi_project_id_label">Project ID</string>
+    <string name="brapi_external_reference">External Ref</string>
+    <string name="brapi_wish_range">Wish range</string>
+    <string name="brapi_import_all_crosses">Import Crosses</string>
+    <string name="brapi_import_parents_option">Import parents into local database</string>
+    <string name="brapi_import_progress">Importing: %1$d of %2$d</string>
+    <string name="dialog_export_option_local">CSV (Local)</string>
+    <string name="dialog_export_option_brapi_export">BrAPI Export</string>
+    <string name="dialog_export_option_brapi_import">BrAPI Import</string>
+    <string name="brapi_import_as_female">Import As Female Parents</string>
+    <string name="brapi_import_as_male">Import As Male Parents</string>
+    <string name="brapi_import_potential_parents">Import Parents</string>
+    <string name="brapi_parent_import_mode">Import type</string>
+    <string name="brapi_parent_import_mode_summary">Potential parents do not include a local sex assignment, so choose which parent list these entries should be added to.</string>
+    <string name="brapi_parent_type_unknown">UNKNOWN</string>
+    <string name="brapi_planned_crosses_load_error">Unable to load crosses for this project.</string>
+    <string name="brapi_potential_parents_load_error">Unable to load potential parents for this project.</string>
+    <string name="brapi_imported_planned_crosses">Imported %1$d planned crosses.</string>
+    <string name="brapi_imported_crosses">Imported %1$d crosses.</string>
+    <string name="brapi_imported_parents">Imported %1$d parents.</string>
+    <string name="brapi_no_potential_parents_found">No potential parents were found in the selected crossing project.</string>
+    <string name="brapi_show_additional_info">Show Additional Info</string>
+    <string name="brapi_hide_additional_info">Hide Additional Info</string>
+    <string name="home_brapi_import">BrAPI Import</string>
+    <string name="home_brapi_export">BrAPI Export</string>
+    <string name="retry">Retry</string>
     <string name="menu_brapi_export_new_crossing_project">Create new crossing project.</string>
     <string name="dialog_cross_project_creator_cross_project_name">Cross Project Name</string>
     <string name="fragment_cross_project_creator_label">Cross Project Creator</string>
     <string name="fragment_project_creator_empty_name">Please use a non-empty name.</string>
     <string name="fragment_project_creator_post_failed">Remote database failed to create cross project.</string>
-    <string name="brapi_parents_import">"BrAPI Parents Import "</string>
+    <string name="brapi_parents_import">BrAPI Parents Import </string>
     <string name="brapi_wishlist_import">BrAPI Wishlist Import</string>
     <string name="brapi_trials_import">Trials Import Fragment</string>
     <string name="brapi_germplasm_import">BrAPI Germplasm Fragment</string>
@@ -827,5 +868,24 @@
     <string name="bottom_nv_summary">Graphs</string>
     <string name="bottom_nv_parents">Parents</string>
     <string name="bottom_nv_settings">Settings</string>
+    <string name="program">PROGRAM</string>
+    <string name="crop">CROP</string>
+    <string name="oauth_configured_incorrectly">Authorization request failed, please check your BrAPI settings.</string>
+    <string name="brapi_cross_import_title">BrAPI Cross Import</string>
+
+    <plurals name="brapi_parent_count">
+        <item quantity="one">%d parent</item>
+        <item quantity="other">%d parents</item>
+    </plurals>
+
+    <plurals name="brapi_cross_count">
+        <item quantity="one">%d cross ready to import</item>
+        <item quantity="other">%d crosses ready to import</item>
+    </plurals>
+
+    <plurals name="brapi_planned_cross_count">
+        <item quantity="one">%d planned cross ready to import</item>
+        <item quantity="other">%d planned crosses ready to import</item>
+    </plurals>
 
 </resources>

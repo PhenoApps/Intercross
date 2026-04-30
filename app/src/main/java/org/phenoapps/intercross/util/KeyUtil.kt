@@ -12,7 +12,7 @@ import kotlin.properties.ReadOnlyProperty
  * Converts keys.xml into string fields to be accessed within a context.
  */
 class KeyUtil @Inject constructor(
-    @ApplicationContext private val ctx: Context,
+    @param:ApplicationContext private val ctx: Context,
 ) {
 
     private fun key(id: Int): ReadOnlyProperty<Any?, String> =

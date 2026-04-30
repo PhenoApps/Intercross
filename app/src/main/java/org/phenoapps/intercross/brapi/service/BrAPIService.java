@@ -10,7 +10,6 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
-import androidx.arch.core.util.Function;
 import androidx.preference.PreferenceManager;
 
 import org.phenoapps.intercross.Constants;
@@ -18,23 +17,12 @@ import org.phenoapps.intercross.R;
 import org.phenoapps.intercross.brapi.ApiError;
 import org.phenoapps.intercross.brapi.BrapiAuthDialog;
 import org.phenoapps.intercross.brapi.BrapiControllerResponse;
-import org.phenoapps.intercross.brapi.model.BrapiProgram;
-import org.phenoapps.intercross.brapi.model.BrapiStudyDetails;
-import org.phenoapps.intercross.brapi.model.BrapiTrial;
-import org.phenoapps.intercross.brapi.model.FieldBookImage;
-import org.phenoapps.intercross.brapi.model.Observation;
 import org.phenoapps.intercross.util.KeyUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
-//todo create github package for a generalized service maybe also an Android Service implementation?
 public interface BrAPIService {
-
-    public static String exportTarget = "export";
-    public static String notUniqueFieldMessage = "not_unique";
-    public static String notUniqueIdMessage = "not_unique_id";
 
     public static BrapiControllerResponse authorizeBrAPI(SharedPreferences sharedPreferences, Context context, String target) {
         KeyUtil keyUtil = new KeyUtil(context);
@@ -201,29 +189,4 @@ public interface BrAPIService {
         }
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
     }
-    
-    public void getPrograms(final BrapiPaginationManager paginationManager, final Function<List<BrapiProgram>, Void> function, final Function<Integer, Void> failFunction);
-
-    public void getTrials(String programDbId, BrapiPaginationManager paginationManager, final Function<List<BrapiTrial>, Void> function, final Function<Integer, Void> failFunction);
-
-    public void getStudies(String programDbId, String trialDbId, BrapiPaginationManager paginationManager, final Function<List<BrapiStudyDetails>, Void> function, final Function<Integer, Void> failFunction);
-
-    //public void getStudyDetails(final String studyDbId, final Function<BrapiStudyDetails, Void> function, final Function<Integer, Void> failFunction);
-
-    //public void getPlotDetails(final String studyDbId, final Function<BrapiStudyDetails, Void> function, final Function<Integer, Void> failFunction);
-
-    //public void getOntology(BrapiPaginationManager paginationManager, final Function<List<TraitObject>, Void> function, final Function<Integer, Void> failFunction);
-
-    public void postPhenotypes(List<Observation> observations,
-                               final Function<List<Observation>, Void> function,
-                               final Function<Integer, Void> failFunction);
-
-    // will only ever have one study in current architecture
-    public void putObservations(List<Observation> observations,
-                                final Function<List<Observation>, Void> function,
-                                final Function<Integer, Void> failFunction);
-
-    //public void getTraits(final String studyDbId, final Function<BrapiStudyDetails, Void> function, final Function<Integer, Void> failFunction);
-
-    //public BrapiControllerResponse saveStudyDetails(BrapiStudyDetails studyDetails);
 }

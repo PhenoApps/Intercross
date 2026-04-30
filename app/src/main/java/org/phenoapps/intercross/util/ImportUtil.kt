@@ -6,33 +6,44 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
+import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
 import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
-import javax.inject.Inject
 
-class ImportUtil (private val context: Context, private val importDirectory: Int, private val importDialogTitle: String) {
+class ImportUtil(
+    private val context: Context,
+    private val importDirectory: Int,
+    private val importDialogTitle: String,
+    private val brapiImportMode: Int = BRAPI_MODE_WISHLIST
+) {
 
-    @Inject
-    lateinit var mPref: SharedPreferences
+    companion object {
+        const val BRAPI_MODE_WISHLIST = 0
+        const val BRAPI_MODE_PARENTS = 1
+        const val BRAPI_MODE_IMPORT_CROSSES = 2
+        const val BRAPI_MODE_EXPORT_CROSSES = 3
+    }
 
-    @Inject
-    lateinit var mKeyUtil: KeyUtil
+    var prefs: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
+    var keyUtil: KeyUtil = KeyUtil(context)
+    var brapiService: BrAPIServiceV2 = BrAPIServiceV2(context)
 
     fun showImportDialog(fragment: Fragment) {
         var importArray: Array<String?> = arrayOf(
             context.getString(R.string.import_source_local),
-            // context.getString(R.string.import_source_cloud),
         )
 
-        if (mPref.getBoolean(mKeyUtil.brapiEnabled, false)) {
-            val displayName = mPref.getString(
-                mKeyUtil.brapiDisplayName,
+        if (prefs.getBoolean(keyUtil.brapiEnabled, false)) {
+            val displayName = prefs.getString(
+                keyUtil.brapiDisplayName,
                 context.getString(R.string.brapi_edit_display_name_default)
             ) ?: context.getString(R.string.brapi_edit_display_name_default)
 
@@ -43,7 +54,6 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
 
         val icons = IntArray(importArray.size).apply {
             this[0] = R.drawable.ic_file_generic
-            // this[1] = R.drawable.ic_file_cloud
             if (importArray.size > 1) {
                 this[1] = R.drawable.ic_adv_brapi
             }
@@ -53,8 +63,7 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
             AdapterView.OnItemClickListener { _, _, position, _ ->
                 when (position) {
                     0 -> loadLocalPermission(fragment)
-                    // 1 -> loadCloud()
-                    // 2 ->loadBrAPI()
+                    1 -> loadBrapi(fragment)
                 }
             }
 
@@ -104,6 +113,16 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun loadBrapi(fragment: Fragment) {
+        when (brapiImportMode) {
+            BRAPI_MODE_IMPORT_CROSSES -> fragment.findNavController().navigate(R.id.global_action_to_brapi_cross_import)
+            else -> fragment.findNavController().navigate(
+                R.id.global_action_to_wishlist_import,
+                bundleOf("importMode" to brapiImportMode)
+            )
         }
     }
 }

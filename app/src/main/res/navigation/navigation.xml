@@ -427,14 +427,14 @@
         app:destination="@+id/brapi_export_fragment"
         app:popUpTo="@id/events_fragment"/>
 
-    <action android:id="@+id/global_action_to_brapi_cross_import"
-        app:destination="@+id/brapi_cross_import_fragment"
+    <action android:id="@+id/global_action_to_brapi_cross_projects"
+        app:destination="@+id/brapi_cross_project_fragment"
         app:launchSingleTop="true"/>
 
     <fragment
         android:id="@+id/brapi_cross_import_fragment"
         android:name="org.phenoapps.intercross.fragments.brapi.BrapiCrossImportFragment"
-        android:label="@string/brapi_planned_crosses_title">
+        android:label="@string/brapi_crosses_import_title">
         <argument
             android:name="crossingProjectDbId"
             app:argType="string" />

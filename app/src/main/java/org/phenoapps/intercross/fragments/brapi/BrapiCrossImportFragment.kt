@@ -150,12 +150,13 @@ class BrapiCrossImportFragment : IntercrossBaseFragment<FragmentBrapiCrossesBind
                 withContext(Dispatchers.IO) {
                     crosses.forEachIndexed { index, cross ->
                         val orderedParents = orderedParents(cross)
+                        val crossId = resolveCrossId(cross)
 
                         val maleId = orderedParents.first.observationUnitDbId ?: ""
                         val femaleId = orderedParents.second.observationUnitDbId ?: ""
 
                         val event = Event(
-                            eventDbId = cross.crossDbId ?: "",
+                            eventDbId = crossId,
                             femaleObsUnitDbId = femaleId,
                             maleObsUnitDbId = maleId,
                             readableName = cross.crossName ?: "$femaleId x $maleId",
@@ -180,7 +181,7 @@ class BrapiCrossImportFragment : IntercrossBaseFragment<FragmentBrapiCrossesBind
                 }
 
                 Toast.makeText(requireContext(), getString(R.string.brapi_imported_crosses, crosses.size), Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+                findNavController().popBackStack(R.id.events_fragment, false)
             } finally {
                 showLoading(false)
             }
@@ -226,6 +227,11 @@ class BrapiCrossImportFragment : IntercrossBaseFragment<FragmentBrapiCrossesBind
         val femaleId: String
     )
 
+    private fun resolveCrossId(cross: BrAPICross): String =
+        cross.externalReferences?.find { it.referenceSource == "Intercross" }?.let { ref ->
+            ref.referenceId ?: ref.referenceID
+        } ?: cross.crossDbId ?: ""
+
     private fun bindCrosses(items: List<BrAPICross>) {
         val context = context ?: return
         mBinding.emptyContainer.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
@@ -238,8 +244,9 @@ class BrapiCrossImportFragment : IntercrossBaseFragment<FragmentBrapiCrossesBind
 
         val rows = items.map { cross ->
             val orderedParents = orderedParents(cross)
+            val crossId = resolveCrossId(cross)
             CrossUiModel(
-                crossId = cross.crossDbId ?: "",
+                crossId = crossId,
                 maleName = orderedParents.first.observationUnitName ?: getString(R.string.brapi_project_value_unavailable),
                 maleId = orderedParents.first.observationUnitDbId ?: getString(R.string.brapi_project_id_unavailable),
                 femaleName = orderedParents.second.observationUnitName ?: getString(R.string.brapi_project_value_unavailable),

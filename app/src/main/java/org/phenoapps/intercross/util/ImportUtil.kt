@@ -30,6 +30,7 @@ class ImportUtil(
         const val BRAPI_MODE_PARENTS = 1
         const val BRAPI_MODE_IMPORT_CROSSES = 2
         const val BRAPI_MODE_EXPORT_CROSSES = 3
+        const val IMPORT_MODE_ARG = "mode"
     }
 
     var prefs: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
@@ -63,7 +64,12 @@ class ImportUtil(
             AdapterView.OnItemClickListener { _, _, position, _ ->
                 when (position) {
                     0 -> loadLocalPermission(fragment)
-                    1 -> loadBrapi(fragment)
+                    1 -> {
+                        fragment.findNavController().navigate(
+                            R.id.global_action_to_wishlist_import,
+                            bundleOf(IMPORT_MODE_ARG to brapiImportMode)
+                        )
+                    }
                 }
             }
 
@@ -113,16 +119,6 @@ class ImportUtil(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    private fun loadBrapi(fragment: Fragment) {
-        when (brapiImportMode) {
-            BRAPI_MODE_IMPORT_CROSSES -> fragment.findNavController().navigate(R.id.global_action_to_brapi_cross_import)
-            else -> fragment.findNavController().navigate(
-                R.id.global_action_to_wishlist_import,
-                bundleOf("importMode" to brapiImportMode)
-            )
         }
     }
 }

@@ -24,6 +24,8 @@ import org.phenoapps.intercross.databinding.FragmentBrapiPotentialParentsBinding
 import org.phenoapps.intercross.databinding.ListItemPotentialParentBinding
 import org.phenoapps.intercross.fragments.IntercrossBaseFragment
 import androidx.appcompat.widget.Toolbar
+import io.swagger.client.model.ProgenyProgeny
+import org.brapi.v2.model.germ.BrAPIParentType
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 
@@ -212,6 +214,10 @@ class BrapiPotentialParentsFragment :
                             items.any { it.parentType?.toString() == "FEMALE" } -> 0
                             else -> 0
                         }
+                        //ProgenyProgeny.ParentTypeEnum
+                        //BrAPI Parent Type: female male, self, population, clonal
+                        //Intercross Cross Type: BIPARENTAL, OPEN, SELF, POLY, UNKNOWN
+
                         Parent(codeId = codeId, sex = inferredSex).also { parent ->
                             parent.name = first.observationUnitName ?: codeId
                         }

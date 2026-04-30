@@ -626,12 +626,15 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                             exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
                         }
                         1 -> {
-                            mNavController.navigate(R.id.global_action_to_brapi_export)
+                            mNavController.navigate(
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_EXPORT_CROSSES)
+                            )
                         }
                         2 -> {
                             mNavController.navigate(
-                                R.id.global_action_to_wishlist_import,
-                                bundleOf("importMode" to ImportUtil.BRAPI_MODE_IMPORT_CROSSES)
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_IMPORT_CROSSES)
                             )
                         }
                     }

@@ -194,10 +194,6 @@ class BrapiCrossProjectFragment: IntercrossBaseFragment<FragmentBrapiCrossProjec
             }
     }
 
-    /**
-     * TODO:
-     * Crosses get call might need a cross project db id parameter
-     */
     private fun loadCrossingProjects() {
         mBinding.listView.choiceMode = ListView.CHOICE_MODE_SINGLE
     }

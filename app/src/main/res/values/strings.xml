@@ -872,6 +872,7 @@
     <string name="crop">CROP</string>
     <string name="oauth_configured_incorrectly">Authorization request failed, please check your BrAPI settings.</string>
     <string name="brapi_cross_import_title">BrAPI Cross Import</string>
+    <string name="brapi_crosses_import_title">Cross Import</string>
 
     <plurals name="brapi_parent_count">
         <item quantity="one">%d parent</item>

@@ -31,6 +31,16 @@ data class ZplTemplate(
                     zplCode = "^XA^DFR:TEMPLATE^FS^PW406^LH10,10^FS^FO0,0^A0,25,20^FN1^FS^FO140,30^BQN,2,3,H,^FN2^FS^FO140,170^A0,25,20^FN5^FS^XZ",
                 ),
                 ZplTemplate(
+                    name = "template_2x1_male_readable",
+                    displayName = context.getString(R.string.label_2x1_male_readable), // add this string (or reuse another)
+                    zplCode = "^XA^DFR:TEMPLATE^FS^PW406^LH10,10^FS" +
+                            "^FO0,0^A0,25,20^FN1^FS" +
+                            "^FO140,0^A0,22,18^FN7^FS" +
+                            "^FO140,38^BQN,2,3,H,^FN2^FS" +
+                            "^FO140,178^A0,25,20^FN5^FS" +
+                            "^XZ",
+                ),
+                ZplTemplate(
                     name = "template_3x2",
                     displayName = context.getString(R.string.label_3x2_name),
                     zplCode = "^XA^DFR:TEMPLATE^FS^PW609^LH10,10^FS^FO0,0^A0,35,28^FN1^FS^FO210,40^BQN,2,5,H,^FN2^FS^FO210,300^A0,32,24^FN5^FS^XZ",

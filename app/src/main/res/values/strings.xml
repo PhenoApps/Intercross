@@ -69,7 +69,7 @@
         ^FO140,170^A0,25,20^FN5^FS
         ^XZ
     </string>
-    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2"x1" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
+    <string name="zpl_parameter_instructions" formatted="false">FN1–8 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n\tFN7=The male parent name\n\tFN8=The female parent name\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2"x1" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
     <string name="select_template">Select Pre-defined Template</string>
     <string name="select_zpl_template_title">Select ZPL Template</string>
     <string name="select_zpl_template_message">Please select a ZPL template for printing.</string>
@@ -681,7 +681,8 @@
     <string name="bottom_nv_summary">Graphs</string>
     <string name="bottom_nv_parents">Parents</string>
     <string name="bottom_nv_settings">Settings</string>
-    <string name="label_2x1_name">Simple (2\\\" x 1\\\")</string>
-    <string name="label_3x2_name">Simple (3\\\" x 2\\\")</string>
+    <string name="label_2x1_name">Simple (2\" x 1\")</string>
+    <string name="label_3x2_name">Simple (3\" x 2\")</string>
+    <string name="label_2x1_male_readable">Simple (2\" x 1\") with male name</string>
 
 </resources>

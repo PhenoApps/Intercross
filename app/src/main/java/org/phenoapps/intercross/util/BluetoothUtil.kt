@@ -15,6 +15,7 @@ import androidx.core.content.edit
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
+import org.phenoapps.intercross.fragments.EventDetailFragment
 import kotlin.collections.forEach
 
 
@@ -136,7 +137,7 @@ class BluetoothUtil {
         builder.show()
     }
 
-    fun print(ctx: Context, events: Array<Event>) {
+    fun print(ctx: Context, events: Array<EventDetailFragment.EventParentRelation>) {
         resolvePrintTemplate(ctx) { template ->
             choose(ctx) { device ->
                 ZebraPrinterUtil(ctx, template, device).printEvents(events)

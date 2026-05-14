@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import org.checkerframework.checker.units.qual.m
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.adapters.MetadataAdapter
@@ -25,21 +26,25 @@ import org.phenoapps.intercross.adapters.models.MetadataModel
 import org.phenoapps.intercross.data.EventsRepository
 import org.phenoapps.intercross.data.MetaValuesRepository
 import org.phenoapps.intercross.data.MetadataRepository
+import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.WishlistRepository
 import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
+import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.EventDetailViewModel
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
 import org.phenoapps.intercross.data.viewmodels.MetaValuesViewModel
 import org.phenoapps.intercross.data.viewmodels.MetadataViewModel
+import org.phenoapps.intercross.data.viewmodels.ParentsListViewModel
 import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventDetailViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.MetaValuesViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.MetadataViewModelFactory
+import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
 import org.phenoapps.intercross.databinding.FragmentEventDetailBinding
 import org.phenoapps.intercross.interfaces.MetadataManager
@@ -71,6 +76,11 @@ class EventDetailFragment:
     private lateinit var mMetaValuesList: List<MetadataValues>
     private lateinit var mMetaList: List<Meta>
     private lateinit var mWishlist: List<WishlistView>
+    private lateinit var mParents: List<Parent>
+
+    private val parentsList: ParentsListViewModel by viewModels {
+        ParentsListViewModelFactory(ParentsRepository.getInstance(db.parentsDao()))
+    }
 
     private val eventsList: EventListViewModel by viewModels {
         EventsListViewModelFactory(EventsRepository.getInstance(db.eventsDao()))
@@ -178,6 +188,10 @@ class EventDetailFragment:
     }
 
     private fun FragmentEventDetailBinding.refreshObservers() {
+
+        parentsList.parents.observe(viewLifecycleOwner) { parents ->
+            mParents = parents
+        }
 
         wishList.wishes.observe(viewLifecycleOwner) { crossblock ->
             mWishlist = crossblock
@@ -426,10 +440,25 @@ class EventDetailFragment:
 
             if (permit) {
 
-                BluetoothUtil().print(ctx, arrayOf(mEvent))
+                val maleParent = mParents.find { it.codeId == mEvent.maleObsUnitDbId }
+                val femaleParent = mParents.find { it.codeId == mEvent.femaleObsUnitDbId }
+
+                val eventParents = EventParentRelation(
+                    event = mEvent,
+                    maleParent = maleParent,
+                    femaleParent = femaleParent
+                )
+
+                BluetoothUtil().print(ctx, arrayOf(eventParents))
 
                 vibrateUtil.vibrate()
             }
         }
     }
+
+    data class EventParentRelation(
+        val event: Event,
+        val maleParent: Parent?,
+        val femaleParent: Parent?
+    )
 }

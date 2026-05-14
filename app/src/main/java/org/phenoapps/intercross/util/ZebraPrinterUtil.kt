@@ -20,6 +20,7 @@ import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.PollenGroup
+import org.phenoapps.intercross.fragments.EventDetailFragment
 
 class ZebraPrinterUtil(
     private val ctx: Context,
@@ -50,7 +51,7 @@ class ZebraPrinterUtil(
         progressDialog = null
     }
 
-    fun printEvents(events: Array<Event>) {
+    fun printEvents(events: Array<EventDetailFragment.EventParentRelation>) {
         scope.launch {
             runPrint(printMode = PrintMode.Events, events = events)
         }
@@ -71,7 +72,7 @@ class ZebraPrinterUtil(
 
     private suspend fun runPrint(
         printMode: PrintMode,
-        events: Array<Event> = emptyArray(),
+        events: Array<EventDetailFragment.EventParentRelation> = emptyArray(),
         parents: Array<Parent> = emptyArray()
     ) {
         showProgress()
@@ -96,20 +97,23 @@ class ZebraPrinterUtil(
 
                     when (printMode) {
                         PrintMode.Events -> {
-                            events.forEach { event ->
-                                var timestamp = event.timestamp
+                            events.forEach { relation ->
+                                var timestamp = relation.event.timestamp
                                 if ("_" in timestamp) {
                                     timestamp = timestamp.split("_")[0]
                                 }
 
                                 printer.sendCommand(
                                     "^XA^XFR:TEMPLATE" +
-                                        "^FN1^FD${event.eventDbId}^FS" +
-                                        "^FN2^FDQA,${event.eventDbId}^FS" +
-                                        "^FN3^FD${event.femaleObsUnitDbId}^FS" +
-                                        "^FN4^FD${event.maleObsUnitDbId}^FS" +
+                                        "^FN1^FD${relation.event.eventDbId}^FS" +
+                                        "^FN2^FDQA,${relation.event.eventDbId}^FS" +
+                                        "^FN3^FD${relation.event.femaleObsUnitDbId}^FS" +
+                                        "^FN4^FD${relation.event.maleObsUnitDbId}^FS" +
                                         "^FN5^FD${timestamp}^FS" +
-                                        "^FN6^FD${event.person}^FS^XZ"
+                                        "^FN6^FD${relation.event.person}^FS" +
+                                        "^FN7^FD${relation.maleParent?.name ?: ""}^FS" +
+                                        "^FN8^FD${relation.femaleParent?.name ?: ""}^FS" +
+                                        "^XZ"
                                 )
                             }
                         }

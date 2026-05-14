@@ -92,8 +92,8 @@ class BrapiCrossProjectFragment: IntercrossBaseFragment<FragmentBrapiCrossProjec
 
         val direction = when (args.mode) {
             ImportUtil.BRAPI_MODE_PARENTS -> BrapiCrossProjectFragmentDirections
-                .actionBrapiCrossProjectImportFragmentToBrapiPotentialParentsFragment(
-                    programDbId = crossProject.programDbId,
+                .actionBrapiCrossProjectImportFragmentToBrapiImportParentsStudyFragment(
+                    programDbId = "", //crossProject.programDbId ?: "",
                     crossingProjectDbId = crossProject.crossingProjectDbId ?: "",
                     crossingProjectName = crossProject.crossingProjectName ?: "",
                     crossingProjectDescription = crossProject.crossingProjectDescription ?: "",
@@ -107,7 +107,12 @@ class BrapiCrossProjectFragment: IntercrossBaseFragment<FragmentBrapiCrossProjec
                             }.getOrNull()
                         }
                         ?.toTypedArray()
-                        ?: emptyArray()
+                        ?: emptyArray(),
+                    prefilledStudyDbId = stringFromCrossingProjectAdditional(crossProject, "studyDbId"),
+                    prefilledObservationVariableDbId = stringFromCrossingProjectAdditional(
+                        crossProject,
+                        "observationVariableDbId"
+                    )
                 )
             ImportUtil.BRAPI_MODE_IMPORT_CROSSES -> BrapiCrossProjectFragmentDirections
                 .actionBrapiCrossProjectImportFragmentToBrapiCrossImportFragment(
@@ -188,7 +193,7 @@ class BrapiCrossProjectFragment: IntercrossBaseFragment<FragmentBrapiCrossProjec
 
         mBinding.nextButton.text =
             if (args.mode == ImportUtil.BRAPI_MODE_PARENTS) {
-                getString(R.string.brapi_review_parents)
+                getString(R.string.brapi_import_parents_cross_project_continue)
             } else {
                 getString(R.string.brapi_import_selected)
             }
@@ -353,5 +358,23 @@ class BrapiCrossProjectFragment: IntercrossBaseFragment<FragmentBrapiCrossProjec
                 findNavController().popBackStack()
             }
         }
+    }
+}
+
+private fun stringFromCrossingProjectAdditional(project: BrAPICrossingProject, key: String): String {
+    val info = project.additionalInfo ?: return ""
+    if (!info.has(key)) return ""
+    val el = info.get(key) ?: return ""
+    if (el.isJsonNull) return ""
+    val prim = el.takeIf { it.isJsonPrimitive }?.asJsonPrimitive ?: return ""
+    return try {
+        when {
+            prim.isString -> prim.asString
+            prim.isNumber -> prim.asNumber.toString()
+            prim.isBoolean -> prim.asBoolean.toString()
+            else -> ""
+        }
+    } catch (_: Exception) {
+        ""
     }
 }

@@ -9,18 +9,27 @@ import androidx.preference.PreferenceManager;
 
 import org.brapi.client.v2.BrAPIClient;
 import org.brapi.client.v2.model.exceptions.ApiException;
+import org.brapi.client.v2.model.queryParams.core.StudyQueryParams;
 import org.brapi.client.v2.model.queryParams.germplasm.CrossQueryParams;
 import org.brapi.client.v2.model.queryParams.germplasm.CrossingProjectQueryParams;
 import org.brapi.client.v2.model.queryParams.germplasm.PlannedCrossQueryParams;
+import org.brapi.client.v2.model.queryParams.phenotype.VariableQueryParams;
 import org.brapi.client.v2.modules.core.ProgramsApi;
+import org.brapi.client.v2.modules.core.StudiesApi;
 import org.brapi.client.v2.modules.germplasm.CrossesApi;
 import org.brapi.client.v2.modules.germplasm.CrossingProjectsApi;
 import org.brapi.client.v2.modules.germplasm.GermplasmApi;
 import org.brapi.client.v2.modules.phenotype.ObservationUnitsApi;
+import org.brapi.client.v2.modules.phenotype.ObservationVariablesApi;
+import org.brapi.client.v2.modules.phenotype.ObservationsApi;
 import org.brapi.v2.model.BrAPIMetadata;
+import org.brapi.v2.model.core.BrAPIStudy;
+import org.brapi.v2.model.core.response.BrAPIStudyListResponse;
 import org.brapi.v2.model.germ.BrAPICross;
 import org.brapi.v2.model.germ.BrAPICrossingProject;
 import org.brapi.v2.model.germ.BrAPIPlannedCross;
+import org.brapi.v2.model.pheno.BrAPIObservationVariable;
+import org.brapi.v2.model.pheno.response.BrAPIObservationVariableListResponse;
 import org.brapi.v2.model.germ.response.BrAPICrossesListResponse;
 import org.brapi.v2.model.germ.response.BrAPICrossingProjectsListResponse;
 import org.brapi.v2.model.germ.response.BrAPIPlannedCrossesListResponse;
@@ -39,6 +48,12 @@ public class BrAPIServiceV2 implements BrAPIService {
     private final GermplasmApi germplasmApi;
 
     public final ObservationUnitsApi observationUnitsApi;
+
+    public final ObservationsApi observationsApi;
+
+    public final StudiesApi studiesApi;
+
+    public final ObservationVariablesApi observationVariablesApi;
 
     private KeyUtil mKeyUtil;
 
@@ -61,6 +76,9 @@ public class BrAPIServiceV2 implements BrAPIService {
         this.germplasmApi = new GermplasmApi(apiClient);
         this.crossesApi = new CrossesApi(apiClient);
         this.observationUnitsApi = new ObservationUnitsApi(apiClient);
+        this.observationsApi = new ObservationsApi(apiClient);
+        this.studiesApi = new StudiesApi(apiClient);
+        this.observationVariablesApi = new ObservationVariablesApi(apiClient);
     }
 
     private void updatePageInfo(BrapiPaginationManager paginationManager, BrAPIMetadata metadata){
@@ -278,6 +296,82 @@ public class BrAPIServiceV2 implements BrAPIService {
             CrossingProjectQueryParams request = new CrossingProjectQueryParams();
             request.crossingProjectDbId(crossProjectDbId);
             crossingProjectsApi.crossingprojectsGetAsync(request, callback);
+
+        } catch (ApiException e) {
+            failFunction.apply(e.getCode());
+            e.printStackTrace();
+        }
+    }
+
+    public void getStudies(String programDbId, BrapiPaginationManager paginationManager,
+                           final Function<List<BrAPIStudy>, Void> function,
+                           final Function<Integer, Void> failFunction) {
+        Integer initPage = paginationManager.getPage();
+        try {
+            BrapiV2ApiCallBack<BrAPIStudyListResponse> callback = new BrapiV2ApiCallBack<BrAPIStudyListResponse>() {
+                @Override
+                public void onSuccess(BrAPIStudyListResponse response, int i, Map<String, List<String>> map) {
+                    if (initPage.equals(paginationManager.getPage())) {
+                        updatePageInfo(paginationManager, response.getMetadata());
+                        List<BrAPIStudy> studies = response.getResult().getData();
+                        function.apply(studies);
+                    }
+                }
+
+                @Override
+                public void onFailure(ApiException error, int i, Map<String, List<String>> map) {
+                    failFunction.apply(error.getCode());
+                }
+            };
+
+            StudyQueryParams request = new StudyQueryParams();
+            if (programDbId != null && !programDbId.isEmpty()) {
+                request.programDbId(programDbId);
+            }
+            request.page(paginationManager.getPage());
+            request.pageSize(paginationManager.getPageSize());
+            studiesApi.studiesGetAsync(request, callback);
+
+        } catch (ApiException e) {
+            failFunction.apply(e.getCode());
+            e.printStackTrace();
+        }
+    }
+
+    public void getObservationVariables(String programDbId, String studyDbId,
+                                        BrapiPaginationManager paginationManager,
+                                        final Function<List<BrAPIObservationVariable>, Void> function,
+                                        final Function<Integer, Void> failFunction) {
+        Integer initPage = paginationManager.getPage();
+        try {
+            BrapiV2ApiCallBack<BrAPIObservationVariableListResponse> callback =
+                    new BrapiV2ApiCallBack<BrAPIObservationVariableListResponse>() {
+                        @Override
+                        public void onSuccess(BrAPIObservationVariableListResponse response, int i,
+                                              Map<String, List<String>> map) {
+                            if (initPage.equals(paginationManager.getPage())) {
+                                updatePageInfo(paginationManager, response.getMetadata());
+                                List<BrAPIObservationVariable> variables = response.getResult().getData();
+                                function.apply(variables);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(ApiException error, int i, Map<String, List<String>> map) {
+                            failFunction.apply(error.getCode());
+                        }
+                    };
+
+            VariableQueryParams request = new VariableQueryParams();
+            if (programDbId != null && !programDbId.isEmpty()) {
+                request.programDbId(programDbId);
+            }
+            if (studyDbId != null && !studyDbId.isEmpty()) {
+                request.studyDbId(studyDbId);
+            }
+            request.page(paginationManager.getPage());
+            request.pageSize(paginationManager.getPageSize());
+            observationVariablesApi.variablesGetAsync(request, callback);
 
         } catch (ApiException e) {
             failFunction.apply(e.getCode());

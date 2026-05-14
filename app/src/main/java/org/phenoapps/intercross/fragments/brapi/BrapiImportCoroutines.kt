@@ -10,17 +10,45 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import org.brapi.client.v2.model.exceptions.ApiException
+import org.brapi.client.v2.model.queryParams.phenotype.ObservationQueryParams
 import org.brapi.client.v2.model.queryParams.phenotype.ObservationUnitQueryParams
 import org.brapi.client.v2.modules.phenotype.ObservationUnitsApi
+import org.brapi.client.v2.modules.phenotype.ObservationsApi
+import org.brapi.v2.model.core.BrAPIStudy
 import org.brapi.v2.model.germ.BrAPICrossingProject
 import org.brapi.v2.model.germ.BrAPIPlannedCross
+import org.brapi.v2.model.pheno.BrAPIObservation
 import org.brapi.v2.model.pheno.BrAPIObservationUnit
+import org.brapi.v2.model.pheno.BrAPIObservationVariable
 import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 import org.phenoapps.intercross.brapi.service.BrapiPaginationManager
 import org.brapi.v2.model.germ.BrAPICross
+import org.brapi.v2.model.pheno.response.BrAPIObservationListResponse
 import org.brapi.v2.model.pheno.response.BrAPIObservationUnitListResponse
 import org.phenoapps.intercross.brapi.service.BrapiV2ApiCallBack
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
+
+/**
+ * BrAPI date/time encoding uses ISO 8601 timestamps **without** fractional seconds for query params
+ * (see Date_Time_Encoding: `yyyy-MM-ddThh:mm:ssZ` for UTC). Many servers reject `.SSS` in range filters.
+ */
+private fun normalizeBrApiObservationTimestampQueryParam(value: String): String =
+    runCatching {
+        val instant = try {
+            OffsetDateTime.parse(value).toInstant()
+        } catch (_: Exception) {
+            Instant.parse(value)
+        }
+        Instant.ofEpochMilli(instant.toEpochMilli())
+            .atOffset(ZoneOffset.UTC)
+            .truncatedTo(ChronoUnit.SECONDS)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+    }.getOrElse { value }
 
 /**
  * Temp helper coroutines TODO
@@ -80,6 +108,28 @@ suspend fun BrAPIServiceV2.awaitCrosses(
         { crosses ->
             if (continuation.isActive) {
                 continuation.resume(crosses)
+            }
+            null
+        },
+        { fail ->
+            if (continuation.isActive) {
+                continuation.resumeWithException(BrapiRequestException(fail))
+            }
+            null
+        }
+    )
+}
+
+suspend fun BrAPIServiceV2.awaitStudies(
+    programDbId: String,
+    paginationManager: BrapiPaginationManager
+): List<BrAPIStudy> = suspendCancellableCoroutine { continuation ->
+    getStudies(
+        programDbId,
+        paginationManager,
+        { studies ->
+            if (continuation.isActive) {
+                continuation.resume(studies)
             }
             null
         },
@@ -197,4 +247,98 @@ suspend fun ObservationUnitsApi.getAllObservationUnits(
     ) { page ->
         fetchObservationUnitsPage(programDbId, page, pageSize)
     }
+}
+
+suspend fun BrAPIServiceV2.awaitObservationVariables(
+    programDbId: String,
+    studyDbId: String,
+    paginationManager: BrapiPaginationManager
+): List<BrAPIObservationVariable> = suspendCancellableCoroutine { continuation ->
+    getObservationVariables(
+        programDbId,
+        studyDbId,
+        paginationManager,
+        { variables ->
+            if (continuation.isActive) {
+                continuation.resume(variables)
+            }
+            null
+        },
+        { fail ->
+            if (continuation.isActive) {
+                continuation.resumeWithException(BrapiRequestException(fail))
+            }
+            null
+        }
+    )
+}
+
+suspend fun ObservationsApi.fetchObservationsPage(
+    studyDbId: String,
+    observationVariableDbId: String,
+    observationTimeStampRangeStart: String,
+    observationTimeStampRangeEnd: String,
+    page: Int,
+    pageSize: Int
+): BrAPIObservationListResponse = suspendCancellableCoroutine { cont ->
+    val rangeStart = normalizeBrApiObservationTimestampQueryParam(observationTimeStampRangeStart)
+    val rangeEnd = normalizeBrApiObservationTimestampQueryParam(observationTimeStampRangeEnd)
+    val params = ObservationQueryParams()
+        .studyDbId(studyDbId)
+        .observationVariableDbId(observationVariableDbId)
+        .observationTimeStampRangeStart(rangeStart)
+        .observationTimeStampRangeEnd(rangeEnd)
+    params.page(page)
+    params.pageSize(pageSize)
+
+    observationsGetAsync(
+        params,
+        object : BrapiV2ApiCallBack<BrAPIObservationListResponse>() {
+            override fun onSuccess(
+                response: BrAPIObservationListResponse,
+                i: Int,
+                map: Map<String, List<String>>
+            ) {
+                cont.resume(response)
+            }
+
+            override fun onFailure(
+                error: ApiException,
+                i: Int,
+                map: Map<String, List<String>>
+            ) {
+                cont.resumeWithException(error)
+            }
+        })
+}
+
+suspend fun ObservationsApi.getAllObservationsForStudyVariableInTimestampRange(
+    studyDbId: String,
+    observationVariableDbId: String,
+    observationTimeStampRangeStart: String,
+    observationTimeStampRangeEnd: String,
+    pageSize: Int = 100
+): List<BrAPIObservation> {
+    val first = fetchObservationsPage(
+        studyDbId,
+        observationVariableDbId,
+        observationTimeStampRangeStart,
+        observationTimeStampRangeEnd,
+        0,
+        pageSize
+    )
+    val results = first.result?.data?.toMutableList() ?: mutableListOf()
+    val totalPages = first.metadata?.pagination?.totalPages?.takeIf { it > 0 } ?: 1
+    for (page in 1 until totalPages) {
+        val pageResponse = fetchObservationsPage(
+            studyDbId,
+            observationVariableDbId,
+            observationTimeStampRangeStart,
+            observationTimeStampRangeEnd,
+            page,
+            pageSize
+        )
+        pageResponse.result?.data?.let { results.addAll(it) }
+    }
+    return results
 }

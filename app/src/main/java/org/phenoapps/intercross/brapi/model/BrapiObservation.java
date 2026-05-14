@@ -1,6 +1,8 @@
 package org.phenoapps.intercross.brapi.model;
 
+import org.threeten.bp.Instant;
 import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -42,18 +44,29 @@ public class BrapiObservation {
         this.timestamp = convertTime(timestamp);
     }
 
+    /**
+     * Parses BrAPI / ISO-8601 timestamps, including high-precision fractions and {@code Z}
+     * (e.g. {@code 2026-05-07T14:20:29.807404Z}), then falls back to the legacy Field Book style.
+     */
     private OffsetDateTime convertTime(String time) {
-        OffsetDateTime converted = null;
-        try {
-            //TODO: locale
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSZZZZZ");
-            converted = OffsetDateTime.parse(time, formatter);
-        } catch (DateTimeParseException e) {
-            e.printStackTrace();
-        } finally {
-            return converted;
+        if (time == null || time.isEmpty()) {
+            return null;
         }
-
+        String trimmed = time.trim();
+        try {
+            return OffsetDateTime.parse(trimmed, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        } catch (DateTimeParseException ignored) {
+        }
+        try {
+            return Instant.parse(trimmed).atOffset(ZoneOffset.UTC);
+        } catch (DateTimeParseException ignored) {
+        }
+        try {
+            DateTimeFormatter legacy = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSZZZZZ");
+            return OffsetDateTime.parse(trimmed, legacy);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     public OffsetDateTime getLastSyncedTime() {

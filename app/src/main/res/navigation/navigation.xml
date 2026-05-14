@@ -111,11 +111,11 @@
             app:argType="integer"
             android:defaultValue="0" />
         <action
+            android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_import_parents_study_fragment"
+            app:destination="@+id/brapi_import_parents_study_fragment" />
+        <action
             android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_planned_crosses_fragment"
             app:destination="@+id/brapi_planned_crosses_fragment" />
-        <action
-            android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_potential_parents_fragment"
-            app:destination="@+id/brapi_potential_parents_fragment" />
         <action
             android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_cross_import_fragment"
             app:destination="@+id/brapi_cross_import_fragment" />
@@ -154,6 +154,109 @@
     </fragment>
 
     <fragment
+        android:id="@+id/brapi_import_parents_study_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiImportParentsStudyFragment"
+        android:label="@string/brapi_import_parents_study_title">
+        <argument
+            android:name="programDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="potentialParentsJson"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="prefilledStudyDbId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="prefilledObservationVariableDbId"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_brapi_import_parents_study_to_brapi_import_parents_observation_variable"
+            app:destination="@+id/brapi_import_parents_observation_variable_fragment" />
+        <action
+            android:id="@+id/action_brapi_import_parents_study_to_brapi_potential_parents_fragment"
+            app:destination="@+id/brapi_potential_parents_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/brapi_import_parents_observation_variable_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiImportParentsObservationVariableFragment"
+        android:label="@string/brapi_import_parents_variable_title">
+        <argument
+            android:name="programDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="potentialParentsJson"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="prefilledObservationVariableDbId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="selectedStudyDbId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="selectedStudyName"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_brapi_import_parents_observation_variable_to_brapi_potential_parents_fragment"
+            app:destination="@+id/brapi_potential_parents_fragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/brapi_potential_parents_fragment"
         android:name="org.phenoapps.intercross.fragments.brapi.BrapiPotentialParentsFragment"
         android:label="@string/brapi_potential_parents_title">
@@ -188,6 +291,14 @@
             app:argType="string[]"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="studyDbId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="observationVariableDbId"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment

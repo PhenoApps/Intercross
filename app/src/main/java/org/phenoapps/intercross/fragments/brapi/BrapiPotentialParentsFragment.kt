@@ -1,6 +1,16 @@
 package org.phenoapps.intercross.fragments.brapi
 
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -8,26 +18,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.brapi.v2.model.germ.BrAPICrossParent
+import org.brapi.v2.model.pheno.BrAPIObservation
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.activities.MainActivity
+import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.models.Parent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import org.phenoapps.intercross.databinding.FragmentBrapiPotentialParentsBinding
 import org.phenoapps.intercross.databinding.ListItemPotentialParentBinding
 import org.phenoapps.intercross.fragments.IntercrossBaseFragment
-import androidx.appcompat.widget.Toolbar
-import io.swagger.client.model.ProgenyProgeny
-import org.brapi.v2.model.germ.BrAPIParentType
-import org.phenoapps.intercross.activities.MainActivity
-import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+
+private data class PotentialParentRow(
+    val parent: BrAPICrossParent,
+    val fromRecentObservation: Boolean
+)
 
 class BrapiPotentialParentsFragment :
     IntercrossBaseFragment<FragmentBrapiPotentialParentsBinding>(R.layout.fragment_brapi_potential_parents) {
@@ -43,19 +49,19 @@ class BrapiPotentialParentsFragment :
     }
 
     private val mService: BrAPIServiceV2 by lazy {
-
         BrAPIServiceV2(this@BrapiPotentialParentsFragment.context)
-
     }
 
     private val gson by lazy { Gson() }
     private val prettyGson by lazy { GsonBuilder().setPrettyPrinting().create() }
 
-    private val potentialParents by lazy {
+    private val basePotentialParents by lazy {
         (args.potentialParentsJson ?: emptyArray()).mapNotNull { encoded ->
             runCatching { gson.fromJson(encoded, BrAPICrossParent::class.java) }.getOrNull()
         }.distinctBy { it.observationUnitDbId ?: it.observationUnitName }
     }
+
+    private var displayRows: List<PotentialParentRow> = emptyList()
 
     private val expandedParentIds = mutableSetOf<String>()
 
@@ -71,36 +77,39 @@ class BrapiPotentialParentsFragment :
 
         bindProjectSummary()
 
-        //if (potentialParents.isEmpty()){
-            //loading obs. units and germplasm
-//            lifecycleScope.launch {
-//
-//                val units = withContext(Dispatchers.IO) {
-//                    mService.observationUnitsApi.getAllObservationUnits(
-//                        programDbId = args.programDbId,
-//                        pageSize = 1,
-//                        maxParallel = 3
-//                    ) { completed, total ->
-//                        println("Progress: $completed / $total pages")
-//                    }
-//                }
-//
-//                Log.d(TAG, "BrAPI returned ${units.size} observation units.")
-//
-//                val items = units.map { unit ->
-//                    BrAPICrossParent().apply {
-//                        observationUnitDbId = unit.observationUnitDbId
-//                        observationUnitName = unit.observationUnitName
-//                    }
-//                }
-//
-//                bindPotentialParents(items)
-//            }
+        displayRows = basePotentialParents.map { PotentialParentRow(it, false) }
+        bindPotentialParents(displayRows)
 
-//        } else {
-            bindPotentialParents(potentialParents)
-//        }
-
+        if (args.studyDbId.isNotBlank() && args.observationVariableDbId.isNotBlank()) {
+            lifecycleScope.launch {
+                progressVisibility = View.VISIBLE
+                try {
+                    val rangeEnd = OffsetDateTime.now(ZoneOffset.UTC)
+                    val rangeStart = rangeEnd.minusDays(7)
+                    val allObs = withContext(Dispatchers.IO) {
+                        mService.observationsApi.getAllObservationsForStudyVariableInTimestampRange(
+                            args.studyDbId,
+                            args.observationVariableDbId,
+                            rangeStart.toString(),
+                            rangeEnd.toString()
+                        )
+                    }
+                    val filtered = filterObservationsLastWeek(allObs)
+                    val suggested = parentsFromObservations(filtered)
+                    displayRows = mergeParentRows(basePotentialParents, suggested)
+                    bindPotentialParents(displayRows)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to load observations for potential parents", e)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.brapi_potential_parents_observations_load_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } finally {
+                    progressVisibility = View.GONE
+                }
+            }
+        }
 
         importButton.setOnClickListener {
             importPotentialParents()
@@ -127,22 +136,22 @@ class BrapiPotentialParentsFragment :
             )
     }
 
-    private fun bindPotentialParents(items: List<BrAPICrossParent>) {
+    private fun bindPotentialParents(rows: List<PotentialParentRow>) {
         val context = context ?: return
         mBinding.plannedCrossCountTextView.text =
-            resources.getQuantityString(R.plurals.brapi_parent_count, items.size, items.size)
-        mBinding.emptyContainer.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
-        mBinding.listView.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
-        mBinding.importButton.isEnabled = items.isNotEmpty()
+            resources.getQuantityString(R.plurals.brapi_parent_count, rows.size, rows.size)
+        mBinding.emptyContainer.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+        mBinding.listView.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
+        mBinding.importButton.isEnabled = rows.isNotEmpty()
 
-        if (items.isEmpty()) {
+        if (rows.isEmpty()) {
             return
         }
 
-        mBinding.listView.adapter = object : ArrayAdapter<BrAPICrossParent>(
+        mBinding.listView.adapter = object : ArrayAdapter<PotentialParentRow>(
             context,
             R.layout.list_item_potential_parent,
-            items
+            rows
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val binding = if (convertView == null) {
@@ -162,16 +171,17 @@ class BrapiPotentialParentsFragment :
                         )
                 }
 
-                val item = getItem(position)
-                val stableId = item?.observationUnitDbId ?: item?.observationUnitName.orEmpty()
-                val rawJson = item?.let { gson.toJson(it) }.orEmpty()
+                val row = getItem(position) ?: return binding.root
+                val item = row.parent
+                val stableId = item.observationUnitDbId ?: item.observationUnitName.orEmpty()
+                val rawJson = gson.toJson(item)
                 val isExpanded = stableId in expandedParentIds
 
-                binding.title = item?.observationUnitName ?: getString(R.string.brapi_project_value_unavailable)
+                binding.title = item.observationUnitName ?: getString(R.string.brapi_project_value_unavailable)
                 binding.observationUnitId =
-                    item?.observationUnitDbId ?: getString(R.string.brapi_project_id_unavailable)
+                    item.observationUnitDbId ?: getString(R.string.brapi_project_id_unavailable)
                 binding.parentType =
-                    item?.parentType?.toString() ?: getString(R.string.brapi_parent_type_unknown)
+                    item.parentType?.toString() ?: getString(R.string.brapi_parent_type_unknown)
                 binding.additionalInfo = formatJson(rawJson)
                 binding.showAdditionalInfo = isExpanded
                 binding.additionalInfoToggleText =
@@ -179,6 +189,8 @@ class BrapiPotentialParentsFragment :
                         if (isExpanded) R.string.brapi_hide_additional_info
                         else R.string.brapi_show_additional_info
                     )
+                binding.externalReference = ""
+                binding.showRecentObservationIcon = row.fromRecentObservation
 
                 binding.additionalInfoToggleChip.setOnClickListener {
                     if (isExpanded) expandedParentIds.remove(stableId) else expandedParentIds.add(stableId)
@@ -192,7 +204,7 @@ class BrapiPotentialParentsFragment :
     }
 
     private fun importPotentialParents() {
-        if (potentialParents.isEmpty()) {
+        if (displayRows.isEmpty()) {
             Toast.makeText(context, R.string.brapi_no_potential_parents_found, Toast.LENGTH_SHORT).show()
             return
         }
@@ -203,7 +215,8 @@ class BrapiPotentialParentsFragment :
         lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val grouped = potentialParents
+                    val grouped = displayRows
+                        .map { it.parent }
                         .groupBy { it.observationUnitDbId ?: it.observationUnitName.orEmpty() }
                         .filterKeys { it.isNotBlank() }
 
@@ -214,9 +227,6 @@ class BrapiPotentialParentsFragment :
                             items.any { it.parentType?.toString() == "FEMALE" } -> 0
                             else -> 0
                         }
-                        //ProgenyProgeny.ParentTypeEnum
-                        //BrAPI Parent Type: female male, self, population, clonal
-                        //Intercross Cross Type: BIPARENTAL, OPEN, SELF, POLY, UNKNOWN
 
                         Parent(codeId = codeId, sex = inferredSex).also { parent ->
                             parent.name = first.observationUnitName ?: codeId
@@ -231,13 +241,13 @@ class BrapiPotentialParentsFragment :
 
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.brapi_imported_parents, potentialParents.size),
+                    getString(R.string.brapi_imported_parents, displayRows.size),
                     Toast.LENGTH_SHORT
                 ).show()
                 findNavController().popBackStack(R.id.parents_fragment, false)
             } finally {
                 mBinding.progressVisibility = View.GONE
-                mBinding.importButton.isEnabled = potentialParents.isNotEmpty()
+                mBinding.importButton.isEnabled = displayRows.isNotEmpty()
             }
         }
     }
@@ -251,4 +261,51 @@ class BrapiPotentialParentsFragment :
             prettyGson.toJson(JsonParser.parseString(rawJson))
         }.getOrElse { rawJson }
     }
+}
+
+private fun stableParentKey(parent: BrAPICrossParent): String =
+    (parent.observationUnitDbId ?: parent.observationUnitName).orEmpty()
+
+private fun filterObservationsLastWeek(observations: List<BrAPIObservation>): List<BrAPIObservation> {
+    val cutoff = OffsetDateTime.now(ZoneOffset.UTC).minusDays(7)
+    return observations.filter { obs ->
+        val ts = obs.observationTimeStamp ?: return@filter false
+        !ts.isBefore(cutoff)
+    }
+}
+
+private fun parentsFromObservations(observations: List<BrAPIObservation>): List<BrAPICrossParent> =
+    observations
+        .distinctBy { obs ->
+            obs.observationUnitDbId?.takeIf { it.isNotBlank() }
+                ?: obs.observationUnitName?.takeIf { it.isNotBlank() }.orEmpty()
+        }
+        .mapNotNull { obs ->
+            val unitId = obs.observationUnitDbId?.takeIf { it.isNotBlank() }
+            val unitName = obs.observationUnitName?.takeIf { it.isNotBlank() }
+            if (unitId == null && unitName == null) return@mapNotNull null
+            BrAPICrossParent().apply {
+                observationUnitDbId = unitId
+                observationUnitName = unitName ?: unitId
+            }
+        }
+
+private fun mergeParentRows(
+    base: List<BrAPICrossParent>,
+    suggested: List<BrAPICrossParent>
+): List<PotentialParentRow> {
+    val usedKeys = mutableSetOf<String>()
+    val rows = mutableListOf<PotentialParentRow>()
+    suggested.forEach { p ->
+        val key = stableParentKey(p)
+        if (key.isBlank() || key in usedKeys) return@forEach
+        usedKeys.add(key)
+        rows.add(PotentialParentRow(p, true))
+    }
+    base.forEach { p ->
+        val key = stableParentKey(p)
+        if (key.isNotBlank() && key !in usedKeys) usedKeys.add(key)
+        rows.add(PotentialParentRow(p, false))
+    }
+    return rows
 }

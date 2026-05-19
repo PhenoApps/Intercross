@@ -67,6 +67,8 @@
     <string name="key_pref_behavior_commutative_crossing">&package;COMMUTATIVE_CROSSING</string>
 
     <!-- Printing preference keys -->
+    <string name="key_pref_printer_category">&package;PRINTER_CATEGORY</string>
+    <string name="key_pref_label_category">&package;LABEL_CATEGORY</string>
     <string name="key_pref_print_connect">&package;PRINTER_CONNECT</string>
     <string name="key_pref_print_zpl_import">&package;ZPL_IMPORT</string>
     <string name="key_pref_print_zpl_code">&package;ZPL_CODE</string>

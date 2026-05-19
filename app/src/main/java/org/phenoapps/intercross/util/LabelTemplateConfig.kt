@@ -23,6 +23,15 @@ enum class LabelMediaType(
     companion object {
         fun fromName(name: String): LabelMediaType =
             entries.firstOrNull { it.name == name } ?: GAP
+
+        fun fromSgd(value: String?): LabelMediaType {
+            return when (value?.lowercase()?.trim()) {
+                "continuous" -> CONTINUOUS
+                "mark" -> MARK
+                "non-continuous" -> GAP
+                else -> GAP
+            }
+        }
     }
 }
 
@@ -81,11 +90,11 @@ data class LabelTemplateConfig(
     val type: LabelTemplateType
         get() = LabelTemplateType.fromName(labelType)
 
-    val widthDots: Int
-        get() = (widthInches * dpi).roundToInt().coerceAtLeast(1)
+    val widthDots: Float
+        get() = (widthInches * dpi).coerceAtLeast(1f)
 
-    val heightDots: Int
-        get() = (heightInches * dpi).roundToInt().coerceAtLeast(1)
+    val heightDots: Float
+        get() = (heightInches * dpi).coerceAtLeast(1f)
 
     fun toZpl(): String {
         rawZpl?.trim()?.takeIf { it.isNotBlank() }?.let { return it }

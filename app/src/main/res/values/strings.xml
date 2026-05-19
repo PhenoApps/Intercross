@@ -583,6 +583,7 @@
     <string name="label_media_type_gap">Gap</string>
     <string name="label_media_type_mark">Black mark</string>
     <string name="label_media_type_continuous">Continuous roll</string>
+    <string name="label_media_type_title">Media Type</string>
     <string name="placeholder_cross_id">Cross ID</string>
     <string name="placeholder_readable_name">Readable cross name</string>
     <string name="placeholder_female_id">Female parent ID</string>
@@ -757,5 +758,7 @@
     <string name="height_in">Height (in)</string>
     <string name="label_width_in">Label Width (in)</string>
     <string name="label_height_in">Label Height (in)</string>
+    <string name="prefs_printing_category_title">Printer</string>
+    <string name="prefs_label_category_title">Label</string>
 
 </resources>

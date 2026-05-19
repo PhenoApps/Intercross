@@ -79,7 +79,7 @@ object LabelPrinterDpiDetector {
             val dpi = readSgd(connection, "head.resolution.in_dpi").toFirstInt()
             val printWidthDots = readSgd(connection, "ezpl.print_width").toFirstInt()
             val labelLengthDots = readSgd(connection, "zpl.label_length").toFirstInt()
-            val mediaType = readSgd(connection, "media.type")
+            val mediaType = readSgd(connection, "ezpl.media_type")
             val deviceLanguage = readSgd(connection, "device.languages")
             val printerName = readSgd(connection, "device.friendly_name")
 
@@ -105,6 +105,74 @@ object LabelPrinterDpiDetector {
                 dpi = null,
                 message = context.getString(R.string.could_not_detect_dpi, deviceName),
             )
+        } finally {
+            runCatching { connection?.close() }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun update(context: Context, deviceName: String, mediaType: LabelMediaType): Boolean {
+        if (!canReadBluetooth(context) || deviceName.isBlank()) return false
+
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        val device = bluetoothManager.adapter?.bondedDevices?.firstOrNull { it.name == deviceName }
+            ?: return false
+
+        var connection: BluetoothConnection? = null
+        return try {
+            connection = BluetoothConnection(device.address)
+            connection.open()
+            val sgdValue = when (mediaType) {
+                LabelMediaType.GAP -> "gap/notch"
+                LabelMediaType.MARK -> "mark"
+                LabelMediaType.CONTINUOUS -> "continuous"
+            }
+            SGD.SET("ezpl.media_type", sgdValue, connection)
+            true
+        } catch (_: Exception) {
+            false
+        } finally {
+            runCatching { connection?.close() }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun updateWidth(context: Context, deviceName: String, widthDots: Float): Boolean {
+        if (!canReadBluetooth(context) || deviceName.isBlank()) return false
+
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        val device = bluetoothManager.adapter?.bondedDevices?.firstOrNull { it.name == deviceName }
+            ?: return false
+
+        var connection: BluetoothConnection? = null
+        return try {
+            connection = BluetoothConnection(device.address)
+            connection.open()
+            SGD.SET("ezpl.print_width", widthDots.toString(), connection)
+            true
+        } catch (_: Exception) {
+            false
+        } finally {
+            runCatching { connection?.close() }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun updateHeight(context: Context, deviceName: String, heightDots: Float): Boolean {
+        if (!canReadBluetooth(context) || deviceName.isBlank()) return false
+
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        val device = bluetoothManager.adapter?.bondedDevices?.firstOrNull { it.name == deviceName }
+            ?: return false
+
+        var connection: BluetoothConnection? = null
+        return try {
+            connection = BluetoothConnection(device.address)
+            connection.open()
+            SGD.SET("zpl.label_length", heightDots.toString(), connection)
+            true
+        } catch (_: Exception) {
+            false
         } finally {
             runCatching { connection?.close() }
         }

@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.viewmodels.LabelTemplateUiState
 import org.phenoapps.intercross.util.LabelTemplateConfig
+import org.phenoapps.intercross.util.LabelMediaType
 import org.phenoapps.intercross.util.LabelTemplateType
 import org.phenoapps.intercross.util.ZplStringReplacer
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -79,14 +80,11 @@ import java.io.File
 import java.io.FileOutputStream
 import android.net.Uri
 import androidx.compose.material3.AlertDialog
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Size
 import org.phenoapps.intercross.ui.theme.colors.DefaultAppColors
 import org.phenoapps.intercross.ui.theme.toMaterialColorScheme
 import org.phenoapps.intercross.ui.theme.toMaterialTypography
 import org.phenoapps.intercross.ui.theme.typography.CompactTypography
 import kotlin.math.roundToInt
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 
 @Composable
@@ -152,6 +150,11 @@ fun LabelTemplateEditorScreen(
             LabelDimensionsSection(
                 config = uiState.config,
                 onConfigChange = onConfigChange,
+            )
+
+            LabelMediaTypePicker(
+                selectedMedia = uiState.config.media,
+                onSelect = { media -> onConfigChange(uiState.config.copy(mediaType = media.name)) },
             )
 
             val visibleTemplates = uiState.savedTemplates.filter { it.type == uiState.config.type }
@@ -331,40 +334,10 @@ private fun LabelSizeBox(
 
             val density = LocalDensity.current
             val strokePx = with(density) { 1.dp.toPx() }
-            val onSurface = MaterialTheme.colorScheme.onSurface
             val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
 
-            // Draw the roll, zig-zag head line, and a precise border inset by the user's margins
+            // Draw a precise border inset by the user's margins
             Canvas(modifier = Modifier.matchParentSize()) {
-                // Draw a small roll coming out of the head (centered)
-                val rollH = size.height * 0.10f
-                val rollW = size.width * 0.20f
-                val rollLeft = (size.width - rollW) / 2f
-                val rollTop = -rollH * 0.45f
-                drawRoundRect(
-                    color = onSurfaceVariant.copy(alpha = 0.14f),
-                    topLeft = Offset(rollLeft, rollTop),
-                    size = Size(rollW, rollH),
-                    cornerRadius = CornerRadius(rollH / 2f, rollH / 2f),
-                )
-
-                // Zig-zag head line across the top of the label area
-                val segments = 42
-                val step = size.width / segments.toFloat()
-                val amplitude = size.height * 0.02f
-                val yBase = 0f + strokePx * 1.5f
-                val path = Path()
-                path.moveTo(0f, yBase)
-                for (i in 1..segments) {
-                    val x = i * step
-                    val y = if (i % 2 == 0) yBase + amplitude else yBase - amplitude
-                    path.lineTo(x, y)
-                }
-                drawPath(
-                    path = path,
-                    color = onSurface,
-                    style = Stroke(width = strokePx * 2f),
-                )
 
                 // Draw the precise border inset by the user's margins (marginX/marginY are in dots)
                 // Compute scale from dots to canvas pixels using config width/height dots
@@ -374,17 +347,13 @@ private fun LabelSizeBox(
                 val scaleY = size.height / heightDots
                 val insetLeft = config.marginX * scaleX
                 val insetTop = config.marginY * scaleY
-                val insetRight = insetLeft
-                val insetBottom = insetTop
 
-                val borderLeft = insetLeft
-                val borderTop = insetTop
-                val borderW = (size.width - insetLeft - insetRight).coerceAtLeast(1f)
-                val borderH = (size.height - insetTop - insetBottom).coerceAtLeast(1f)
+                val borderW = (size.width - insetLeft - insetLeft).coerceAtLeast(1f)
+                val borderH = (size.height - insetTop - insetTop).coerceAtLeast(1f)
 
                 drawRect(
                     color = onSurfaceVariant,
-                    topLeft = Offset(borderLeft, borderTop),
+                    topLeft = Offset(insetLeft, insetTop),
                     size = androidx.compose.ui.geometry.Size(borderW, borderH),
                     style = Stroke(width = strokePx)
                 )
@@ -738,16 +707,29 @@ private fun LabelTypePicker(
     selectedType: LabelTemplateType,
     onSelect: (LabelTemplateType) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(stringResource(R.string.label_type_title), style = MaterialTheme.typography.labelLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LabelTemplateType.entries.forEach { type ->
-                FilterChip(
-                    selected = selectedType == type,
-                    onClick = { onSelect(type) },
-                    label = { Text(type.typeLabel()) },
-                )
-            }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LabelTemplateType.entries.forEach { type ->
+            FilterChip(
+                selected = selectedType == type,
+                onClick = { onSelect(type) },
+                label = { Text(type.typeLabel()) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LabelMediaTypePicker(
+    selectedMedia: LabelMediaType,
+    onSelect: (LabelMediaType) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LabelMediaType.entries.forEach { media ->
+            FilterChip(
+                selected = selectedMedia == media,
+                onClick = { onSelect(media) },
+                label = { Text(stringResource(media.displayNameResId)) },
+            )
         }
     }
 }

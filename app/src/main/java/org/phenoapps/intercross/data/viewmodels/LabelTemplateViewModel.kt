@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.LabelMediaType
 import org.phenoapps.intercross.util.LabelPrinterDpiDetector
 import org.phenoapps.intercross.util.LabelTemplateConfig
 import org.phenoapps.intercross.util.LabelTemplateStore
@@ -74,6 +75,15 @@ class LabelTemplateViewModel @Inject constructor(
 
     fun updateConfig(config: LabelTemplateConfig) {
         val previousConfig = _uiState.value.config
+        if (previousConfig.mediaType != config.mediaType) {
+            updatePrinterMediaType(config.media)
+        }
+        if (previousConfig.widthInches != config.widthInches) {
+            updatePrinterWidth(config.widthDots)
+        }
+        if (previousConfig.heightInches != config.heightInches) {
+            updatePrinterHeight(config.heightDots)
+        }
         val updatedConfig = if (
             previousConfig.type != config.type &&
             ZplStringReplacer.hasPlaceholdersForOtherType(config.toZpl(), config.type)
@@ -243,6 +253,9 @@ class LabelTemplateViewModel @Inject constructor(
                     result.labelLengthDots?.let { heightDots ->
                         config = config.copy(heightInches = heightDots / dpi.toFloat())
                     }
+                    result.mediaType?.let { mType ->
+                        config = config.copy(mediaType = LabelMediaType.fromSgd(mType).name)
+                    }
                     config
                 } ?: state.config
                 state.copy(
@@ -252,6 +265,33 @@ class LabelTemplateViewModel @Inject constructor(
                     message = result.message,
                 )
             }
+        }
+    }
+
+    fun updatePrinterMediaType(mediaType: LabelMediaType) {
+        val deviceName = _uiState.value.deviceName
+        if (deviceName.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            LabelPrinterDpiDetector.update(context, deviceName, mediaType)
+        }
+    }
+
+    fun updatePrinterWidth(widthDots: Float) {
+        val deviceName = _uiState.value.deviceName
+        if (deviceName.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            LabelPrinterDpiDetector.updateWidth(context, deviceName, widthDots)
+        }
+    }
+
+    fun updatePrinterHeight(heightDots: Float) {
+        val deviceName = _uiState.value.deviceName
+        if (deviceName.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            LabelPrinterDpiDetector.updateHeight(context, deviceName, heightDots)
         }
     }
 

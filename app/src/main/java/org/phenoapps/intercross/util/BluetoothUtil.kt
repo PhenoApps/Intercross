@@ -50,30 +50,36 @@ class BluetoothUtil {
             return
         }
 
-        val map = HashMap<Int, Map.Entry<String, BluetoothDevice>>()
-        val input = RadioGroup(ctx)
-
-        pairedDevices?.entries?.forEach { entry ->
-            val button = RadioButton(ctx)
-            button.text = entry.key
-            input.addView(button)
-            map[button.id] = entry
+        if (pairedDevices.isNullOrEmpty()) {
+            AlertDialog.Builder(ctx)
+                .setTitle(R.string.choose_bluetooth_device_title)
+                .setMessage(R.string.no_device_paired)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
         }
 
-        val builder = AlertDialog.Builder(ctx)
-        builder.setTitle(ctx.getString(R.string.choose_bluetooth_device_title))
-        builder.setView(input)
-        builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
-        builder.setPositiveButton(android.R.string.ok) { _, _ ->
-            if (input.checkedRadioButtonId != -1) {
-                val entry = map[input.checkedRadioButtonId] ?: return@setPositiveButton
-                pref.edit {
-                    putString(keyUtil.printerDeviceNameKey, entry.key)
-                }
-                f(entry.value)
+        val deviceEntries = pairedDevices.entries.toList()
+        val deviceNames = deviceEntries.map { it.key }.toTypedArray()
+        var selectedIndex = deviceEntries.indexOfFirst { it.key == savedDeviceName }
+
+        AlertDialog.Builder(ctx)
+            .setTitle(ctx.getString(R.string.choose_bluetooth_device_title))
+            .setIcon(R.drawable.ic_setting_print_connect)
+            .setSingleChoiceItems(deviceNames, selectedIndex) { _, which ->
+                selectedIndex = which
             }
-        }
-        builder.show()
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (selectedIndex != -1) {
+                    val entry = deviceEntries[selectedIndex]
+                    pref.edit {
+                        putString(keyUtil.printerDeviceNameKey, entry.key)
+                    }
+                    f(entry.value)
+                }
+            }
+            .show()
     }
 
     private var defaultZpl = """

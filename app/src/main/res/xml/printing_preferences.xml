@@ -4,20 +4,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
         <Preference
-            android:icon="@drawable/ic_setting_print_connect"
-            android:key="@string/key_pref_print_connect"
-            android:title="@string/prefs_zebra_print_connect_title"
-            android:summary="@string/prefs_zebra_print_connect_summary"/>
+            android:icon="@drawable/ic_setting_import_zpl"
+            android:key="@string/key_pref_print_label_templates"
+            android:title="@string/zpl_label_setup_title"
+            android:summary="@string/label_designer_summary" />
         <ListPreference
             android:icon="@drawable/ic_setting_import_zpl"
-            android:key="@string/key_pref_print_zpl_template"
-            android:title="@string/select_zpl_template_title"
-            android:summary="%s" />
-        <Preference
-            android:icon="@drawable/ic_setting_import_zpl"
-            android:key="@string/key_pref_print_zpl_import"
-            android:title="@string/prefs_zebra_import_title"
-            android:summary="@string/prefs_zebra_import_summary" />
+            android:key="@string/key_pref_print_cross_zpl_template"
+            android:title="@string/prefs_cross_zpl_template_title"
+            android:summary="@string/prefs_zpl_template_empty_summary" />
+        <ListPreference
+            android:icon="@drawable/parent_text_cell"
+            android:key="@string/key_pref_print_parent_zpl_template"
+            android:title="@string/prefs_parent_zpl_template_title"
+            android:summary="@string/prefs_zpl_template_empty_summary" />
         <Preference
             android:icon="@drawable/ic_connection"
             android:key="@string/key_pref_print_device_name"

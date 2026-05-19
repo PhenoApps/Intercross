@@ -76,68 +76,70 @@ class BluetoothUtil {
         builder.show()
     }
 
-    //new smaller template
-    private var template = """
-        ^XA^DFR:TEMPLATE^FS
+    private var defaultZpl = """
+        ^XA
         ^PW406
         ^LH10,10^FS
-        ^FO0,0^A0,25,20^FN1^FS
-        ^FO140,30^BQN,2,3,H,^FN2^FS
-        ^FO140,170^A0,25,20^FN5^FS
+        ^FO0,0^A0,25,20^FD{crossId}^FS
+        ^FO140,30^BQN,2,3,H^FDHA,{crossId}^FS
+        ^FO140,170^A0,25,20^FD{date}^FS
         ^XZ
     """.trimIndent()
 
-    private fun resolvePrintTemplate(ctx: Context, onComplete: (String) -> Unit) {
+    private var defaultParentZpl = """
+        ^XA
+        ^PW406
+        ^LH10,10^FS
+        ^FO0,0^A0,25,20^FD{parentId}^FS
+        ^FO140,30^BQN,2,3,H^FDHA,{parentId}^FS
+        ^XZ
+    """.trimIndent()
+
+    private fun resolvePrintTemplate(
+        ctx: Context,
+        type: LabelTemplateType,
+        onComplete: (String) -> Unit,
+    ) {
         val pref = PreferenceManager.getDefaultSharedPreferences(ctx)
         val keyUtil = KeyUtil(ctx)
 
-        val selectedTemplateName = pref.getString(keyUtil.zplTemplateKey, "") ?: ""
-        val importedZpl = pref.getString(keyUtil.zplCodeKey, "") ?: ""
+        val selectedName = when (type) {
+            LabelTemplateType.CROSS -> pref.getString(keyUtil.crossZplTemplateKey, "")
+            LabelTemplateType.PARENT -> pref.getString(keyUtil.parentZplTemplateKey, "")
+        }?.trim().orEmpty()
+        val savedZpl = when (type) {
+            LabelTemplateType.CROSS -> pref.getString(keyUtil.crossZplCodeKey, "")
+            LabelTemplateType.PARENT -> pref.getString(keyUtil.parentZplCodeKey, "")
+        }?.trim().orEmpty()
 
-        // Check if user has explicitly imported custom ZPL (not just the default template)
-        val hasCustomZpl = importedZpl.isNotBlank()
-                && selectedTemplateName.equals(ctx.getString(R.string.none), ignoreCase = true)
-
-        // If custom ZPL imported, use it
-        if (hasCustomZpl) {
-            onComplete(importedZpl)
+        if (savedZpl.isNotBlank()) {
+            onComplete(savedZpl)
             return
         }
 
-        // If template already selected and it's a valid predefined template, use it
-        if (selectedTemplateName.isNotBlank() && !selectedTemplateName.equals(ctx.getString(R.string.none), ignoreCase = true)) {
-            ZplTemplate.getTemplateByDisplayName(ctx, selectedTemplateName)?.let {
-                onComplete(it.zplCode)
-                return
-            }
+        ZplTemplate.getAvailableTemplates(ctx)
+            .firstOrNull { it.displayName == selectedName && it.type == type }
+            ?.let {
+            onComplete(it.zplCode)
+            return
         }
 
-        // If no template selected, show dialog
-        val templates = ZplTemplate.getDefaultTemplates(ctx)
-        val templateNames = templates.map { it.displayName }.toTypedArray()
-
-        val builder = AlertDialog.Builder(ctx)
-        builder.setTitle(ctx.getString(R.string.select_zpl_template_title))
-        builder.setSingleChoiceItems(templateNames, -1) { dialog, which ->
-            val selectedTemplate = templates[which]
-            pref.edit {
-                putString(keyUtil.zplTemplateKey, selectedTemplate.displayName)
-                putString(keyUtil.zplCodeKey, selectedTemplate.zplCode)
-            }
-            onComplete(selectedTemplate.zplCode)
-            dialog.dismiss()
-        }
-        builder.setNegativeButton(android.R.string.cancel) { dialog, _ ->
-            dialog.dismiss()
-            // Use default template if user cancels
-            onComplete(template)
+        val legacyZpl = pref.getString(keyUtil.zplCodeKey, "")?.trim().orEmpty()
+        if (legacyZpl.isNotBlank()) {
+            onComplete(legacyZpl)
+            return
         }
 
-        builder.show()
+        onComplete(
+            when (type) {
+                LabelTemplateType.CROSS -> defaultZpl
+                LabelTemplateType.PARENT -> defaultParentZpl
+            },
+        )
     }
 
     fun print(ctx: Context, events: Array<Event>) {
-        resolvePrintTemplate(ctx) { template ->
+        resolvePrintTemplate(ctx, LabelTemplateType.CROSS) { template ->
             choose(ctx) { device ->
                 ZebraPrinterUtil(ctx, template, device).printEvents(events)
             }
@@ -145,7 +147,7 @@ class BluetoothUtil {
     }
 
     fun print(ctx: Context, parents: Array<Parent>) {
-        resolvePrintTemplate(ctx) { template ->
+        resolvePrintTemplate(ctx, LabelTemplateType.PARENT) { template ->
             choose(ctx) { device ->
                 ZebraPrinterUtil(ctx, template, device).printParents(parents)
             }

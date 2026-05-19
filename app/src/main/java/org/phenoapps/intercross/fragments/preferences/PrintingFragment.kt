@@ -13,12 +13,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.util.ZplTemplate
-import androidx.core.net.toUri
+import org.phenoapps.intercross.util.LabelTemplateConfig
+import org.phenoapps.intercross.util.LabelTemplateStore
+import org.phenoapps.intercross.util.LabelTemplateType
 
 class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
 
@@ -36,10 +38,10 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(findPreference<Preference>(getString(R.string.key_pref_print_zpl_import))) {
+        with(findPreference<Preference>(getString(R.string.key_pref_print_label_templates))) {
             this?.let {
                 setOnPreferenceClickListener {
-                    findNavController().navigate(PrintingFragmentDirections.actionToImportZplFragment())
+                    findNavController().navigate(PrintingFragmentDirections.actionToLabelTemplateEditorFragment())
                     true
                 }
             }
@@ -63,6 +65,9 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
             true
         }
 
+        setupTemplatePreference(LabelTemplateType.CROSS)
+        setupTemplatePreference(LabelTemplateType.PARENT)
+
         val devicePref = findPreference<Preference>(getString(R.string.key_pref_print_device_name))
         devicePref?.let {
             updateDevicePreferenceSummary(it)
@@ -71,43 +76,62 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
                 true
             }
         }
-
-        setupTemplatePreference()
     }
 
-    private fun setupTemplatePreference() {
-        val templatePref = findPreference<ListPreference>(getString(R.string.key_pref_print_zpl_template))
-        templatePref?.let { pref ->
-            val templates = ZplTemplate.getDefaultTemplates(requireContext())
-            val templateNames = templates.map { it.displayName }.toTypedArray()
+    private fun setupTemplatePreference(type: LabelTemplateType) {
+        val pref = findPreference<ListPreference>(templatePreferenceKey(type)) ?: return
+        updateTemplatePreference(pref, type)
+        pref.setOnPreferenceChangeListener { _, newValue ->
+            val templateName = newValue as? String ?: return@setOnPreferenceChangeListener false
+            val template = templatesFor(type).firstOrNull { it.name == templateName }
+                ?: return@setOnPreferenceChangeListener false
 
-            // Add "None" option at the beginning
-            val entries = arrayOf(context?.getString(R.string.none) ?: "None", *templateNames)
-            val entryValues = arrayOf(context?.getString(R.string.none) ?: "None", *templateNames)
+            setActiveTemplate(template)
+            updateTemplatePreference(pref, type)
+            false
+        }
+    }
 
-            pref.entries = entries
-            pref.entryValues = entryValues
+    private fun updateTemplatePreference(pref: ListPreference, type: LabelTemplateType) {
+        val templates = templatesFor(type)
+        val selectedName = mPrefs.getString(templatePreferenceKey(type), "").orEmpty()
+        val selectedTemplate = templates.firstOrNull { it.name == selectedName }
 
-            val savedTemplateName = mPrefs.getString(mKeyUtil.zplTemplateKey, "")?.trim().orEmpty()
-            if (savedTemplateName.isNotBlank() && entries.contains(savedTemplateName)) {
-                pref.value = savedTemplateName
-            }
+        pref.entries = templates.map { it.name }.toTypedArray()
+        pref.entryValues = templates.map { it.name }.toTypedArray()
+        pref.value = selectedTemplate?.name
+        pref.isEnabled = templates.isNotEmpty()
+        pref.summary = when {
+            templates.isEmpty() -> getString(R.string.prefs_zpl_template_empty_summary)
+            selectedName.isBlank() -> getString(R.string.no_active_zpl)
+            else -> getString(R.string.prefs_zpl_template_selected_summary, selectedName)
+        }
+    }
 
-            pref.setOnPreferenceChangeListener { _, newValue ->
-                val selectedName = newValue as String
-                if (selectedName != context?.getString(R.string.none)) {
-                    val selectedTemplate = templates.find { it.displayName == selectedName }
-                    selectedTemplate?.let { template ->
-                        mPrefs.edit {
-                            putString(mKeyUtil.zplTemplateKey, template.displayName)
-                            putString(mKeyUtil.zplCodeKey, template.zplCode)
-                        }
-                    }
-                } else {
-                    mPrefs.edit { putString(mKeyUtil.zplTemplateKey, context?.getString(R.string.none) ?: "None") }
+    private fun templatesFor(type: LabelTemplateType): List<LabelTemplateConfig> {
+        return LabelTemplateStore.load(mPrefs, mKeyUtil.labelTemplatesKey)
+            .filter { it.type == type }
+    }
+
+    private fun setActiveTemplate(template: LabelTemplateConfig) {
+        mPrefs.edit {
+            when (template.type) {
+                LabelTemplateType.CROSS -> {
+                    putString(mKeyUtil.crossZplTemplateKey, template.name)
+                    putString(mKeyUtil.crossZplCodeKey, template.toZpl())
                 }
-                true
+                LabelTemplateType.PARENT -> {
+                    putString(mKeyUtil.parentZplTemplateKey, template.name)
+                    putString(mKeyUtil.parentZplCodeKey, template.toZpl())
+                }
             }
+        }
+    }
+
+    private fun templatePreferenceKey(type: LabelTemplateType): String {
+        return when (type) {
+            LabelTemplateType.CROSS -> mKeyUtil.crossZplTemplateKey
+            LabelTemplateType.PARENT -> mKeyUtil.parentZplTemplateKey
         }
     }
 
@@ -219,5 +243,11 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
         setToolbar(getString(R.string.prefs_printing_title))
         val devicePref = findPreference<Preference>(getString(R.string.key_pref_print_device_name))
         devicePref?.let { updateDevicePreferenceSummary(it) }
+        findPreference<ListPreference>(mKeyUtil.crossZplTemplateKey)?.let {
+            updateTemplatePreference(it, LabelTemplateType.CROSS)
+        }
+        findPreference<ListPreference>(mKeyUtil.parentZplTemplateKey)?.let {
+            updateTemplatePreference(it, LabelTemplateType.PARENT)
+        }
     }
 }

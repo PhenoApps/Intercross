@@ -23,7 +23,7 @@ import org.phenoapps.intercross.data.models.PollenGroup
 
 class ZebraPrinterUtil(
     private val ctx: Context,
-    private val template: String,
+    private val zpl: String,
     private val printerDevice: BluetoothDevice
 ) {
 
@@ -90,38 +90,53 @@ class ZebraPrinterUtil(
                 getPrinterStatus(connection)
 
                 if (printerStatus.isReadyToPrint) {
-                    if (template.isNotBlank()) {
-                        printer.sendCommand(template)
+                    val usesNamedReplacement = ZplStringReplacer.hasNamedPlaceholders(zpl)
+                    val usesLegacyFields = ZplStringReplacer.hasLegacyFields(zpl)
+
+                    if (!usesNamedReplacement && usesLegacyFields && zpl.isNotBlank()) {
+                        printer.sendCommand(zpl)
                     }
 
                     when (printMode) {
                         PrintMode.Events -> {
                             events.forEach { event ->
-                                var timestamp = event.timestamp
-                                if ("_" in timestamp) {
-                                    timestamp = timestamp.split("_")[0]
-                                }
+                                if (usesNamedReplacement) {
+                                    printer.sendCommand(ZplStringReplacer.forEvent(zpl, event))
+                                } else if (usesLegacyFields) {
+                                    var timestamp = event.timestamp
+                                    if ("_" in timestamp) {
+                                        timestamp = timestamp.split("_")[0]
+                                    }
 
-                                printer.sendCommand(
-                                    "^XA^XFR:TEMPLATE" +
-                                        "^FN1^FD${event.eventDbId}^FS" +
-                                        "^FN2^FDQA,${event.eventDbId}^FS" +
-                                        "^FN3^FD${event.femaleObsUnitDbId}^FS" +
-                                        "^FN4^FD${event.maleObsUnitDbId}^FS" +
-                                        "^FN5^FD${timestamp}^FS" +
-                                        "^FN6^FD${event.person}^FS^XZ"
-                                )
+                                    printer.sendCommand(
+                                        "^XA^XFR:TEMPLATE" +
+                                            "^FN1^FD${event.eventDbId}^FS" +
+                                            "^FN2^FDQA,${event.eventDbId}^FS" +
+                                            "^FN3^FD${event.femaleObsUnitDbId}^FS" +
+                                            "^FN4^FD${event.maleObsUnitDbId}^FS" +
+                                            "^FN5^FD${timestamp}^FS" +
+                                            "^FN6^FD${event.person}^FS^XZ"
+                                    )
+                                } else if (zpl.isNotBlank()) {
+                                    printer.sendCommand(zpl)
+                                }
                             }
                         }
 
                         PrintMode.Parents -> {
                             parents.forEach { parent ->
-                                printer.sendCommand(
-                                    "^XA^XFR:TEMPLATE" +
-                                        "^FN1^FD${parent.codeId}^FS" +
-                                        "^FN2^FDQA,${parent.codeId}^FS" +
-                                        "^XZ"
-                                )
+                                if (usesNamedReplacement) {
+                                    printer.sendCommand(ZplStringReplacer.forParent(zpl, parent))
+                                } else if (usesLegacyFields) {
+                                    printer.sendCommand(
+                                        "^XA^XFR:TEMPLATE" +
+                                            "^FN1^FD${parent.codeId}^FS" +
+                                            "^FN2^FDQA,${parent.codeId}^FS" +
+                                            "^XZ"
+                                    )
+                                } else if (zpl.isNotBlank()) {
+                                    printer.sendCommand(zpl)
+                                }
                             }
                         }
                     }

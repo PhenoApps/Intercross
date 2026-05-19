@@ -57,7 +57,16 @@
             android:id="@+id/action_to_import_zpl_fragment"
             app:destination="@id/import_zpl_fragment"
             app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_to_label_template_editor_fragment"
+            app:destination="@id/label_template_editor_fragment"
+            app:launchSingleTop="true" />
     </fragment>
+
+    <fragment
+        android:id="@+id/label_template_editor_fragment"
+        android:name="org.phenoapps.intercross.fragments.LabelTemplateEditorFragment"
+        android:label="@string/label_designer_title" />
 
     <fragment android:id="@+id/database_preference_fragment"
         android:name="org.phenoapps.intercross.fragments.preferences.DatabaseFragment"

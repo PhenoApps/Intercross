@@ -15,11 +15,6 @@ class KeyUtil @Inject constructor(
     @ApplicationContext private val ctx: Context,
 ) {
 
-    //explicitly state phenolib utils
-    val brapiKeys by lazy {
-        org.phenoapps.utils.KeyUtil(ctx)
-    }
-
     private fun key(id: Int): ReadOnlyProperty<Any?, String> =
         ReadOnlyProperty { _, _ -> ctx.getString(id) }
 
@@ -65,6 +60,11 @@ class KeyUtil @Inject constructor(
     val zplImportKey by key(R.string.key_pref_print_zpl_import)
     val zplCodeKey by key(R.string.key_pref_print_zpl_code)
     val zplTemplateKey by key(R.string.key_pref_print_zpl_template)
+    val crossZplCodeKey by key(R.string.key_pref_print_cross_zpl_code)
+    val crossZplTemplateKey by key(R.string.key_pref_print_cross_zpl_template)
+    val parentZplCodeKey by key(R.string.key_pref_print_parent_zpl_code)
+    val parentZplTemplateKey by key(R.string.key_pref_print_parent_zpl_template)
+    val labelTemplatesKey by key(R.string.key_pref_print_label_templates)
     val printerDeviceNameKey by key(R.string.key_pref_print_device_name)
 
     val databaseRoot by key(R.string.root_database)

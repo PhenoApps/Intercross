@@ -586,6 +586,8 @@
     <string name="label_media_type_title">Media Type</string>
     <string name="placeholder_cross_id">Cross ID</string>
     <string name="placeholder_readable_name">Readable cross name</string>
+    <string name="placeholder_female_name">Female parent name</string>
+    <string name="placeholder_male_name">Male parent name</string>
     <string name="placeholder_female_id">Female parent ID</string>
     <string name="placeholder_male_id">Male parent ID</string>
     <string name="placeholder_date">Cross date</string>
@@ -751,9 +753,10 @@
     <string name="bottom_nv_summary">Graphs</string>
     <string name="bottom_nv_parents">Parents</string>
     <string name="bottom_nv_settings">Settings</string>
-    <string name="label_2x1_name">Simple ZPL (2\\\" x 1\\\")</string>
-    <string name="label_3x2_name">Simple ZPL (3\\\" x 2\\\")</string>
-    <string name="parent_label_2x1_name">Parent ZPL (2\\\" x 1\\\")</string>
+    <string name="label_2x1_name">Simple ZPL (2" x 1")</string>
+    <string name="label_3x2_name">Simple ZPL (3" x 2")</string>
+    <string name="parent_label_2x1_name">Parent ZPL (2" x 1")</string>
+    <string name="simple_names_2x1_name">Simple Names ZPL (2" x 1")</string>
     <string name="width_in">Width (in)</string>
     <string name="height_in">Height (in)</string>
     <string name="label_width_in">Label Width (in)</string>

@@ -17,9 +17,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.R
+import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.PollenGroup
+import kotlin.collections.forEach
 
 class ZebraPrinterUtil(
     private val ctx: Context,
@@ -50,7 +52,7 @@ class ZebraPrinterUtil(
         progressDialog = null
     }
 
-    fun printEvents(events: Array<Event>) {
+    fun printEvents(events: Array<CrossParentRelation>) {
         scope.launch {
             runPrint(printMode = PrintMode.Events, events = events)
         }
@@ -69,9 +71,14 @@ class ZebraPrinterUtil(
         }
     }
 
+    data class CrossParentRelation(
+        val cross: Event,
+        val parents: EventsDao.ParentData
+    )
+
     private suspend fun runPrint(
         printMode: PrintMode,
-        events: Array<Event> = emptyArray(),
+        events: Array<CrossParentRelation> = emptyArray(),
         parents: Array<Parent> = emptyArray()
     ) {
         showProgress()
@@ -103,19 +110,19 @@ class ZebraPrinterUtil(
                                 if (usesNamedReplacement) {
                                     printer.sendCommand(ZplStringReplacer.forEvent(zpl, event))
                                 } else if (usesLegacyFields) {
-                                    var timestamp = event.timestamp
+                                    var timestamp = event.cross.timestamp
                                     if ("_" in timestamp) {
                                         timestamp = timestamp.split("_")[0]
                                     }
 
                                     printer.sendCommand(
                                         "^XA^XFR:TEMPLATE" +
-                                            "^FN1^FD${event.eventDbId}^FS" +
-                                            "^FN2^FDQA,${event.eventDbId}^FS" +
-                                            "^FN3^FD${event.femaleObsUnitDbId}^FS" +
-                                            "^FN4^FD${event.maleObsUnitDbId}^FS" +
+                                            "^FN1^FD${event.cross.eventDbId}^FS" +
+                                            "^FN2^FDQA,${event.cross.eventDbId}^FS" +
+                                            "^FN3^FD${event.cross.femaleObsUnitDbId}^FS" +
+                                            "^FN4^FD${event.cross.maleObsUnitDbId}^FS" +
                                             "^FN5^FD${timestamp}^FS" +
-                                            "^FN6^FD${event.person}^FS^XZ"
+                                            "^FN6^FD${event.cross.person}^FS^XZ"
                                     )
                                 } else if (zpl.isNotBlank()) {
                                     printer.sendCommand(zpl)

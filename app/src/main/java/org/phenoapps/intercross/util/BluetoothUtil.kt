@@ -138,7 +138,7 @@ class BluetoothUtil {
         )
     }
 
-    fun print(ctx: Context, events: Array<Event>) {
+    fun print(ctx: Context, events: Array<ZebraPrinterUtil.CrossParentRelation>) {
         resolvePrintTemplate(ctx, LabelTemplateType.CROSS) { template ->
             choose(ctx) { device ->
                 ZebraPrinterUtil(ctx, template, device).printEvents(events)

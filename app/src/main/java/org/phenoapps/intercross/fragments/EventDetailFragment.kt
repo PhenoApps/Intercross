@@ -30,6 +30,7 @@ import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
+import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.EventDetailViewModel
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
@@ -48,6 +49,7 @@ import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.VibrateUtil
+import org.phenoapps.intercross.util.ZebraPrinterUtil
 import org.phenoapps.intercross.util.observeOnce
 import javax.inject.Inject
 
@@ -68,6 +70,8 @@ class EventDetailFragment:
     }
 
     private lateinit var mEvent: Event
+    private lateinit var mParent: EventsDao.ParentData
+
     private lateinit var mMetaValuesList: List<MetadataValues>
     private lateinit var mMetaList: List<Meta>
     private lateinit var mWishlist: List<WishlistView>
@@ -208,6 +212,8 @@ class EventDetailFragment:
             eventDetailViewModel.parents.observe(viewLifecycleOwner) { data ->
 
                 data?.let { parents ->
+
+                    mParent = parents
 
                     eventDetailLayout.female = parents.momReadableName
 
@@ -426,7 +432,7 @@ class EventDetailFragment:
 
             if (permit) {
 
-                BluetoothUtil().print(ctx, arrayOf(mEvent))
+                BluetoothUtil().print(ctx, arrayOf(ZebraPrinterUtil.CrossParentRelation(mEvent, mParent)))
 
                 vibrateUtil.vibrate()
             }

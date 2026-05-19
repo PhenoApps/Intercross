@@ -60,6 +60,27 @@ data class ZplTemplate(
                         ^XZ
                     """.trimIndent(),
                     type = LabelTemplateType.PARENT,
+                ),
+                ZplTemplate(
+                    name = "simple_names_template_2x1",
+                    displayName = context.getString(R.string.parent_label_2x1_name),
+                    zplCode = """
+                        ^XA
+                        ^PW406
+                        ^LL203
+                        ^LH8,8^FS
+                        ^CF0,20,20
+                        ^FD{femaleName}^FS
+                        ^FO0,20^FD{femaleId}^FS
+                        ^FO0,50^FD{maleName}^FS
+                        ^FO0,70^FD{maleId}^FS
+                        ^FO200,50
+                        ^BQN,2,3,H
+                        ^FDHA,{crossId}^FS
+                        ^FO0,175^FD{date}^FS
+                        ^XZ
+                    """.trimIndent(),
+                    type = LabelTemplateType.PARENT,
                 )
             )
         }

@@ -15,6 +15,7 @@ import androidx.annotation.StringRes
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
+import kotlin.to
 
 data class ZplPlaceholderHelp(
     val token: String,
@@ -27,6 +28,8 @@ object ZplStringReplacer {
         ZplPlaceholderHelp("{readableName}", R.string.placeholder_readable_name),
         ZplPlaceholderHelp("{femaleId}", R.string.placeholder_female_id),
         ZplPlaceholderHelp("{maleId}", R.string.placeholder_male_id),
+        ZplPlaceholderHelp("{femaleName}", R.string.placeholder_female_name),
+        ZplPlaceholderHelp("{maleName}", R.string.placeholder_male_name),
         ZplPlaceholderHelp("{date}", R.string.placeholder_date),
         ZplPlaceholderHelp("{timestamp}", R.string.placeholder_timestamp),
         ZplPlaceholderHelp("{person}", R.string.placeholder_person),
@@ -62,22 +65,24 @@ object ZplStringReplacer {
         return otherTypePlaceholders.any { placeholder -> zpl.contains(placeholder) }
     }
 
-    fun forEvent(zpl: String, event: Event): String {
-        val timestamp = event.timestamp
+    fun forEvent(zpl: String, event: ZebraPrinterUtil.CrossParentRelation): String {
+        val timestamp = event.cross.timestamp
         val date = timestamp.substringBefore("_")
         return replace(
             zpl,
             mapOf(
-                "{crossId}" to event.eventDbId,
-                "{readableName}" to event.readableName,
-                "{femaleId}" to event.femaleObsUnitDbId,
-                "{maleId}" to event.maleObsUnitDbId,
+                "{crossId}" to event.cross.eventDbId,
+                "{readableName}" to event.cross.readableName,
+                "{femaleId}" to event.cross.femaleObsUnitDbId,
+                "{maleId}" to event.cross.maleObsUnitDbId,
+                "{femaleName}" to event.parents.momReadableName,
+                "{maleName}" to event.parents.dadReadableName,
                 "{date}" to date,
                 "{timestamp}" to timestamp,
-                "{person}" to event.person,
-                "{experiment}" to event.experiment,
-                "{type}" to event.type.name,
-                "{qrCrossId}" to "QA,${event.eventDbId}",
+                "{person}" to event.cross.person,
+                "{experiment}" to event.cross.experiment,
+                "{type}" to event.cross.type.name,
+                "{qrCrossId}" to "QA,${event.cross.eventDbId}",
             ),
         )
     }

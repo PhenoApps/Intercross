@@ -322,11 +322,12 @@ class LabelTemplateViewModel @Inject constructor(
 
     private fun createInitialState(): LabelTemplateUiState {
         val savedTemplates = LabelTemplateStore.load(prefs, keyUtil.labelTemplatesKey)
+        val allTemplates = savedTemplates.withBuiltInZpl()
         val activeTemplateName = prefs.getString(keyUtil.zplTemplateKey, "").orEmpty()
         val activeZpl = prefs.getString(keyUtil.zplCodeKey, "").orEmpty()
         val defaultName = context.getString(R.string.label_designer_default_name)
         val noneName = context.getString(R.string.none)
-        val initialConfig = savedTemplates.firstOrNull { it.name == activeTemplateName }
+        val initialConfig = allTemplates.firstOrNull { it.name == activeTemplateName }
             ?: activeZpl.takeIf { it.isNotBlank() }?.let {
                 LabelTemplateConfig(
                     name = activeTemplateName
@@ -335,13 +336,12 @@ class LabelTemplateViewModel @Inject constructor(
                     rawZpl = it,
                 )
             }
-            ?: savedTemplates.firstOrNull()
-            ?: builtInZpl().firstOrNull()
+            ?: allTemplates.firstOrNull()
             ?: LabelTemplateConfig(name = defaultName)
 
         return LabelTemplateUiState(
             config = initialConfig,
-            savedTemplates = savedTemplates.withBuiltInZpl(),
+            savedTemplates = allTemplates,
             selectedTemplateName = initialConfig.name,
             activeTemplateName = activeTemplateNameFor(initialConfig.type).ifBlank { activeTemplateName },
             deviceName = prefs.getString(keyUtil.printerDeviceNameKey, "").orEmpty(),
@@ -393,14 +393,16 @@ class LabelTemplateViewModel @Inject constructor(
             LabelTemplateType.CROSS -> mapOf(
                 "{crossId}" to "CROSS-001",
                 "{readableName}" to "Female A x Male B",
-                "{femaleId}" to "FEMALE-A",
-                "{maleId}" to "MALE-B",
+                "{femaleId}" to "female-id-123",
+                "{maleId}" to "male-id-456",
                 "{date}" to "2026-05-18",
                 "{timestamp}" to "2026-05-18_14-46-00",
                 "{person}" to "Collector",
                 "{experiment}" to "Experiment",
                 "{type}" to "Biparental",
                 "{qrCrossId}" to "QA,CROSS-001",
+                "{femaleName}" to "FEMALE-A",
+                "{maleName}" to "MALE-B"
             )
             LabelTemplateType.PARENT -> mapOf(
                 "{parentId}" to "PARENT-001",

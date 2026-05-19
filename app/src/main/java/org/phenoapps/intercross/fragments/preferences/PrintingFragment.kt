@@ -21,6 +21,7 @@ import org.phenoapps.intercross.R
 import org.phenoapps.intercross.util.LabelTemplateConfig
 import org.phenoapps.intercross.util.LabelTemplateStore
 import org.phenoapps.intercross.util.LabelTemplateType
+import org.phenoapps.intercross.util.ZplTemplate
 
 class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
 
@@ -94,7 +95,14 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
 
     private fun updateTemplatePreference(pref: ListPreference, type: LabelTemplateType) {
         val templates = templatesFor(type)
-        val selectedName = mPrefs.getString(templatePreferenceKey(type), "").orEmpty()
+        var selectedName = mPrefs.getString(templatePreferenceKey(type), "").orEmpty()
+
+        if (selectedName.isBlank() && templates.isNotEmpty()) {
+            val defaultTemplate = templates.first()
+            setActiveTemplate(defaultTemplate)
+            selectedName = defaultTemplate.name
+        }
+
         val selectedTemplate = templates.firstOrNull { it.name == selectedName }
 
         pref.entries = templates.map { it.name }.toTypedArray()
@@ -109,8 +117,18 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
     }
 
     private fun templatesFor(type: LabelTemplateType): List<LabelTemplateConfig> {
-        return LabelTemplateStore.load(mPrefs, mKeyUtil.labelTemplatesKey)
+        val saved = LabelTemplateStore.load(mPrefs, mKeyUtil.labelTemplatesKey)
+        val builtIn = ZplTemplate.getDefaultTemplates(requireContext()).map {
+            LabelTemplateConfig(
+                name = it.displayName,
+                rawZpl = it.zplCode,
+                labelType = it.type.name,
+            )
+        }
+        return (saved + builtIn)
             .filter { it.type == type }
+            .distinctBy { it.name.lowercase() }
+            .sortedBy { it.name.lowercase() }
     }
 
     private fun setActiveTemplate(template: LabelTemplateConfig) {
@@ -180,7 +198,7 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
         val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         mBluetoothAdapter?.let { adapter ->
-            val pairedDevices = adapter.bondedDevices
+            val pairedDevices = adapter.bondedDevices.toList()
 
             if (pairedDevices.isEmpty()) {
                 AlertDialog.Builder(requireContext())
@@ -191,37 +209,23 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
                 return
             }
 
-            val deviceMap = HashMap<Int, String>()
-            val input = RadioGroup(requireContext())
-
-            pairedDevices.forEachIndexed { _, device ->
-                val button = RadioButton(requireContext())
-                button.text = device.name
-                input.addView(button)
-                deviceMap[button.id] = device.name
-            }
-
-            // Pre-select the currently saved device if it exists
+            val deviceNames = pairedDevices.map { it.name }.toTypedArray()
             val currentDevice = mPrefs.getString(mKeyUtil.printerDeviceNameKey, "")
-            pairedDevices.find { it.name == currentDevice }?.let { device ->
-                val existingButton = (0 until input.childCount)
-                    .map { input.getChildAt(it) as RadioButton }
-                    .find { it.text == device.name }
-                existingButton?.isChecked = true
-            }
+            var selectedIndex = pairedDevices.indexOfFirst { it.name == currentDevice }
 
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.choose_bluetooth_device_title))
-                .setView(input)
+                .setIcon(R.drawable.ic_setting_print_connect)
+                .setSingleChoiceItems(deviceNames, selectedIndex) { _, which ->
+                    selectedIndex = which
+                }
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    if (input.checkedRadioButtonId != -1) {
-                        val selectedDevice = deviceMap[input.checkedRadioButtonId]
-                        selectedDevice?.let { device ->
-                            mPrefs.edit { putString(mKeyUtil.printerDeviceNameKey, device) }
-                            findPreference<Preference>(getString(R.string.key_pref_print_device_name))?.let { pref ->
-                                updateDevicePreferenceSummary(pref)
-                            }
+                    if (selectedIndex != -1) {
+                        val selectedDevice = pairedDevices[selectedIndex]
+                        mPrefs.edit { putString(mKeyUtil.printerDeviceNameKey, selectedDevice.name) }
+                        findPreference<Preference>(getString(R.string.key_pref_print_device_name))?.let { pref ->
+                            updateDevicePreferenceSummary(pref)
                         }
                     }
                 }

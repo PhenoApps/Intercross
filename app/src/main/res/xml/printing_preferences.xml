@@ -10,16 +10,17 @@
             android:title="@string/prefs_printing_category_title">
 
                 <Preference
+                    android:icon="@drawable/ic_connection"
+                    android:key="@string/key_pref_print_device_name"
+                    android:title="@string/prefs_zebra_device_title"
+                    android:summary="@string/prefs_zebra_device_summary" />
+
+                <Preference
                     android:icon="@drawable/ic_setting_print_connect"
                     android:key="@string/key_pref_print_connect"
                     android:title="@string/prefs_zebra_print_connect_title"
                     android:summary="@string/prefs_zebra_print_connect_summary"/>
 
-                <Preference
-                    android:icon="@drawable/ic_connection"
-                    android:key="@string/key_pref_print_device_name"
-                    android:title="@string/prefs_zebra_device_title"
-                    android:summary="@string/prefs_zebra_device_summary" />
         </PreferenceCategory>
 
 
@@ -44,6 +45,11 @@
                     android:key="@string/key_pref_print_parent_zpl_template"
                     android:title="@string/prefs_parent_zpl_template_title"
                     android:summary="@string/prefs_zpl_template_empty_summary" />
+                <Preference
+                    android:icon="@drawable/ic_about_github"
+                    android:key="@string/key_pref_print_label_request"
+                    android:title="@string/prefs_label_request_title"
+                    android:summary="@string/prefs_label_request_summary" />
         </PreferenceCategory>
 
 

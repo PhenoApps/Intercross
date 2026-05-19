@@ -538,6 +538,8 @@
     <string name="prefs_parent_zpl_template_title">Parent Label ZPL</string>
     <string name="prefs_zpl_template_empty_summary">Save a ZPL template first.</string>
     <string name="prefs_zpl_template_selected_summary">Selected: %s</string>
+    <string name="prefs_label_request_title">Request Label Design</string>
+    <string name="prefs_label_request_summary">Missing a label? Submit a request to the Intercross issue tracker.</string>
     <string name="label_designer_default_name">Field label</string>
     <string name="label_editor_intro">Save readable raw ZPL strings for cross or parent labels.</string>
     <string name="saved_zpl_label">Saved ZPL</string>

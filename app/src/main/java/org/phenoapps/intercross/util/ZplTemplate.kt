@@ -24,8 +24,6 @@ data class ZplTemplate(
                     displayName = context.getString(R.string.label_2x1_name),
                     zplCode = """
                         ^XA
-                        ^PW406
-                        ^LH10,10^FS
                         ^FO0,0^A0,25,20^FD{crossId}^FS
                         ^FO140,30^BQN,2,3,H^FDHA,{crossId}^FS
                         ^FO140,170^A0,25,20^FD{date}^FS
@@ -38,8 +36,6 @@ data class ZplTemplate(
                     displayName = context.getString(R.string.label_3x2_name),
                     zplCode = """
                         ^XA
-                        ^PW609
-                        ^LH10,10^FS
                         ^FO0,0^A0,35,28^FD{crossId}^FS
                         ^FO210,40^BQN,2,5,H^FDHA,{crossId}^FS
                         ^FO210,300^A0,32,24^FD{date}^FS
@@ -52,8 +48,6 @@ data class ZplTemplate(
                     displayName = context.getString(R.string.parent_label_2x1_name),
                     zplCode = """
                         ^XA
-                        ^PW406
-                        ^LH10,10^FS
                         ^FO0,0^A0,25,20^FD{parentId}^FS
                         ^FO140,30^BQN,2,3,H^FDHA,{parentId}^FS
                         ^FO0,150^A0,22,18^FD{parentName}^FS

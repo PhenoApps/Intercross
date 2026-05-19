@@ -48,6 +48,14 @@ class PrintingFragment : BasePreferenceFragment(R.xml.printing_preferences) {
             }
         }
 
+        findPreference<Preference>(getString(R.string.key_pref_print_label_request))?.let {
+            it.setOnPreferenceClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, "https://github.com/PhenoApps/Intercross/issues".toUri())
+                startActivity(intent)
+                true
+            }
+        }
+
         val printSetup = findPreference<Preference>(getString(R.string.key_pref_print_connect))
         printSetup?.setOnPreferenceClickListener {
             val intent = activity?.packageManager

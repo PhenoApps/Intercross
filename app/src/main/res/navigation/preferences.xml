@@ -20,6 +20,10 @@
                 android:defaultValue="false" />
         </action>
 
+        <action android:id="@+id/action_from_preferences_fragment_to_layout_fragment"
+            app:destination="@+id/layout_preference_fragment"
+            app:launchSingleTop="true"/>
+
         <action android:id="@+id/action_from_preferences_fragment_to_printing_fragment"
             app:destination="@+id/printing_preference_fragment"
             app:launchSingleTop="true"/>
@@ -49,6 +53,10 @@
     <fragment android:id="@+id/profile_preference_fragment"
         android:name="org.phenoapps.intercross.fragments.preferences.ProfileFragment"
         android:label="@string/preferences_profile_fragment_label"/>
+
+    <fragment android:id="@+id/layout_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.LayoutFragment"
+        android:label="@string/preferences_printing_fragment_label"/>
 
     <fragment android:id="@+id/printing_preference_fragment"
         android:name="org.phenoapps.intercross.fragments.preferences.PrintingFragment"

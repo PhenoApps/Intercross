@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.chip.ChipGroup
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -177,47 +177,39 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         maleRecycler.adapter = mMaleAdapter
         maleRecycler.layoutManager = LinearLayoutManager(ctx)
 
-        filterChipGroup.setOnCheckedStateChangeListener { _: ChipGroup, checkedIds: List<Int> ->
-            when (checkedIds.firstOrNull()) {
-                R.id.filter_female -> {
-                    femaleRecycler.visibility = View.VISIBLE
-                    maleRecycler.visibility = View.GONE
-                    fragParentsSelectAllCb.isChecked = !mNextFemaleSelection
+        mBinding.parentTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> { // All
+                        mBinding.femaleRecycler.visibility = View.VISIBLE
+                        mBinding.maleRecycler.visibility = View.GONE
+                    }
+                    1 -> { // Female
+                        mBinding.femaleRecycler.visibility = View.VISIBLE
+                        mBinding.maleRecycler.visibility = View.GONE
+                    }
+                    2 -> { // Male
+                        mBinding.femaleRecycler.visibility = View.GONE
+                        mBinding.maleRecycler.visibility = View.VISIBLE
+                    }
                 }
-                R.id.filter_male -> {
-                    maleRecycler.visibility = View.VISIBLE
-                    femaleRecycler.visibility = View.GONE
-                    fragParentsSelectAllCb.isChecked = !mNextMaleSelection
+                viewModel.parents.value?.let { parents ->
+                    groupList.groups.value?.let { groups ->
+                        updateLists(parents, groups)
+                        mBinding.updateSelectionText(parents.filter { it.selected }, groups.filter { it.selected })
+                    }
                 }
+                mBinding.updateNoDataVisibility()
             }
-            viewModel.parents.observe(viewLifecycleOwner) { parents ->
-                groupList.groups.observe(viewLifecycleOwner) { groups ->
-                    mBinding.updateSelectionText(
-                        parents.filter { it.selected },
-                        groups.filter { it.selected })
-                }
-            }
-            updateNoDataVisibility()
-        }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
 
         /*
-        On startup, select the chip matching the tabFocus argument (0 = female, 1 = male)
+        On startup, select the tab matching the tabFocus argument (0 = female, 1 = male)
          */
-        if (tabFocus == 1) filterMale.isChecked = true
+        mBinding.parentTabLayout.getTabAt(if (tabFocus == 1) 2 else 1)?.select()
 
-        sortChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            currentSortType = when (checkedIds.firstOrNull()) {
-                R.id.sort_id -> SortType.ID
-                R.id.sort_crosses -> SortType.CROSSES
-                else -> SortType.NAME
-            }
-            // Re-submit the lists with new sort
-            viewModel.parents.value?.let { parents ->
-                groupList.groups.value?.let { groups ->
-                    updateLists(parents, groups)
-                }
-            }
-        }
 
         eventsModel.events.observe(viewLifecycleOwner) { parents ->
 
@@ -230,16 +222,17 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
 
         viewModel.parents.observe(viewLifecycleOwner) { parents ->
+            val groups = groupList.groups.value ?: emptyList()
+            updateLists(parents, groups)
+            mBinding.updateSelectionText(parents.filter { it.selected }, groups.filter { it.selected })
+            mBinding.updateNoDataVisibility()
+        }
 
-            groupList.groups.observe(viewLifecycleOwner) { groups ->
-
-                updateLists(parents, groups)
-
-                mBinding.updateSelectionText(parents.filter { it.selected }, groups.filter { it.selected })
-
-                updateNoDataVisibility()
-
-            }
+        groupList.groups.observe(viewLifecycleOwner) { groups ->
+            val parents = viewModel.parents.value ?: emptyList()
+            updateLists(parents, groups)
+            mBinding.updateSelectionText(parents.filter { it.selected }, groups.filter { it.selected })
+            mBinding.updateNoDataVisibility()
         }
 
         fragParentsNewParentBtn.setOnClickListener {
@@ -254,12 +247,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         fragParentsPrintFab.setOnClickListener {
             mBinding.printParents()
-        }
-
-        fragParentsSelectAllCb.setOnClickListener {
-
-            mBinding.selectAll()
-
         }
 
        // val gdc = GestureDetectorCompat(requireContext(), gestureListener)
@@ -291,10 +278,14 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private fun FragmentParentsBinding.updateSelectionText(parents: List<Parent>, groups: List<PollenGroup>? = null) {
 
-        val selectedSex = if (filterFemale.isChecked) 0 else 1
-
-        var count = parents.count { it.sex == selectedSex }
-        if (selectedSex == 1) count += groups?.count() ?: 0
+        val tabPosition = parentTabLayout.selectedTabPosition
+        
+        val count = when (tabPosition) {
+            0 -> parents.count() + (groups?.count() ?: 0)
+            1 -> parents.count { it.sex == 0 }
+            2 -> parents.count { it.sex == 1 } + (groups?.count() ?: 0)
+            else -> 0
+        }
 
         val tv = fragParentsTb.findViewById<TextView>(R.id.frag_parents_toolbar_count_tv)
 
@@ -312,27 +303,20 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     }
 
     private fun updateMenuButtons(expanded: Boolean = false) {
-        arrayOf(R.id.action_parents_delete, R.id.action_parents_print).forEach {
-            mBinding.fragParentsTb.menu?.findItem(it)?.isVisible = false
-        }
-        mBinding.fragParentsTb.invalidateMenu()
+        mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_delete)?.isVisible = expanded
+        mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_print)?.isVisible = expanded
+        mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_select_all)?.isVisible = expanded
+        
         mBinding.fragParentsDeleteFab.visibility = if (expanded) View.VISIBLE else View.GONE
         mBinding.fragParentsPrintFab.visibility = if (expanded) View.VISIBLE else View.GONE
     }
 
-    private fun FragmentParentsBinding.swipeLeft() {
-        filterMale.isChecked = true
-    }
-
-    private fun FragmentParentsBinding.swipeRight() {
-        filterFemale.isChecked = true
-    }
-
     private fun FragmentParentsBinding.updateNoDataVisibility() {
-        val currentListEmpty = if (filterFemale.isChecked) {
-            mFemaleAdapter.currentList.isEmpty()
-        } else {
-            mMaleAdapter.currentList.isEmpty()
+        val tabPosition = parentTabLayout.selectedTabPosition
+        val currentListEmpty = when (tabPosition) {
+            0, 1 -> mFemaleAdapter.currentList.isEmpty()
+            2 -> mMaleAdapter.currentList.isEmpty()
+            else -> true
         }
         noDataText.visibility = if (currentListEmpty) View.VISIBLE else View.GONE
     }
@@ -342,21 +326,26 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
      */
     private fun FragmentParentsBinding.selectAll() {
 
-        if (filterFemale.isChecked) {
+        val tabPosition = parentTabLayout.selectedTabPosition
 
+        if (tabPosition == 1 || tabPosition == 0) {
             val updatedParents = mFemaleAdapter.currentList
                 .filterIsInstance<Parent>()
                 .map { mom -> mom.apply { mom.selected = mNextFemaleSelection } }
 
             parentList.update(*getSortedParents(updatedParents, femaleCrossCounts).toTypedArray())
 
-            mNextFemaleSelection = !mNextFemaleSelection
+            if (tabPosition == 0) {
+                val updatedGroups = mFemaleAdapter.currentList
+                    .filterIsInstance<PollenGroup>()
+                    .map { g -> g.apply { selected = mNextFemaleSelection } }
+                groupList.update(*getSortedGroups(updatedGroups, maleCrossCounts).toTypedArray())
+            }
 
+            mNextFemaleSelection = !mNextFemaleSelection
             mFemaleAdapter.notifyItemRangeChanged(0, mFemaleAdapter.itemCount)
 
-
-        } else {
-
+        } else if (tabPosition == 2) {
             val updatedParents = mMaleAdapter.currentList
                 .filterIsInstance<Parent>()
                 .map { dad -> dad.apply { dad.selected = mNextMaleSelection } }
@@ -370,7 +359,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
             groupList.update(*getSortedGroups(updatedGroups, maleCrossCounts).toTypedArray())
 
             mNextMaleSelection = !mNextMaleSelection
-
             mMaleAdapter.notifyItemRangeChanged(0, mMaleAdapter.itemCount)
         }
     }
@@ -394,7 +382,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 getString(R.string.frag_parent_confirm_delete_message)
             ) {
 
-                if (filterFemale.isChecked) {
+                val tabPosition = parentTabLayout.selectedTabPosition
+
+                if (tabPosition == 1 || tabPosition == 0) {
 
                     val out: List<Parent> =
                         mFemaleAdapter.currentList.filterIsInstance<Parent>()
@@ -517,7 +507,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         if (!checkBluetoothRuntimePermission()) return
 
-        if (filterFemale.isChecked) {
+        val tabPosition = parentTabLayout.selectedTabPosition
+
+        if (tabPosition == 1 || tabPosition == 0) {
 
             val outParents = mFemaleAdapter.currentList.filterIsInstance<Parent>()
 
@@ -562,14 +554,14 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         
         val maleParents = getSortedParents(parents.filter { p -> p.sex == 1 }.distinctBy { p -> p.codeId }, maleCrossCounts)
         mMaleAdapter.submitList(addedMales + maleParents)
-        mBinding.maleRecycler.post {
-            mBinding.maleRecycler.scrollToPosition(0)
-        }
 
         val femaleParents = getSortedParents(parents.filter { p -> p.sex == 0 }.distinctBy { p -> p.codeId }, femaleCrossCounts)
-        mFemaleAdapter.submitList(femaleParents)
-        mBinding.femaleRecycler.post {
-            mBinding.femaleRecycler.scrollToPosition(0)
+        
+        val tabPosition = mBinding.parentTabLayout.selectedTabPosition
+        if (tabPosition == 0) {
+            mFemaleAdapter.submitList(femaleParents + addedMales + maleParents)
+        } else {
+            mFemaleAdapter.submitList(femaleParents)
         }
     }
 
@@ -596,6 +588,14 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 mBinding.printParents()
             }
 
+            R.id.action_parents_select_all -> {
+                mBinding.selectAll()
+            }
+
+            R.id.action_parents_sort -> {
+                showSortDialog()
+            }
+
             android.R.id.home -> {
                 findNavController().popBackStack()
             }
@@ -604,6 +604,40 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showSortDialog() {
+        val options = arrayOf(
+            getString(R.string.sort_name),
+            getString(R.string.sort_id),
+            getString(R.string.sort_crosses)
+        )
+
+        var selected = when (currentSortType) {
+            SortType.NAME -> 0
+            SortType.ID -> 1
+            SortType.CROSSES -> 2
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.sort_by)
+            .setSingleChoiceItems(options, selected) { _, which ->
+                selected = which
+            }
+            .setPositiveButton(R.string.ok) { _, _ ->
+                currentSortType = when (selected) {
+                    1 -> SortType.ID
+                    2 -> SortType.CROSSES
+                    else -> SortType.NAME
+                }
+                viewModel.parents.value?.let { parents ->
+                    groupList.groups.value?.let { groups ->
+                        updateLists(parents, groups)
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun showAddParentsDialog() {

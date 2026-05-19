@@ -2,6 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_parents_select_all"
+        android:icon="@drawable/ic_check_all"
+        android:title="@string/SelectAllRows"
+        android:visible="false"
+        app:iconTint="@color/WHITE"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_parents_sort"
+        android:icon="@drawable/sort"
+        android:title="@string/sort_by"
+        app:iconTint="@color/WHITE"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/action_parents_print"
         android:icon="@drawable/ic_cross_print"
         android:title="@string/menu_parents_print_title"

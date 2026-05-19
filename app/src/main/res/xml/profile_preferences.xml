@@ -31,10 +31,4 @@
         android:title="@string/profile_manage_persons"
         android:icon="@drawable/account_group_outline" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="@string/key_pref_profile_show_person_input"
-        android:title="@string/profile_show_person_input"
-        android:defaultValue="false"
-        android:icon="@drawable/form_dropdown" />
-
 </PreferenceScreen>

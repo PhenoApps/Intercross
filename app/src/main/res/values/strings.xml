@@ -100,6 +100,7 @@
     <string name="wishlist_header_min">wishMin</string>
     <string name="wishlist_header_max">wishMax</string>
 
+    <string name="all_parents">All Parents</string>
     <string name="parental_navigation">Parents</string>
     <string name="parents_dont_exist">Parents do not exist in the DB</string>
     <string name="navigate_to_summary">Navigate to summary</string>
@@ -272,6 +273,7 @@
     <string name="preferences_profile_fragment_label">Profile</string>
     <string name="preferences_naming_fragment_label">Naming</string>
     <string name="preferences_workflow_fragment_label">Workflow</string>
+    <string name="preferences_layout_fragment_label">Layout</string>
     <string name="preferences_printing_fragment_label">Printing</string>
     <string name="preferences_database_fragment_label">Database</string>
     <string name="preferences_brapi_fragment_label">Brapi</string>
@@ -484,6 +486,9 @@
     <string name="collect_dialog_new_collector">Do you want to save the name of the person collecting data?</string>
 
     <!-- PREFERENCES -->
+
+    <!-- Layout Preferences -->
+    <string name="prefs_layout_title">Layout</string>
 
     <!-- Profile Preferences-->
     <string name="prefs_profile_title">Profile</string>

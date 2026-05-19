@@ -13,6 +13,12 @@
         app:iconSpaceReserved="false"/>
 
     <PreferenceScreen
+        android:key="@string/root_layout"
+        android:title="@string/prefs_layout_title"
+        android:icon="@drawable/ic_book_open"
+        app:iconSpaceReserved="false"/>
+
+    <PreferenceScreen
         android:key="@string/root_behavior"
         android:title="@string/prefs_behavior_title"
         android:icon="@drawable/ic_setting_pattern_create"

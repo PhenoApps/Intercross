@@ -4,7 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Toast
@@ -101,8 +101,9 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
             .setTitle(R.string.profile_person_select_title)
             .setView(listView)
             .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
-            .setNeutralButton(getString(R.string.add)) { _, _ ->
-                showAddPersonDialog()
+            .setNeutralButton(getString(R.string.Clear)) { _, _ ->
+                setSelectedPerson("")
+                updatePersonSummary()
             }
             .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
                 if (selectedIndex in persons.indices) {
@@ -188,26 +189,43 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
     }
 
     private fun showAddPersonDialog() {
-        val input = AutoCompleteTextView(requireContext()).apply {
-            hint = getString(R.string.profile_person_input_hint)
+        val context = requireContext()
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = (context.resources.displayMetrics.density * 16).toInt()
+            setPadding(padding, padding, padding, padding)
+        }
+
+        val firstNameInput = EditText(context).apply {
+            hint = getString(R.string.profile_name_first)
             isSingleLine = true
         }
 
-        val persons = loadPersons()
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, persons)
-        input.setAdapter(adapter)
-        input.threshold = 0
-        input.setOnClickListener { input.showDropDown() }
+        val lastNameInput = EditText(context).apply {
+            hint = getString(R.string.profile_name_last)
+            isSingleLine = true
+        }
+
+        layout.addView(firstNameInput)
+        layout.addView(lastNameInput)
 
         val dialog = AlertDialog.Builder(context)
             .setTitle(R.string.profile_add_person)
-            .setView(input)
+            .setView(layout)
+            .setNeutralButton(getString(R.string.Clear), null)
             .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
-            .setPositiveButton(getString(R.string.add)) { _, _ ->
-                val entered = input.text?.toString()?.trim().orEmpty()
+            .setPositiveButton(getString(R.string.add), null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val first = firstNameInput.text?.toString()?.trim().orEmpty()
+                val last = lastNameInput.text?.toString()?.trim().orEmpty()
+                val entered = "$first $last".trim()
+
                 if (entered.isBlank()) {
                     Toast.makeText(requireContext(), getString(R.string.profile_person_name_required), Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
+                    return@setOnClickListener
                 }
 
                 val currentPersons = loadPersons().toMutableList()
@@ -216,8 +234,17 @@ class ProfileFragment : BasePreferenceFragment(R.xml.profile_preferences) {
                     currentPersons.sortBy { it.lowercase(Locale.getDefault()) }
                     savePersons(currentPersons)
                 }
+
+                setSelectedPerson(entered)
+                updatePersonSummary()
+                dialog.dismiss()
             }
-            .create()
+
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                firstNameInput.setText("")
+                lastNameInput.setText("")
+            }
+        }
 
         dialog.show()
     }

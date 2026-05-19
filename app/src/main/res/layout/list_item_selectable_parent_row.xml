@@ -129,7 +129,9 @@
                 app:chipMinHeight="28dp"
                 app:chipIconSize="18dp"
                 app:chipStartPadding="16dp"
-                app:chipIcon="@drawable/ic_female_black_24dp"/>
+                app:chipIcon="@drawable/ic_female_black_24dp"
+                app:chipBackgroundColor="@android:color/transparent"
+                app:chipStrokeWidth="1dp"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/pollenGroupChip"
@@ -141,6 +143,8 @@
                 app:chipMinHeight="28dp"
                 app:chipIcon="@drawable/ic_account_tree_black_24dp"
                 app:chipIconSize="18dp"
+                app:chipBackgroundColor="@android:color/transparent"
+                app:chipStrokeWidth="1dp"
                 tools:text="Pollen group"
                 tools:visibility="visible" />
 
@@ -153,6 +157,8 @@
                 app:chipMinHeight="28dp"
                 app:chipIcon="@drawable/ic_cross"
                 app:chipIconSize="18dp"
+                app:chipBackgroundColor="@android:color/transparent"
+                app:chipStrokeWidth="1dp"
                 tools:text="4"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

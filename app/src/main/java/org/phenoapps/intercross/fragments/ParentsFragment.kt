@@ -532,12 +532,12 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 }
 
             if (permit) {
-                printParents(ctx)
+                printParents()
             }
         }
     }
 
-    private fun FragmentParentsBinding.printParents(ctx: Context) {
+    private fun FragmentParentsBinding.printParents() {
 
         if (!checkBluetoothRuntimePermission()) return
 
@@ -625,7 +625,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
             }
 
             R.id.action_parents_print -> {
-                mBinding.printParents(ctx)
+                mBinding.printParents()
             }
 
             R.id.action_parents_select_all -> {

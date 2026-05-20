@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
@@ -28,6 +26,7 @@ import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.ShowChildrenDialogUtil
 import org.phenoapps.intercross.util.WishProgressColorUtil
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @AndroidEntryPoint
 class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.layout.fragment_cross_block),
@@ -83,12 +82,7 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
 
         setHasOptionsMenu(true)
 
-        setBottomNavBarSelection()
-        // bottomNavBar.selectedItemId = R.id.action_nav_crosses
-
-        setupBottomNavBar()
-
-        mPref.edit().putString("last_visited_summary", "crossblock").apply()
+        mPref.edit { putString("last_visited_summary", "crossblock") }
 
         val isCommutative = mPref.getBoolean(mKeyUtil.commutativeCrossingKey, false)
 
@@ -184,83 +178,6 @@ class CrossBlockFragment : IntercrossBaseFragment<FragmentCrossBlockBinding>(R.l
 
         inflater.inflate(R.menu.crossblock_toolbar, menu)
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        setBottomNavBarSelection()
-    }
-
-    private fun setBottomNavBarSelection() {
-        // set bottom nav selected item based on previous fragment
-        val previousFragment = findNavController().previousBackStackEntry?.destination?.id
-        when (previousFragment) {
-            R.id.summary_fragment -> {
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
-                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_summary
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = true
-            }
-            R.id.cross_tracker_fragment -> {
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = false
-                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = true
-            }
-            R.id.events_fragment -> {
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_home).isEnabled = false
-                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_home
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_home).isEnabled = true
-            }
-            else -> { // default
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = false
-                mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
-                mBinding.bottomNavBar.menu.findItem(R.id.action_nav_crosses).isEnabled = true
-            }
-        }
-    }
-
-    //a quick wrapper function for tab selection
-    private fun tabSelected(onSelect: (TabLayout.Tab?) -> Unit) = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            onSelect(tab)
-        }
-        override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        override fun onTabReselected(tab: TabLayout.Tab?) {}
-    }
-
-    private fun FragmentCrossBlockBinding.setupBottomNavBar() {
-
-        bottomNavBar.setOnNavigationItemSelectedListener { item ->
-
-            when (item.itemId) {
-
-                R.id.action_nav_home -> {
-
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToEvents())
-                }
-                R.id.action_nav_preferences -> {
-
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToPreferencesFragment())
-                }
-                R.id.action_nav_parents -> {
-
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToParents())
-
-                }
-                R.id.action_nav_crosses -> {
-
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToCrossTracker())
-
-                }
-                R.id.action_nav_summary -> {
-
-                    findNavController().navigate(CrossBlockFragmentDirections.globalActionToSummary())
-
-                }
-            }
-
-            true
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

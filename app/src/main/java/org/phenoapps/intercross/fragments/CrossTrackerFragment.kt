@@ -2,7 +2,6 @@ package org.phenoapps.intercross.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.evrencoskun.tableview.sort.ISortableModel
 import org.phenoapps.intercross.R
@@ -62,10 +60,6 @@ class CrossTrackerFragment :
     IntercrossBaseFragment<FragmentCrossTrackerBinding>(R.layout.fragment_cross_tracker),
     CrossController,
     EventClickListener {
-
-    companion object {
-        const val SORT_DELAY_MS = 500L
-    }
 
     private val eventsModel: EventListViewModel by viewModels {
         EventsListViewModelFactory(EventsRepository.getInstance(db.eventsDao()))
@@ -257,14 +251,6 @@ class CrossTrackerFragment :
             layoutManager = LinearLayoutManager(context)
         }
 
-        bottomNavBar.selectedItemId = R.id.action_nav_crosses
-
-        setupBottomNavBar()
-
-        // summaryTabLayout.getTabAt(0)?.select()
-
-        // setupTabLayout()
-
         eventsModel.events.observe(viewLifecycleOwner) {
             mEvents = it
         }
@@ -272,8 +258,6 @@ class CrossTrackerFragment :
 
         fragmentCrossTrackerAddButton.setOnClickListener {
             showAddWishlistDialog()
-            // findNavController().navigate(CrossTrackerFragmentDirections
-            //     .actionFromCrossTrackerToSearch())
         }
 
         filterChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
@@ -598,8 +582,6 @@ class CrossTrackerFragment :
 
         updateToolbarWishlistIcon()
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_crosses
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -658,71 +640,9 @@ class CrossTrackerFragment :
             R.id.action_to_crossblock -> {
                 findNavController().navigate(CrossTrackerFragmentDirections.actionToCrossblock())
             }
-            // R.id.action_cross_count_delete_all -> {
-            //     val deleteFilter = when (currentFilter) {
-            //         CrossFilter.ALL -> getString(R.string.dialog_cross_count_delete_both)
-            //         CrossFilter.PLANNED -> getString(R.string.dialog_cross_count_delete_planned)
-            //         else -> getString(R.string.dialog_cross_count_delete_unplanned)
-            //     }
-            //     context?.let { ctx ->
-            //         Dialogs.onOk(AlertDialog.Builder(ctx),
-            //             getString(R.string.menu_cross_count_delete_all_title),
-            //             getString(android.R.string.cancel),
-            //             getString(android.R.string.ok),
-            //             String.format(getString(R.string.dialog_cross_count_delete_all_message), deleteFilter)) {
-            //
-            //             Dialogs.onOk(AlertDialog.Builder(ctx),
-            //                 getString(R.string.menu_cross_count_delete_all_title),
-            //                 getString(android.R.string.cancel),
-            //                 getString(android.R.string.ok),
-            //                 getString(R.string.dialog_cross_count_delete_all_message_2)) {
-            //
-            //                 if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.UNPLANNED) {
-            //                     eventsModel.deleteAll()
-            //                 }
-            //                 if (currentFilter == CrossFilter.ALL || currentFilter == CrossFilter.PLANNED) {
-            //                     wishModel.deleteAll()
-            //                 }
-            //
-            //                 findNavController().popBackStack()
-            //             }
-            //         }
-            //     }
-            // }
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun FragmentCrossTrackerBinding.setupBottomNavBar() {
-
-        bottomNavBar.setOnNavigationItemSelectedListener { item ->
-
-            when (item.itemId) {
-
-                R.id.action_nav_preferences -> {
-
-                    findNavController().navigate(CrossTrackerFragmentDirections.globalActionToPreferencesFragment())
-                }
-                R.id.action_nav_summary -> {
-
-                    findNavController().navigate(CrossTrackerFragmentDirections.actionToSummary())
-
-                }
-                R.id.action_nav_parents -> {
-
-                    findNavController().navigate(CrossTrackerFragmentDirections.globalActionToParents())
-
-                }
-                R.id.action_nav_home -> {
-
-                    findNavController().navigate(CrossTrackerFragmentDirections.globalActionToEvents())
-
-                }
-            }
-
-            true
-        }
     }
 
     override fun onCrossClicked(male: String, female: String) {

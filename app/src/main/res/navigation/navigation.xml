@@ -6,7 +6,7 @@
     android:id="@+id/main_graph"
     app:startDestination="@+id/events_fragment">
 
-    <include app:graph="@navigation/preferences"/>
+    <include app:graph="@navigation/metadata"/>
 
     <fragment android:id="@+id/wf_female_fragment"
         android:name="org.phenoapps.intercross.fragments.wish_factory.FemaleChoiceFragment">
@@ -473,34 +473,6 @@
     <!-- Summary, Cross Block, and Wishlist Fragment Definitions !-->
 
     <fragment
-        android:id="@+id/wishlist_fragment"
-        android:name="org.phenoapps.intercross.fragments.WishlistFragment"
-        android:label="@string/wishlist_label"
-        tools:layout="@layout/fragment_cross_tracker">
-
-        <action android:id="@+id/action_from_wishlist_to_events_list"
-            app:destination="@+id/events_fragment"
-            app:popUpTo="@id/wishlist_fragment">
-            <argument app:argType="string"
-                android:name="male"/>
-            <argument app:argType="string"
-                android:name="female"/>
-        </action>
-        <action android:id="@+id/action_to_cross_tracker"
-            app:destination="@id/cross_tracker_fragment"
-            app:popUpTo="@id/events_fragment"/>
-        <action android:id="@+id/action_to_crossblock"
-            app:destination="@id/crossblock_fragment"
-            app:popUpTo="@id/events_fragment"/>
-        <action android:id="@+id/action_to_summary"
-            app:destination="@+id/summary_fragment"
-            app:popUpTo="@id/events_fragment"/>
-        <action android:id="@+id/action_from_wishlist_to_wish_factory"
-            app:destination="@id/wf_female_fragment"
-            app:popUpTo="@id/wishlist_fragment"/>
-    </fragment>
-
-    <fragment
         android:id="@+id/search_fragment"
         android:name="org.phenoapps.intercross.fragments.SearchFragment"
         android:label="@string/search_fragment_label"
@@ -585,7 +557,7 @@
 
     <!-- Global Actions used by Navigation Drawer -->
     <action android:id="@+id/global_action_to_preferences_fragment"
-        app:destination="@id/preferences"
+        app:destination="@id/preferences_fragment"
         app:launchSingleTop="true"/>
 
     <action android:id="@+id/global_action_to_event_detail"
@@ -687,4 +659,83 @@
             app:argType="string"
             android:defaultValue="" />
     </fragment>
+
+    <fragment
+        android:id="@+id/preferences_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.PreferencesFragment"
+        android:label="@string/settings_label">
+
+        <action android:id="@+id/action_from_preferences_fragment_to_profile_fragment"
+            app:destination="@+id/profile_preference_fragment"
+            app:launchSingleTop="true">
+            <argument
+                android:name="PERSON_UPDATE"
+                app:argType="boolean"
+                android:defaultValue="false" />
+        </action>
+
+        <action android:id="@+id/action_from_preferences_fragment_to_layout_fragment"
+            app:destination="@+id/layout_preference_fragment"
+            app:launchSingleTop="true"/>
+
+        <action android:id="@+id/action_from_preferences_fragment_to_printing_fragment"
+            app:destination="@+id/printing_preference_fragment"
+            app:launchSingleTop="true"/>
+
+        <action android:id="@+id/action_from_preferences_fragment_to_database_fragment"
+            app:destination="@+id/database_preference_fragment"
+            app:launchSingleTop="true"/>
+
+        <action android:id="@+id/action_from_settings_to_brapi_fragment"
+            app:destination="@+id/brapi_preference_fragment"
+            app:launchSingleTop="true"/>
+
+        <action android:id="@+id/action_from_preferences_fragment_to_about_fragment"
+            app:destination="@+id/about_fragment"
+            app:launchSingleTop="true"/>
+
+        <action android:id="@+id/action_to_about"
+            app:destination="@id/about_fragment"
+            app:launchSingleTop="true" />
+
+        <action
+            android:id="@+id/action_from_preferences_fragment_to_behavior_preferences_fragment"
+            app:destination="@id/behavior_preferences_fragment"
+            app:launchSingleTop="true"/>
+    </fragment>
+
+    <fragment android:id="@+id/profile_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.ProfileFragment"
+        android:label="@string/preferences_profile_fragment_label"/>
+
+    <fragment android:id="@+id/layout_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.LayoutFragment"
+        android:label="@string/preferences_printing_fragment_label"/>
+
+    <fragment android:id="@+id/printing_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.PrintingFragment"
+        android:label="@string/preferences_printing_fragment_label">
+        <action
+            android:id="@+id/action_to_import_zpl_fragment"
+            app:destination="@id/import_zpl_fragment"
+            app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_to_label_template_editor_fragment"
+            app:destination="@id/label_template_editor_fragment"
+            app:launchSingleTop="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/label_template_editor_fragment"
+        android:name="org.phenoapps.intercross.fragments.LabelTemplateEditorFragment"
+        android:label="@string/label_designer_title" />
+
+    <fragment android:id="@+id/database_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.DatabaseFragment"
+        android:label="@string/preferences_database_fragment_label"/>
+
+    <fragment android:id="@+id/brapi_preference_fragment"
+        android:name="org.phenoapps.intercross.fragments.preferences.BrapiFragment"
+        android:label="@string/preferences_brapi_fragment_label"/>
+
 </navigation>

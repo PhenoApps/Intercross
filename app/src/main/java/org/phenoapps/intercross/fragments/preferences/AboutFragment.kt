@@ -9,11 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.danielstone.materialaboutlibrary.MaterialAboutFragment
@@ -22,7 +20,6 @@ import com.danielstone.materialaboutlibrary.items.MaterialAboutItemOnClickAction
 import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.michaelflisar.changelog.ChangelogBuilder
 import com.michaelflisar.changelog.classes.ImportanceChangelogSorter
 import com.mikepenz.aboutlibraries.LibsBuilder
@@ -39,7 +36,6 @@ import java.net.URL
 
 class AboutFragment : MaterialAboutFragment() {
 
-    private var mBottomNavBar: BottomNavigationView? = null
     private lateinit var updateCheckItem: MaterialAboutActionItem
     private lateinit var  circularProgressDrawable: CircularProgressDrawable
 
@@ -57,40 +53,8 @@ class AboutFragment : MaterialAboutFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // to add bottom navigation
-        // take the original view, add it to wrapper
-        // create a bottom nav view and add it to the wrapper
-
         // original view from MaterialAboutFragment
         val originalView = super.onCreateView(inflater, container, savedInstanceState)
-
-        // Create a wrapper layout
-        val wrapper = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-
-        // add the originalView to wrapper with weight
-        originalView?.let {
-            wrapper.addView(it, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                0,
-                1f // take up all space except for bottom nav
-            ))
-        }
-
-        mBottomNavBar = BottomNavigationView(requireContext()).apply {
-            id = R.id.preferences_bottom_nav_bar
-            inflateMenu(R.menu.menu_bot_nav)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
-        wrapper.addView(mBottomNavBar)
 
         (activity as MainActivity).setBackButtonToolbar()
         (activity as MainActivity).supportActionBar?.apply {
@@ -98,40 +62,12 @@ class AboutFragment : MaterialAboutFragment() {
             show()
         }
 
-        return wrapper
-    }
-
-    private fun setupBottomNavBar() {
-        mBottomNavBar?.selectedItemId = R.id.action_nav_preferences
-
-        mBottomNavBar?.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.action_nav_home -> {
-                    findNavController().navigate(R.id.global_action_to_events)
-                }
-                R.id.action_nav_parents -> {
-                    findNavController().navigate(R.id.global_action_to_parents)
-                }
-                R.id.action_nav_crosses -> {
-                    findNavController().navigate(R.id.global_action_to_cross_tracker)
-                }
-                R.id.action_nav_summary -> {
-                    findNavController().navigate(R.id.global_action_to_summary)
-                }
-            }
-            true
-        }
+        return originalView!!
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomNavBar()
         checkForUpdate()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mBottomNavBar?.selectedItemId = R.id.action_nav_preferences
     }
 
     override fun getMaterialAboutList(c: Context): MaterialAboutList {
@@ -216,7 +152,7 @@ class AboutFragment : MaterialAboutFragment() {
                 .icon(R.drawable.ic_about_libraries)
                 .setOnClickAction {
                     LibsBuilder()
-                            .withAutoDetect(true)
+                            //.withAutoDetect(true)
                             .withActivityTitle(getString(R.string.libraries_title))
                             .withLicenseShown(true)
                             .withVersionShown(true)

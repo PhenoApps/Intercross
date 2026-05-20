@@ -25,7 +25,7 @@
             android:orientation="vertical"
             android:weightSum="1"
             app:layout_constraintTop_toBottomOf="@id/frag_summary_tb"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar">
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/crosses_over_time_summary_card"
@@ -148,15 +148,6 @@
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:menu="@menu/menu_bot_nav"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

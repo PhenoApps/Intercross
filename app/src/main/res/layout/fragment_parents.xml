@@ -44,27 +44,7 @@
             app:layout_constraintTop_toBottomOf="@id/frag_parents_tb"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tabMode="fixed">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/all_parents"
-                android:icon="@drawable/ic_nv_parents_tab" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/female"
-                android:icon="@drawable/ic_female_black_24dp" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/male"
-                android:icon="@drawable/ic_male_black_24dp" />
-
-        </com.google.android.material.tabs.TabLayout>
+            app:tabMode="fixed"/>
 
         <TextView
             android:id="@+id/no_data_text"
@@ -75,7 +55,7 @@
             android:visibility="gone"
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintTop_toBottomOf="@id/parent_tab_layout"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -87,7 +67,7 @@
             android:clipToPadding="false"
             android:paddingBottom="176dp"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/parent_tab_layout"
@@ -101,7 +81,7 @@
             android:clipToPadding="false"
             android:paddingBottom="176dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/parent_tab_layout"
@@ -150,18 +130,9 @@
             android:elevation="5dp"
             android:scaleType="fitCenter"
             app:tint="#ffffff"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_add_white_24dp" />
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:menu="@menu/menu_bot_nav"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

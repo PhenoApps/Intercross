@@ -1,6 +1,5 @@
 package org.phenoapps.intercross.fragments
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -101,39 +100,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private var currentSortType = SortType.NAME
 
-    //simple gesture listener to detect left and right swipes,
-    //on a detected swipe the viewed gender will change
-   // private val gestureListener = object : GestureDetector.SimpleOnGestureListener() {
-   //
-   //     override fun onFling(
-   //         e1: MotionEvent?,
-   //         e2: MotionEvent,
-   //         velocityX: Float,
-   //         velocityY: Float
-   //     ): Boolean {
-   //
-   //         e1?.let {
-   //
-   //             val dx = e1.x - e2.x
-   //             val x = abs(dx)
-   //
-   //             if (x in 100.0..1000.0) {
-   //                 if (dx > 0) {
-   //                     //swipe to left
-   //                     mBinding.swipeLeft()
-   //                 } else {
-   //                     //swipe right
-   //                     mBinding.swipeRight()
-   //                 }
-   //             }
-   //
-   //             return true
-   //
-   //         }
-   //         return false
-   //     }
-   // }
-
     private fun updateCrossCounts(events: List<Event>) {
         femaleCrossCounts = events.groupingBy { it.femaleObsUnitDbId }.eachCount()
         maleCrossCounts = events.groupingBy { it.maleObsUnitDbId }.eachCount()
@@ -157,6 +123,12 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
         viewModel.updateSelection(0)
         groupList.updateSelection(0)
+
+        // Add tabs programmatically to avoid icon tint bug with XML TabItems
+        parentTabLayout.removeAllTabs()
+        parentTabLayout.addTab(parentTabLayout.newTab().setText(R.string.all_parents).setIcon(R.drawable.ic_nv_parents_tab))
+        parentTabLayout.addTab(parentTabLayout.newTab().setText(R.string.female).setIcon(R.drawable.ic_female_black_24dp))
+        parentTabLayout.addTab(parentTabLayout.newTab().setText(R.string.male).setIcon(R.drawable.ic_male_black_24dp))
 
         mMaleAdapter = ParentsAdapter(viewModel, groupList) { parent ->
             when (parent) {
@@ -212,7 +184,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
          */
         mBinding.parentTabLayout.getTabAt(if (tabFocus == 1) 2 else 1)?.select()
 
-
         eventsModel.events.observe(viewLifecycleOwner) { parents ->
 
             parents?.let {
@@ -251,27 +222,11 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
             mBinding.printParents()
         }
 
-       // val gdc = GestureDetectorCompat(requireContext(), gestureListener)
-       //
-       // maleRecycler.setOnTouchListener { _, motionEvent ->
-       //     gdc.onTouchEvent(motionEvent)
-       // }
-       //
-       // femaleRecycler.setOnTouchListener { _, motionEvent ->
-       //     gdc.onTouchEvent(motionEvent)
-       // }
-
-        bottomNavBar.selectedItemId = R.id.action_nav_parents
-
-        setupBottomNavBar()
-
         setupToolbar()
 
     }
 
-    private fun FragmentParentsBinding.setupToolbar() {
-
-        //(activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragParentsTb)
+    private fun setupToolbar() {
 
         mBinding.fragParentsTb.setOnMenuItemClickListener {
             onOptionsItemSelected(it)
@@ -474,69 +429,6 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         return permit
     }
 
-    private fun FragmentParentsBinding.setupBottomNavBar() {
-
-        bottomNavBar.setOnNavigationItemSelectedListener { item ->
-
-            when (item.itemId) {
-
-                R.id.action_nav_preferences -> {
-
-                    findNavController().navigate(R.id.global_action_to_preferences_fragment)
-                }
-
-                R.id.action_nav_home -> {
-
-                    findNavController().navigate(ParentsFragmentDirections.globalActionToEvents())
-
-                }
-
-                R.id.action_nav_crosses -> {
-
-                    findNavController().navigate(ParentsFragmentDirections.globalActionToCrossTracker())
-                }
-
-                R.id.action_nav_summary -> {
-                    findNavController().navigate(ParentsFragmentDirections.actionToSummary())
-                }
-            }
-
-            true
-        }
-    }
-
-    private fun FragmentParentsBinding.requestPermissionAndPrintParents() {
-
-        context?.let { ctx ->
-
-            var permit = false
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                    permit = true
-                } else {
-                    requestBluetoothPermissions.launch(arrayOf(
-                        android.Manifest.permission.BLUETOOTH_SCAN,
-                        android.Manifest.permission.BLUETOOTH_CONNECT
-                    ))
-                }
-            } else
-                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
-                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
-                    permit = true
-                } else {
-                    requestBluetoothPermissions.launch(arrayOf(
-                        android.Manifest.permission.BLUETOOTH,
-                        android.Manifest.permission.BLUETOOTH_ADMIN
-                    ))
-                }
-
-            if (permit) {
-                printParents()
-            }
-        }
-    }
-
     private fun FragmentParentsBinding.printParents() {
 
         if (!checkBluetoothRuntimePermission()) return
@@ -605,17 +497,12 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_parents
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
@@ -640,7 +527,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 findNavController().popBackStack()
             }
 
-            else -> true
+            else -> return true
         }
 
         return super.onOptionsItemSelected(item)
@@ -698,12 +585,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 when (position) {
                     0 -> { // import parents
                         context?.let {
-                            ImportUtil(
-                                it,
-                                R.string.dir_parents_import,
-                                getString(R.string.dialog_import_parents_title),
-                                ImportUtil.BRAPI_MODE_PARENTS
-                            )
+                            ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
                                 .showImportDialog(this)
                         }
                     }

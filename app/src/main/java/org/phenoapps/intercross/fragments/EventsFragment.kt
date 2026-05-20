@@ -195,8 +195,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         (activity as MainActivity).setToolbar()
         (activity as MainActivity).supportActionBar?.title = mPref.getString(mKeyUtil.experimentNameKey, "")
 
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_home
-
         setupPersonInput()
     }
 
@@ -435,43 +433,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
         setupButtons()
 
-        setupBottomNavBar()
-
         setHasOptionsMenu(true)
-
-    }
-
-    private fun FragmentEventsBinding.setupBottomNavBar() {
-
-        bottomNavBar.setOnNavigationItemSelectedListener { item ->
-
-            when (item.itemId) {
-
-                R.id.action_nav_preferences -> {
-
-                    findNavController().navigate(R.id.global_action_to_preferences_fragment)
-                }
-                R.id.action_nav_parents -> {
-
-                    findNavController().navigate(EventsFragmentDirections.globalActionToParents())
-
-                }
-                R.id.action_nav_summary -> {
-
-                    findNavController().navigate(EventsFragmentDirections.actionToSummary())
-
-                }
-                R.id.action_nav_crosses -> {
-
-                    findNavController().navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-
-                }
-            }
-
-            true
-        }
-
-        bottomNavBar.selectedItemId = R.id.action_nav_home
 
     }
 
@@ -574,8 +536,9 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         //https://stackoverflow.com/questions/3425932/detecting-when-user-has-dismissed-the-soft-keyboard
         activity?.addKeyboardToggleListener { shown ->
 
-            if (shown) bottomNavBar.visibility = View.GONE
-            else bottomNavBar.visibility = View.VISIBLE
+            val bottomNav = (activity as? MainActivity)?.getBottomNavView()
+            if (shown) bottomNav?.visibility = View.GONE
+            else bottomNav?.visibility = View.VISIBLE
         }
 
         secondText.addTextChangedListener(emptyGuard)

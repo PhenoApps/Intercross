@@ -113,10 +113,6 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         //if somehow events are injected after afterCreateView, the graph won't update
         //but that could only happen if someone used the database inspector
         startObservers()
-
-        bottomNavBar.selectedItemId = R.id.action_nav_summary
-
-        setupBottomNavBar()
     }
 
     // override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -134,47 +130,10 @@ class SummaryFragment : IntercrossBaseFragment<FragmentDataSummaryBinding>(R.lay
         super.onResume()
 
         (activity as? AppCompatActivity)?.setSupportActionBar(mBinding.fragSummaryTb)
-
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = false
-
-        mBinding.bottomNavBar.selectedItemId = R.id.action_nav_summary
-
-        mBinding.bottomNavBar.menu.findItem(R.id.action_nav_summary).isEnabled = true
-
     }
 
     //used to load label/value pair data into the adapter's view holder
     open class ListEntry(open var label: String, open var value: Float)
-
-    private fun FragmentDataSummaryBinding.setupBottomNavBar() {
-
-        bottomNavBar.setOnNavigationItemSelectedListener { item ->
-
-            when (item.itemId) {
-
-                R.id.action_nav_home -> {
-
-                    findNavController().navigate(SummaryFragmentDirections.globalActionToEvents())
-                }
-                R.id.action_nav_preferences -> {
-
-                    findNavController().navigate(SummaryFragmentDirections.globalActionToPreferencesFragment())
-                }
-                R.id.action_nav_parents -> {
-
-                    findNavController().navigate(SummaryFragmentDirections.globalActionToParents())
-
-                }
-                R.id.action_nav_crosses -> {
-
-                    findNavController().navigate(SummaryFragmentDirections.globalActionToCrossTracker())
-
-                }
-            }
-
-            true
-        }
-    }
 
     /**
      * Cascade-load event and parent data, once the data is loaded trigger the first tab data to load.

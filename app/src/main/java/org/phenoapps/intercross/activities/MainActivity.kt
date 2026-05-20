@@ -82,6 +82,7 @@ import java.io.File
 import javax.inject.Inject
 import androidx.core.content.edit
 import androidx.navigation.findNavController
+import androidx.navigation.navOptions
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
@@ -466,6 +467,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
         mNavController = findNavController(R.id.nav_fragment)
 
+        setupBottomNavigation()
+
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         // toolbar for search screen
@@ -501,6 +504,61 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayShowHomeEnabled(false)
         supportActionBar?.show()
+    }
+
+    private fun setupBottomNavigation() {
+        val bottomNav = mBinding.bottomNavBar
+
+        // Manual setup without animations or state save/restore to avoid
+        // TabLayout item inflation bug in ParentsFragment when navigating back
+        bottomNav.setOnItemSelectedListener { item ->
+            val currentDestId = mNavController.currentDestination?.id
+            if (item.itemId != currentDestId) {
+                val navOptions = androidx.navigation.navOptions {
+                    anim {
+                        enter = 0
+                        exit = 0
+                        popEnter = 0
+                        popExit = 0
+                    }
+                    popUpTo(R.id.events_fragment) {
+                        saveState = false
+                    }
+                    launchSingleTop = true
+                    restoreState = false
+                }
+                mNavController.navigate(item.itemId, null, navOptions)
+            }
+            true
+        }
+
+        // Sync bottom nav selection when destination changes (e.g. back press)
+        mNavController.addOnDestinationChangedListener { _, destination, _ ->
+            val menu = bottomNav.menu
+            for (i in 0 until menu.size()) {
+                val menuItem = menu.getItem(i)
+                if (menuItem.itemId == destination.id) {
+                    menuItem.isChecked = true
+                    break
+                }
+            }
+
+            // Define which destinations show the bottom nav bar
+            val topLevelDestinations = setOf(
+                R.id.events_fragment,
+                R.id.cross_tracker_fragment,
+                R.id.parents_fragment,
+                R.id.summary_fragment,
+                R.id.preferences_fragment,
+                R.id.crossblock_fragment,
+                R.id.about_fragment
+            )
+            bottomNav.visibility = if (destination.id in topLevelDestinations) View.VISIBLE else View.GONE
+        }
+    }
+
+    fun getBottomNavView(): com.google.android.material.bottomnavigation.BottomNavigationView {
+        return mBinding.bottomNavBar
     }
 
     private fun startObservers() {

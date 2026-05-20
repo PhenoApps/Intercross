@@ -71,6 +71,7 @@ android {
 
         debug {
             isDebuggable = true
+            applicationIdSuffix = ".debug"
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

@@ -13,21 +13,15 @@
     <string name="key_pref_brapi_enabled">&package;BRAPI_ENABLED</string>
     <string name="key_pref_brapi_display_name">&package;BRAPI_DISPLAY_NAME</string>
     <string name="key_pref_brapi_token">&package;BRAPI_TOKEN</string>
+    <string name="key_pref_brapi_id">&package;BRAPI_ID</string>
     <string name="key_pref_brapi_url">&package;BRAPI_BASE_URL</string>
     <string name="key_pref_brapi_oidc">&package;BRAPI_OIDC_URL</string>
     <string name="key_pref_brapi_oidc_flow">&package;BRAPI_OIDC_FLOW</string>
-    <string name="key_pref_brapi_server_barcode">&package;BRAPI_SERVER_BARCODE</string>
-    <string name="key_pref_brapi_server_cassavabase">&package;BRAPI_SERVER_CASSAVABASE</string>
-    <string name="key_pref_brapi_server_t3_wheat">&package;BRAPI_SERVER_T3_WHEAT</string>
-    <string name="key_pref_brapi_server_t3_oat">&package;BRAPI_SERVER_T3_OAT</string>
-    <string name="key_pref_brapi_server_t3_barley">&package;BRAPI_SERVER_T3_BARLEY</string>
-    <string name="key_pref_brapi_server_test">&package;BRAPI_SERVER_TEST</string>
-    <string name="key_pref_brapi_server_add">&package;BRAPI_SERVER_ADD</string>
     <string name="key_pref_brapi_authorize">&package;BRAPI_AUTHORIZE</string>
-    <string name="key_pref_brapi_revoke">&package;BRAPI_REVOKE</string>
     <string name="key_cat_brapi_login">&package;BRAPI_LOGIN</string>
-    <string name="key_cat_brapi_community_servers">&package;BRAPI_COMMUNITY_SERVERS</string>
-    <string name="key_pref_brapi_add_account">&package;BRAPI_ADD_ANDROID_ACCOUNT</string>
+    <string name="key_pref_brapi_client">&package;BRAPI_CLIENT</string>
+    <string name="key_pref_brapi_scope">&package;BRAPI_SCOPE</string>
+    <string name="key_pref_brapi_explicit_oidc">&package;BRAPI_EXPLICIT_OIDC</string>
 
     <!-- Preferences search key -->
     <string name="key_pref_search">&package;PREF_SEARCH</string>

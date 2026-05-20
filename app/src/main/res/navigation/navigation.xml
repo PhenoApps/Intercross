@@ -192,65 +192,127 @@
     </fragment>
 
     <fragment
-        android:id="@+id/brapi_trials_fragment"
-        android:name="org.phenoapps.intercross.fragments.BrapiTrialsFragment"
-        android:label="@string/brapi_trials_import">
-        <argument android:name="project"
-            android:defaultValue=""/>
-        <argument android:name="programDbIds"
-            android:defaultValue=""/>
-        <action android:id="@+id/action_to_germplasm_fragment"
-            app:enterAnim="@anim/slide_in"
-            app:destination="@+id/brapi_germplasm_fragment"/>
+        android:id="@+id/brapi_export_summary_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiExportSummaryFragment"
+        android:label="@string/brapi_export_summary_title">
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment
-        android:id="@+id/brapi_germplasm_fragment"
-        android:name="org.phenoapps.intercross.fragments.BrapiGermplasmFragment"
-        android:label="@string/brapi_germplasm_import"/>
+        android:id="@+id/brapi_cross_project_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiCrossProjectFragment"
+        android:label="@string/home_brapi_import">
+        <!-- 0 - import wishlist, 1 - import parents, 2 - import crosses, 3 - export crosses -->
+        <argument
+            android:name="mode"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_planned_crosses_fragment"
+            app:destination="@+id/brapi_planned_crosses_fragment" />
+        <action
+            android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_potential_parents_fragment"
+            app:destination="@+id/brapi_potential_parents_fragment" />
+        <action
+            android:id="@+id/action_brapi_cross_project_import_fragment_to_brapi_cross_import_fragment"
+            app:destination="@+id/brapi_cross_import_fragment" />
+        <action
+            android:id="@+id/action_to_export_brapi_crosses"
+            app:destination="@+id/brapi_export_summary_fragment"/>
+    </fragment>
 
     <fragment
-        android:id="@+id/brapi_wishlist_import_fragment"
-        android:name="org.phenoapps.intercross.fragments.BrapiWishlistImportFragment"
-        android:label="@string/brapi_wishlist_import"/>
+        android:id="@+id/brapi_planned_crosses_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiPlannedCrossesFragment"
+        android:label="@string/brapi_planned_crosses_title">
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
-    <!-- programs filter fragment -->
     <fragment
-        android:id="@+id/brapi_parents_import_fragment"
-        android:name="org.phenoapps.intercross.fragments.BrapiProgramsFragment"
-        android:label="@string/brapi_parents_import">
-        <action android:id="@+id/action_to_trials_fragment"
-            app:enterAnim="@anim/slide_in"
-            app:destination="@+id/brapi_trials_fragment">
-            <argument
-                android:name="programDbIds"
-                app:argType="string"
-                android:defaultValue=""/>
-        </action>
-        <action
-            android:id="@+id/action_to_wishlist_import"
-            app:destination="@+id/brapi_wishlist_import_fragment"
-            app:popUpTo="@id/events_fragment"/>
-        <action
-            android:id="@+id/action_to_brapi_export"
-            app:destination="@+id/brapi_export_fragment"
-            app:popUpTo="@id/events_fragment"/>
+        android:id="@+id/brapi_potential_parents_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiPotentialParentsFragment"
+        android:label="@string/brapi_potential_parents_title">
+        <argument
+            android:name="programDbId"
+            app:argType="string"/>
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="potentialParentsJson"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
     <fragment
         android:id="@+id/cross_project_creator_fragment"
         android:name="org.phenoapps.intercross.fragments.CrossProjectCreatorFragment"
         android:label="@string/fragment_cross_project_creator_label"/>
-
-    <fragment
-        android:id="@+id/brapi_export_fragment"
-        android:name="org.phenoapps.intercross.fragments.BrapiExportFragment"
-        android:label="@string/brapi_export">
-        <action
-            android:id="@+id/action_to_project_creator"
-            app:destination="@id/cross_project_creator_fragment"
-            app:popUpTo="@id/brapi_export_fragment"/>
-    </fragment>
 
     <fragment
         android:id="@+id/about_fragment"
@@ -478,6 +540,9 @@
         <action android:id="@+id/action_from_cross_tracker_to_wish_factory"
             app:destination="@id/wf_female_fragment"
             app:popUpTo="@id/cross_tracker_fragment"/>
+        <action android:id="@+id/action_from_cross_tracker_to_brapi_import"
+            app:destination="@id/brapi_cross_project_fragment"
+            app:popUpTo="@id/cross_tracker_fragment"/>
         <action android:id="@+id/action_from_cross_tracker_to_type_choice"
             app:destination="@id/wf_type_fragment">
             <argument android:name="femaleId" app:argType="string"/>
@@ -547,7 +612,7 @@
         app:launchSingleTop="true"/>
 
     <action android:id="@+id/global_action_to_wishlist_import"
-        app:destination="@+id/brapi_wishlist_import_fragment"
+        app:destination="@+id/brapi_cross_project_fragment"
         app:launchSingleTop="true"
         app:popUpTo="@id/cross_tracker_fragment"/>
 
@@ -558,6 +623,39 @@
     <action android:id="@+id/global_action_to_brapi_export"
         app:destination="@+id/brapi_export_fragment"
         app:popUpTo="@id/events_fragment"/>
+
+    <action android:id="@+id/global_action_to_brapi_cross_projects"
+        app:destination="@+id/brapi_cross_project_fragment"
+        app:launchSingleTop="true"/>
+
+    <fragment
+        android:id="@+id/brapi_cross_import_fragment"
+        android:name="org.phenoapps.intercross.fragments.brapi.BrapiCrossImportFragment"
+        android:label="@string/brapi_crosses_import_title">
+        <argument
+            android:name="crossingProjectDbId"
+            app:argType="string" />
+        <argument
+            android:name="crossingProjectName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="crossingProjectDescription"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="programName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="commonCropName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="parentCount"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/behavior_preferences_fragment"

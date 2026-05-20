@@ -26,7 +26,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/preferences_bottom_nav_bar"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:menu="@menu/menu_bot_nav"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

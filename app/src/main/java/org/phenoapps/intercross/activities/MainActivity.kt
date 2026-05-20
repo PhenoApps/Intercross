@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -47,6 +48,7 @@ import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
 import org.phenoapps.intercross.data.models.Parent
+import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.data.models.PollenGroup
 import org.phenoapps.intercross.data.models.Settings
 import org.phenoapps.intercross.data.models.Wishlist
@@ -604,22 +606,36 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
     fun showExportDialog(onDismiss: () -> Unit) {
 
-        //TODO
-        //val tokenCheck = mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null)
+        val tokenCheck = mPref.getString(mKeyUtil.brapiToken, null)
         val importCheck = mPref.getString(mKeyUtil.brapiHasBeenImported, null)
         val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
 
-        if (importCheck != null) { //(tokenCheck != null || importCheck != null) {
+        if (tokenCheck != null || importCheck != null) {
+
+            val options = arrayOf(
+                getString(R.string.dialog_export_option_local),
+                getString(R.string.dialog_export_option_brapi_export),
+                getString(R.string.dialog_export_option_brapi_import)
+            )
 
             AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_export_title)
-                .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
+                .setSingleChoiceItems(options, 0) { dialog, which ->
                     when (which) {
                         0 -> {
                             exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
                         }
-                        else -> {
-                            mNavController.navigate(R.id.global_action_to_brapi_export)
+                        1 -> {
+                            mNavController.navigate(
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_EXPORT_CROSSES)
+                            )
+                        }
+                        2 -> {
+                            mNavController.navigate(
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_IMPORT_CROSSES)
+                            )
                         }
                     }
 

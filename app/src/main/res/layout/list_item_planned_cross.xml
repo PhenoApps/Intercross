@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="plannedCrossId"
+            type="String" />
+
+        <variable
+            name="maleName"
+            type="String" />
+
+        <variable
+            name="maleId"
+            type="String" />
+
+        <variable
+            name="femaleName"
+            type="String" />
+
+        <variable
+            name="femaleId"
+            type="String" />
+
+        <variable
+            name="wishType"
+            type="String" />
+
+        <variable
+            name="wishMin"
+            type="int" />
+
+        <variable
+            name="wishMax"
+            type="int" />
+
+        <variable
+            name="note"
+            type="String" />
+
+        <variable
+            name="hasNote"
+            type="Boolean" />
+
+        <variable
+            name="showNote"
+            type="Boolean" />
+
+        <variable
+            name="noteToggleText"
+            type="String" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/card_stroke"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="@{title}"
+                android:textColor="@color/card_meta_value"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@id/wishTypeChip"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Female A x Male B" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/wishTypeChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="@{wishType}"
+                app:closeIconVisible="false"
+                app:ensureMinTouchTargetSize="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="cross" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/plannedCrossIdChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text='@{plannedCrossId.isEmpty() ? @string/brapi_project_id_unavailable : plannedCrossId}'
+                app:chipIcon="@drawable/ic_badge_black_24dp"
+                app:closeIconVisible="false"
+                app:ensureMinTouchTargetSize="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                tools:text="planned-42" />
+
+            <LinearLayout
+                android:id="@+id/wishRangeRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/wishTypeChip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/brapi_wish_range"
+                    android:textColor="@color/card_meta_label"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text='@{wishMin + " - " + wishMax}'
+                    android:textColor="@color/card_meta_value"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="1 - 10" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/femaleRow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/plannedCrossIdChip">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_female_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_female"
+                        android:textAllCaps="true"
+                        android:textColor="@color/card_meta_label"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@{femaleName}"
+                        android:textColor="@color/card_meta_value"
+                        android:textSize="15sp"
+                        tools:text="Female Parent A" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{femaleId}"
+                        android:textSize="13sp"
+                        tools:text="female-id-1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/maleRow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/femaleRow">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_male_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_male"
+                        android:textAllCaps="true"
+                        android:textColor="@color/card_meta_label"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@{maleName}"
+                        android:textColor="@color/card_meta_value"
+                        android:textSize="15sp"
+                        tools:text="Male Parent B" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{maleId}"
+                        android:textSize="13sp"
+                        tools:text="male-id-1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/additionalInfoToggleChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@{noteToggleText}"
+                android:visibility="@{hasNote ? View.VISIBLE : View.GONE}"
+                app:chipIcon="@drawable/ic_about_info"
+                app:closeIconVisible="false"
+                app:ensureMinTouchTargetSize="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/maleRow"
+                tools:text="Show Additional Info" />
+
+            <TextView
+                android:id="@+id/noteTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="2dp"
+                android:text="@{note}"
+                android:textSize="12sp"
+                android:visibility="@{showNote ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/additionalInfoToggleChip"
+                tools:text="{ wishType: cross, wishMin: 1 }" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

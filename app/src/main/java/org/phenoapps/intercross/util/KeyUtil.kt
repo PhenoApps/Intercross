@@ -12,7 +12,7 @@ import kotlin.properties.ReadOnlyProperty
  * Converts keys.xml into string fields to be accessed within a context.
  */
 class KeyUtil @Inject constructor(
-    @ApplicationContext private val ctx: Context,
+    @param:ApplicationContext private val ctx: Context,
 ) {
 
     private fun key(id: Int): ReadOnlyProperty<Any?, String> =
@@ -29,6 +29,14 @@ class KeyUtil @Inject constructor(
     // brapi preferences
     val brapiEnabled by key(R.string.key_pref_brapi_enabled)
     val brapiDisplayName by key(R.string.key_pref_brapi_display_name)
+    val brapiOidc by key(R.string.key_pref_brapi_oidc)
+    val brapiFlow by key(R.string.key_pref_brapi_oidc_flow)
+    val brapiUrl by key(R.string.key_pref_brapi_url)
+    val brapiToken by key(R.string.key_pref_brapi_token)
+    val brapiId by key(R.string.key_pref_brapi_id)
+    val brapiClient by key(R.string.key_pref_brapi_client)
+    val brapiScope by key(R.string.key_pref_brapi_scope)
+    val brapiExplicitOidcUrl by key(R.string.key_pref_brapi_explicit_oidc)
 
     // behavior preferences
     val behaviorRoot by key(R.string.root_behavior)

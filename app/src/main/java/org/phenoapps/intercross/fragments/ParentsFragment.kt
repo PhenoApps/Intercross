@@ -1,5 +1,6 @@
 package org.phenoapps.intercross.fragments
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -41,6 +42,7 @@ import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.VibrateUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,12 +51,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
 
     private val requestBluetoothPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
 
-        granted?.let { grant ->
+        if (granted.filter { !it.value }.isNotEmpty()) {
 
-            if (grant.filter { it.value == false }.isNotEmpty()) {
-
-                Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -73,6 +72,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     private val parentList: ParentsListViewModel by viewModels {
         ParentsListViewModelFactory(ParentsRepository.getInstance(db.parentsDao()))
     }
+
+    @Inject
+    lateinit var vibrateUtil: VibrateUtil
 
     @Inject
     lateinit var mPref: SharedPreferences
@@ -279,7 +281,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     private fun FragmentParentsBinding.updateSelectionText(parents: List<Parent>, groups: List<PollenGroup>? = null) {
 
         val tabPosition = parentTabLayout.selectedTabPosition
-        
+
         val count = when (tabPosition) {
             0 -> parents.count() + (groups?.count() ?: 0)
             1 -> parents.count { it.sex == 0 }
@@ -306,7 +308,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_delete)?.isVisible = expanded
         mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_print)?.isVisible = expanded
         mBinding.fragParentsTb.menu?.findItem(R.id.action_parents_select_all)?.isVisible = expanded
-        
+
         mBinding.fragParentsDeleteFab.visibility = if (expanded) View.VISIBLE else View.GONE
         mBinding.fragParentsPrintFab.visibility = if (expanded) View.VISIBLE else View.GONE
     }
@@ -503,7 +505,39 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
         }
     }
 
-    private fun FragmentParentsBinding.printParents() {
+    private fun FragmentParentsBinding.requestPermissionAndPrintParents() {
+
+        context?.let { ctx ->
+
+            var permit = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH_SCAN,
+                        android.Manifest.permission.BLUETOOTH_CONNECT
+                    ))
+                }
+            } else
+                if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
+                    && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
+                    permit = true
+                } else {
+                    requestBluetoothPermissions.launch(arrayOf(
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_ADMIN
+                    ))
+                }
+
+            if (permit) {
+                printParents(ctx)
+            }
+        }
+    }
+
+    private fun FragmentParentsBinding.printParents(ctx: Context) {
 
         if (!checkBluetoothRuntimePermission()) return
 
@@ -517,6 +551,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 requireContext(),
                 outParents.filter { p -> p.selected }.toTypedArray()
             )
+
+            vibrateUtil.vibrate()
+
         } else {
 
             val outParents = mMaleAdapter.currentList
@@ -529,6 +566,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                 .map { group -> Parent(group.codeId, 1, group.name) }
 
             BluetoothUtil().print(requireContext(), outAll.toTypedArray())
+
+            vibrateUtil.vibrate()
+
         }
     }
 
@@ -551,12 +591,12 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
     private fun updateLists(parents: List<Parent>, groups: List<PollenGroup>) {
         val addedMales = ArrayList<BaseParent>()
         addedMales.addAll(getSortedGroups(groups.distinctBy { it.codeId }, maleCrossCounts))
-        
+
         val maleParents = getSortedParents(parents.filter { p -> p.sex == 1 }.distinctBy { p -> p.codeId }, maleCrossCounts)
         mMaleAdapter.submitList(addedMales + maleParents)
 
         val femaleParents = getSortedParents(parents.filter { p -> p.sex == 0 }.distinctBy { p -> p.codeId }, femaleCrossCounts)
-        
+
         val tabPosition = mBinding.parentTabLayout.selectedTabPosition
         if (tabPosition == 0) {
             mFemaleAdapter.submitList(femaleParents + addedMales + maleParents)
@@ -585,7 +625,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
             }
 
             R.id.action_parents_print -> {
-                mBinding.printParents()
+                mBinding.printParents(ctx)
             }
 
             R.id.action_parents_select_all -> {

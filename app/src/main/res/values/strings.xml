@@ -61,21 +61,27 @@
     <string name="test">TEST</string>
     <string name="import_a_zpl_file">Import a ZPL file</string>
     <string name="zpl_default" formatted="false">
-        ^XA^DFR:TEMPLATE^FS
+        ^XA
         ^PW406
         ^LH10,10^FS
-        ^FO0,0^A0,25,20^FN1^FS
-        ^FO140,30^BQN,2,3,H,^FN2^FS
-        ^FO140,170^A0,25,20^FN5^FS
+        ^FO0,0^A0,25,20^FD{crossId}^FS
+        ^FO140,30^BQN,2,3,H^FDHA,{crossId}^FS
+        ^FO140,170^A0,25,20^FD{date}^FS
         ^XZ
     </string>
-    <string name="zpl_parameter_instructions" formatted="false">FN1–6 are ZPL fields used to pass data.\n\n<b>Required:</b> The name of the template must be TEMPLATE as shown in the above example.\n\n<b>For basic cross prints</b>\n\tFN1=the cross id\n\tFN2=the cross id but should be used for barcodes\n\tFN3=the female cross id\n\tFN4=the male cross id\n\tFN5=the timestamp of the cross\n\tFN6=the person who made the cross.\n<b>Note:</b> parent label prints cannot be customized yet.\nUse Labelary: http://labelary.com/viewer.html to define a label easily.\nThe template is designed for 2"x1" labels\nUse Zebra Printer Setup app to calibrate and define media settings.</string>
+    <string name="zpl_parameter_instructions" formatted="false">Use placeholders in raw ZPL. Intercross replaces them before printing.\n\nCross labels: {crossId}, {readableName}, {femaleId}, {maleId}, {date}, {timestamp}, {person}, {experiment}, {type}\nParent labels: {parentId}, {parentName}, {parentType}\n\nExisting ZPL that uses ^FN1-^FN6 still prints for compatibility.</string>
+    <string name="select_template">Select Saved ZPL</string>
+    <string name="select_zpl_template_title">Select ZPL</string>
+    <string name="select_zpl_template_message">Please select ZPL for printing.</string>
+    <string name="choose_bluetooth_device_title">Choose Bluetooth Printer Device</string>
+    <string name="zpl_code_preview">ZPL Code Preview</string>
     <string name="import_zpl">Import ZPL</string>
     <string name="female">Female</string>
     <string name="male">Male</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
     <string name="print">Print</string>
+    <string name="printing">Printing…</string>
     <string name="none">None</string>
     <string name="pattern">Pattern</string>
     <string name="uuid">UUID</string>
@@ -532,6 +538,79 @@
     <string name="prefs_zebra_print_connect_summary">Connect a Zebra printer.</string>
     <string name="prefs_zebra_import_title">ZPL Import</string>
     <string name="prefs_zebra_import_summary">Import a ZPL file.</string>
+    <string name="label_designer_title">ZPL Label Setup</string>
+    <string name="zpl_label_setup_title">ZPL Label Setup</string>
+    <string name="label_designer_summary">Import, edit, and save raw ZPL strings.</string>
+    <string name="prefs_cross_zpl_template_title">Cross Label ZPL</string>
+    <string name="prefs_parent_zpl_template_title">Parent Label ZPL</string>
+    <string name="prefs_zpl_template_empty_summary">Save a ZPL template first.</string>
+    <string name="prefs_zpl_template_selected_summary">Selected: %s</string>
+    <string name="prefs_label_request_title">Request Label Design</string>
+    <string name="prefs_label_request_summary">Missing a label? Submit a request to the Intercross issue tracker.</string>
+    <string name="label_designer_default_name">Field label</string>
+    <string name="label_editor_intro">Save readable raw ZPL strings for cross or parent labels.</string>
+    <string name="saved_zpl_label">Saved ZPL</string>
+    <string name="zpl_string_title">ZPL string</string>
+    <string name="saved_name_label">Saved name</string>
+    <string name="label_type_title">Saves as</string>
+    <string name="cross_label_type">Cross label</string>
+    <string name="parent_label_type">Parent label</string>
+    <string name="zpl_field_label">ZPL</string>
+    <string name="placeholders_title">Placeholders</string>
+    <string name="tap_placeholder_to_insert">Tap a placeholder to insert it at the cursor.</string>
+    <string name="cross_label_placeholders">Cross labels: %s</string>
+    <string name="parent_label_placeholders">Parent labels: %s</string>
+    <string name="placeholder_compatibility_note">Named placeholders are replaced before printing. Existing ^FN1-^FN6 ZPL still works for older saved labels.</string>
+    <string name="printer_info_title">Printer info</string>
+    <string name="printer_info_values">%1$d DPI | %2$s | %3$s x %4$s in</string>
+    <string name="reading_printer">Reading…</string>
+    <string name="read_printer">Read Printer</string>
+    <string name="printer_settings_empty">No printer info read yet.</string>
+    <string name="label_preview_title">Label preview</string>
+    <string name="render_preview">Render Preview</string>
+    <string name="rendering_preview">Rendering…</string>
+    <string name="label_preview_empty">Render a preview to check the current ZPL.</string>
+    <string name="label_preview_failed">Preview could not be rendered.</string>
+    <string name="use_now">Use Now</string>
+    <string name="no_active_zpl">No saved ZPL string is active for this label type.</string>
+    <string name="active_zpl">Active ZPL: %s</string>
+    <string name="label_template_saved_selected">Saved and selected %s.</string>
+    <string name="label_template_selected">Selected %s for future labels.</string>
+    <string name="imported_zpl_name">Imported ZPL</string>
+    <string name="imported_zpl_message">Imported ZPL. Review, then save or use it.</string>
+    <string name="choose_printer_before_dpi">Choose a printer device first to detect DPI.</string>
+    <string name="bluetooth_permission_needed_for_dpi">Bluetooth permission is needed before printer DPI can be detected.</string>
+    <string name="saved_printer_not_found">Saved printer was not found in paired Bluetooth devices.</string>
+    <string name="read_printer_settings_from">Read printer settings from %s.</string>
+    <string name="printer_did_not_report_dpi">Printer did not report a DPI. Keeping the current value.</string>
+    <string name="could_not_detect_dpi">Could not detect DPI from %s. Keeping the current value.</string>
+    <string name="printer_summary_dpi">%d DPI</string>
+    <string name="printer_summary_width">W %d</string>
+    <string name="printer_summary_length">L %d</string>
+    <string name="printer_summary_media">%s</string>
+    <string name="printer_summary_language">%s</string>
+    <string name="label_media_type_gap">Gap</string>
+    <string name="label_media_type_mark">Black mark</string>
+    <string name="label_media_type_continuous">Continuous roll</string>
+    <string name="label_media_type_title">Media Type</string>
+    <string name="placeholder_cross_id">Cross ID</string>
+    <string name="placeholder_readable_name">Readable cross name</string>
+    <string name="placeholder_female_name">Female parent name</string>
+    <string name="placeholder_male_name">Male parent name</string>
+    <string name="placeholder_female_id">Female parent ID</string>
+    <string name="placeholder_male_id">Male parent ID</string>
+    <string name="placeholder_date">Cross date</string>
+    <string name="placeholder_timestamp">Full timestamp</string>
+    <string name="placeholder_person">Collector</string>
+    <string name="placeholder_experiment">Experiment</string>
+    <string name="placeholder_type">Cross type</string>
+    <string name="placeholder_qr_cross_id">QR payload for barcode</string>
+    <string name="placeholder_parent_id">Parent ID</string>
+    <string name="placeholder_parent_name">Parent name</string>
+    <string name="placeholder_parent_type">Female, male, or unknown</string>
+    <string name="prefs_zebra_device_title">Choose Printer Device</string>
+    <string name="prefs_zebra_device_summary">Select a Bluetooth printer device for printing labels.</string>
+    <string name="prefs_zebra_device_selected">Selected: %s"</string>
 
     <!-- Database preferences -->
     <string name="prefs_database_reset_title">Reset Database</string>
@@ -605,6 +684,10 @@
     <string name="export_no_data">No data to export</string>
     <string name="export_dialog_delete_crosses_title">Delete Crosses</string>
     <string name="export_dialog_delete_crosses_message">Do you want to delete all the crosses?</string>
+    <string name="export_zpl">Export .zpl</string>
+    <string name="export_dialog_title">Export ZPL</string>
+    <string name="export_dialog_message">Save the ZPL to storage or share via other apps.</string>
+    <string name="share_text">Share</string>
 
     <string name="brapi_edit_display_name_default">BrAPI Test Server</string>
     <string name="activity_file_explorer_up_directory_name">Up</string>
@@ -679,6 +762,16 @@
     <string name="bottom_nv_summary">Graphs</string>
     <string name="bottom_nv_parents">Parents</string>
     <string name="bottom_nv_settings">Settings</string>
+    <string name="label_2x1_name">Simple ZPL (2" x 1")</string>
+    <string name="label_3x2_name">Simple ZPL (3" x 2")</string>
+    <string name="parent_label_2x1_name">Parent ZPL (2" x 1")</string>
+    <string name="simple_names_2x1_name">Simple Names ZPL (2" x 1")</string>
+    <string name="width_in">Width (in)</string>
+    <string name="height_in">Height (in)</string>
+    <string name="label_width_in">Label Width (in)</string>
+    <string name="label_height_in">Label Height (in)</string>
+    <string name="prefs_printing_category_title">Printer</string>
+    <string name="prefs_label_category_title">Label</string>
 
     <string name="manual_cross_search_title">Find Cross</string>
     <string name="manual_cross_search_hint">Cross ID</string>

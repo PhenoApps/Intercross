@@ -30,6 +30,7 @@ import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
+import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.WishlistView
 import org.phenoapps.intercross.data.viewmodels.EventDetailViewModel
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
@@ -47,6 +48,8 @@ import org.phenoapps.intercross.util.BluetoothUtil
 import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
+import org.phenoapps.intercross.util.VibrateUtil
+import org.phenoapps.intercross.util.ZebraPrinterUtil
 import org.phenoapps.intercross.util.observeOnce
 import javax.inject.Inject
 
@@ -55,18 +58,20 @@ class EventDetailFragment:
     IntercrossBaseFragment<FragmentEventDetailBinding>(R.layout.fragment_event_detail),
     MetadataManager {
 
+    @Inject
+    lateinit var vibrateUtil: VibrateUtil
+
     private val requestBluetoothPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
 
-        granted?.let { grant ->
+        if (granted.filter { !it.value }.isNotEmpty()) {
 
-            if (grant.filter { it.value == false }.isNotEmpty()) {
-
-                Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, R.string.error_no_bluetooth_permission, Toast.LENGTH_SHORT).show()
         }
     }
 
     private lateinit var mEvent: Event
+    private lateinit var mParent: EventsDao.ParentData
+
     private lateinit var mMetaValuesList: List<MetadataValues>
     private lateinit var mMetaList: List<Meta>
     private lateinit var mWishlist: List<WishlistView>
@@ -207,6 +212,8 @@ class EventDetailFragment:
             eventDetailViewModel.parents.observe(viewLifecycleOwner) { data ->
 
                 data?.let { parents ->
+
+                    mParent = parents
 
                     eventDetailLayout.female = parents.momReadableName
 
@@ -401,7 +408,7 @@ class EventDetailFragment:
     private fun startPrintProcess() {
         context?.let { ctx ->
 
-            var permit = true
+            var permit = false
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
                     && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
@@ -412,7 +419,7 @@ class EventDetailFragment:
                         android.Manifest.permission.BLUETOOTH_CONNECT
                     ))
                 }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else
                 if (ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED
                     && ctx.checkSelfPermission(android.Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
                     permit = true
@@ -422,12 +429,12 @@ class EventDetailFragment:
                         android.Manifest.permission.BLUETOOTH_ADMIN
                     ))
                 }
-            }
 
             if (permit) {
 
-                BluetoothUtil().print(requireContext(), arrayOf(mEvent))
+                BluetoothUtil().print(ctx, arrayOf(ZebraPrinterUtil.CrossParentRelation(mEvent, mParent)))
 
+                vibrateUtil.vibrate()
             }
         }
     }

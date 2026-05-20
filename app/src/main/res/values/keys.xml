@@ -73,9 +73,19 @@
     <string name="key_pref_behavior_commutative_crossing">&package;COMMUTATIVE_CROSSING</string>
 
     <!-- Printing preference keys -->
+    <string name="key_pref_printer_category">&package;PRINTER_CATEGORY</string>
+    <string name="key_pref_label_category">&package;LABEL_CATEGORY</string>
     <string name="key_pref_print_connect">&package;PRINTER_CONNECT</string>
     <string name="key_pref_print_zpl_import">&package;ZPL_IMPORT</string>
     <string name="key_pref_print_zpl_code">&package;ZPL_CODE</string>
+    <string name="key_pref_print_zpl_template">&package;ZPL_TEMPLATE</string>
+    <string name="key_pref_print_cross_zpl_code">&package;CROSS_ZPL_CODE</string>
+    <string name="key_pref_print_cross_zpl_template">&package;CROSS_ZPL_TEMPLATE</string>
+    <string name="key_pref_print_parent_zpl_code">&package;PARENT_ZPL_CODE</string>
+    <string name="key_pref_print_parent_zpl_template">&package;PARENT_ZPL_TEMPLATE</string>
+    <string name="key_pref_print_label_templates">&package;LABEL_TEMPLATES</string>
+    <string name="key_pref_print_label_request">&package;LABEL_REQUEST</string>
+    <string name="key_pref_print_device_name">&package;PRINTER_DEVICE_NAME</string>
 
     <!-- Database preference keys -->
     <string name="key_pref_storage_definer">&package;STORAGE_DEFINER</string>

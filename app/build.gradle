@@ -76,7 +76,7 @@ android {
             clean
             debuggable true
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
     }
@@ -96,6 +96,11 @@ android {
         maven {
             url 'https://jitpack.io'
         }
+    }
+
+    lint {
+        abortOnError = false
+        disable 'MissingTranslation'
     }
 }
 
@@ -214,9 +219,11 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.2.0'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 
-    implementation "androidx.navigation:navigation-runtime-ktx:2.9.6"
-    implementation "androidx.navigation:navigation-fragment-ktx:2.9.6"
-    implementation "androidx.navigation:navigation-ui-ktx:2.9.6"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.8'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.8'
+    implementation 'androidx.compose.foundation:foundation-layout:1.11.1'
+
+    implementation "androidx.navigation:navigation-runtime-ktx:2.9.8"
     implementation "androidx.hilt:hilt-navigation-compose:1.3.0"
 
 //    implementation 'org.apache.poi:poi:4.1.2'

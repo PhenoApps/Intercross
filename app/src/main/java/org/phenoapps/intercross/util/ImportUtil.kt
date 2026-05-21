@@ -40,7 +40,6 @@ class ImportUtil(
     private val keyUtil by lazy {
         KeyUtil(context)
     }
-    var brapiService: BrAPIServiceV2 = BrAPIServiceV2(context)
 
     fun showImportDialog(fragment: Fragment) {
         var importArray: Array<String?> = arrayOf(
@@ -78,7 +77,6 @@ class ImportUtil(
                 }
             }
 
-        // TODO: remove this array size checking when BrAPI is added in the app
         if (importArray.size == 1) loadLocalPermission(fragment)
         else fragment.activity?.let {
             val dialog = ListAddDialog(it, context.getString(R.string.import_file), importArray, icons, onItemClickListener)
@@ -107,20 +105,22 @@ class ImportUtil(
 
     private fun loadLocal(fragment: Fragment) {
         try {
-            fragment.let {
-                val importDir = getDirectory(context, importDirectory)
-                if (importDir != null && importDir.exists()) {
-                    FileExploreDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(getString(R.string.dialog_title), importDialogTitle)
-                            putString(getString(R.string.path), importDir.uri.toString())
-                            putStringArray(getString(R.string.include), arrayOf("csv", "xls", "xlsx"))
-                        }
-                        setOnFileSelectedListener { uri ->
-                            (it.activity as MainActivity).importFromUri(uri)
-                        }
-                    }.show(it.parentFragmentManager, FileExploreDialogFragment.TAG)
+            val appContext: Context = context
+            val importDir = getDirectory(appContext, importDirectory)
+            if (importDir != null && importDir.exists()) {
+                val dialogTitleKey = appContext.getString(R.string.dialog_title)
+                val pathKey = appContext.getString(R.string.path)
+                val includeKey = appContext.getString(R.string.include)
+                val dialog = FileExploreDialogFragment()
+                dialog.arguments = Bundle().apply {
+                    putString(dialogTitleKey, importDialogTitle)
+                    putString(pathKey, importDir.uri.toString())
+                    putStringArray(includeKey, arrayOf("csv", "xls", "xlsx"))
                 }
+                dialog.setOnFileSelectedListener { uri ->
+                    (fragment.activity as MainActivity).importFromUri(uri)
+                }
+                dialog.show(fragment.parentFragmentManager, FileExploreDialogFragment.TAG)
             }
         } catch (e: Exception) {
             e.printStackTrace()

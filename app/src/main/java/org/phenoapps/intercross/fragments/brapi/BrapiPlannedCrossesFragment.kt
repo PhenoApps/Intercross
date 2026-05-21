@@ -301,11 +301,15 @@ class BrapiPlannedCrossesFragment :
                     Toast.LENGTH_SHORT
                 ).show()
 
-                findNavController().popBackStack(R.id.cross_tracker_fragment, false)
+                if (!findNavController().popBackStack(R.id.parents_fragment, false)) {
+                    findNavController().navigate(R.id.parents_fragment)
+                }
 
             } finally {
                 showLoading(false)
-                mBinding.importParentsCheckBox.isEnabled = true
+                if (view != null) {
+                    mBinding.importParentsCheckBox.isEnabled = true
+                }
             }
         }
     }

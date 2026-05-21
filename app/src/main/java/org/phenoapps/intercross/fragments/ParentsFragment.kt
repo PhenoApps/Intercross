@@ -586,7 +586,7 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                     0 -> { // import parents
                         context?.let {
                             ImportUtil(it, R.string.dir_parents_import, getString(R.string.dialog_import_parents_title))
-                                .showImportDialog(this)
+                                .showImportDialog(this@ParentsFragment)
                         }
                     }
                     // create a new female parent
@@ -594,13 +594,9 @@ class ParentsFragment: IntercrossBaseFragment<FragmentParentsBinding>(R.layout.f
                         .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(0))
                     // create a new male parent
                     2 -> {
-                        /*
-                            Go to Pollen Manager fragment for male group data-entry
-                        */
                         Navigation.findNavController(mBinding.root)
                             .navigate(ParentsFragmentDirections.actionParentsToCreateEvent(1))
                     }
-
                 }
             }
 

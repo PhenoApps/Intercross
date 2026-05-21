@@ -724,7 +724,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             "summary" -> {
                 if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-                else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
+                else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
             }
@@ -735,7 +735,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                         getString(R.string.summary_and_wishlist_empty))
             }
             "wishlist" -> {
-                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
+                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))

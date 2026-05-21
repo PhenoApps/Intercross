@@ -149,10 +149,6 @@
             app:destination="@+id/cross_tracker_fragment"
             app:popUpTo="@id/events_fragment">
         </action>
-        <action android:id="@+id/action_to_wishlist_fragment"
-            app:destination="@+id/wishlist_fragment"
-            app:popUpTo="@id/events_fragment">
-        </action>
         <action android:id="@+id/action_to_parents_fragment"
             app:destination="@+id/parents_fragment"
             app:popUpTo="@id/events_fragment"/>
@@ -165,12 +161,8 @@
         <action android:id="@+id/action_to_about"
             app:destination="@+id/about_fragment"
             app:popUpTo="@id/events_fragment"/>
-        <action
-            android:id="@+id/action_to_parents_import"
-            app:destination="@+id/brapi_parents_import_fragment"
-            app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_from_events_to_preferences"
-            app:destination="@+id/preferences"
+            app:destination="@+id/preferences_fragment"
             app:popUpTo="@id/events_fragment">
             <argument
                 android:name="PERSON_UPDATE"
@@ -329,9 +321,6 @@
         <action android:id="@+id/action_to_crossblock"
             app:destination="@id/crossblock_fragment"
             app:popUpTo="@id/summary_fragment"/>
-        <action android:id="@+id/action_to_wishlist"
-            app:destination="@id/wishlist_fragment"
-            app:popUpTo="@id/events_fragment"/>
     </fragment>
 
     <fragment
@@ -487,9 +476,6 @@
         android:name="org.phenoapps.intercross.fragments.CrossTrackerFragment"
         android:label="@string/summary_label"
         tools:layout="@layout/fragment_cross_tracker">
-        <action android:id="@+id/action_from_cross_tracker_to_search"
-            app:destination="@+id/search_fragment"
-            app:popUpTo="@id/cross_tracker_fragment"/>
         <action android:id="@+id/action_from_cross_tracker_to_events_list"
             app:destination="@+id/events_fragment"
             app:popUpTo="@id/cross_tracker_fragment">
@@ -498,17 +484,11 @@
             <argument app:argType="string"
                 android:name="female"/>
         </action>
-        <action android:id="@+id/action_to_wishlist"
-            app:destination="@id/wishlist_fragment"
-            app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_to_crossblock"
             app:destination="@id/crossblock_fragment"
             app:popUpTo="@id/cross_tracker_fragment"/>
         <action android:id="@+id/action_to_event_detail"
             app:destination="@id/event_fragment"/>
-        <action android:id="@+id/action_to_summary"
-            app:destination="@+id/summary_fragment"
-            app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_from_cross_tracker_to_wish_factory"
             app:destination="@id/wf_female_fragment"
             app:popUpTo="@id/cross_tracker_fragment"/>
@@ -541,9 +521,6 @@
         <action android:id="@+id/action_to_cross_tracker"
             app:destination="@id/cross_tracker_fragment"
             app:popUpTo="@id/events_fragment"/>
-        <action android:id="@+id/action_to_wishlist"
-            app:destination="@id/wishlist_fragment"
-            app:popUpTo="@id/events_fragment"/>
         <action android:id="@+id/action_to_event_detail"
             app:destination="@+id/event_fragment"
             app:popUpTo="@id/crossblock_fragment"/>
@@ -555,46 +532,19 @@
             app:popUpTo="@id/crossblock_fragment"/>
     </fragment>
 
-    <!-- Global Actions used by Navigation Drawer -->
-    <action android:id="@+id/global_action_to_preferences_fragment"
-        app:destination="@id/preferences_fragment"
-        app:launchSingleTop="true"/>
-
+    <!-- Global Actions -->
     <action android:id="@+id/global_action_to_event_detail"
         app:destination="@id/event_fragment"/>
-
-    <action android:id="@+id/global_action_to_events"
-        app:destination="@id/events_fragment"
-        app:popUpTo="@id/events_fragment"
-        app:launchSingleTop="true"/>
-
-    <action android:id="@+id/global_action_to_parents"
-        app:destination="@id/parents_fragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/parents_fragment"/>
 
     <action android:id="@+id/global_action_to_cross_tracker"
         app:destination="@id/cross_tracker_fragment"
         app:popUpTo="@id/cross_tracker_fragment"
         app:launchSingleTop="true"/>
 
-    <action android:id="@+id/global_action_to_summary"
-        app:destination="@id/summary_fragment"
-        app:popUpTo="@id/summary_fragment"
-        app:launchSingleTop="true"/>
-
     <action android:id="@+id/global_action_to_wishlist_import"
         app:destination="@+id/brapi_cross_project_fragment"
         app:launchSingleTop="true"
         app:popUpTo="@id/cross_tracker_fragment"/>
-
-    <action android:id="@+id/global_action_to_brapi_auth"
-        app:destination="@+id/brapi_auth_fragment"
-        app:launchSingleTop="true"/>
-
-    <action android:id="@+id/global_action_to_brapi_export"
-        app:destination="@+id/brapi_export_fragment"
-        app:popUpTo="@id/events_fragment"/>
 
     <action android:id="@+id/global_action_to_brapi_cross_projects"
         app:destination="@+id/brapi_cross_project_fragment"

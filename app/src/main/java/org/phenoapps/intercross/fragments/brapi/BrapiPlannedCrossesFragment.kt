@@ -301,8 +301,8 @@ class BrapiPlannedCrossesFragment :
                     Toast.LENGTH_SHORT
                 ).show()
 
-                if (!findNavController().popBackStack(R.id.parents_fragment, false)) {
-                    findNavController().navigate(R.id.parents_fragment)
+                if (!findNavController().popBackStack(R.id.cross_tracker_fragment, false)) {
+                    findNavController().navigate(R.id.global_action_to_cross_tracker)
                 }
 
             } finally {

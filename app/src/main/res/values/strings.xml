@@ -145,6 +145,8 @@
     <string name="ask_for_new_name">Enter a new file name</string>
     <string name="crosses_export_mom_header">femaleObsUnitDbId</string>
     <string name="crosses_export_dad_header">maleObsUnitDbId</string>
+    <string name="crosses_export_mom_name_header">femaleName</string>
+    <string name="crosses_export_dad_name_header">maleName</string>
     <string name="crosses_export_name_header">readableName</string>
     <string name="crosses_export_date_header">timestamp</string>
     <string name="crosses_export_person_header">person</string>

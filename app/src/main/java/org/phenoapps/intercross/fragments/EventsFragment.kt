@@ -950,26 +950,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
         langParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
         experimentDialog?.window?.attributes = langParams
     }
-
-    private fun showCrossesExport() {
-        val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
-        val fileName = "${defaultFileNamePrefix}_${DateUtil().getTime()}"
-
-        val inflater = (activity as MainActivity).layoutInflater
-        val layout = inflater.inflate(R.layout.dialog_export, null)
-        val fileNameET = layout.findViewById<EditText>(R.id.file_name)
-
-        fileNameET.setText(fileName)
-
-        val builder = AlertDialog.Builder(activity as MainActivity)
-            .setTitle(R.string.dialog_export_title)
-            .setView(layout)
-            .setNegativeButton(getString(R.string.dialog_cancel)) { d, _ -> d.dismiss() }
-            .setPositiveButton(getString(R.string.dialog_export)) { _, _ ->
-                (activity as MainActivity).startExport(fileNameET.text.toString())
-            }
-        builder.create().show()
-    }
     
     override fun onEventClick(eventId: Long) {
         findNavController().navigate(EventsFragmentDirections.actionToEventFragment(eventId))

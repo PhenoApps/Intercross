@@ -144,7 +144,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             try {
 
-                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, mParents, mGroups, mMetadata, mMetaValues)
+                val parentIds = (mEvents.map { it.maleObsUnitDbId } + mEvents.map { it.femaleObsUnitDbId })
+                val filteredParents = mParents.filter { it.codeId in parentIds }
+                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, filteredParents, mGroups, mMetadata, mMetaValues)
 
             } catch (e: Exception) {
 
@@ -656,10 +658,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         //} else {
         importedFileContent.launch("*/*")
         //}
-    }
-
-    fun startExport(fileName: String) {
-        exportUtil.exportCrosses(eventsModel, mEvents, mParents, mGroups, mMetadata, mMetaValues, fileName)
     }
 
     fun showExportDialog(onDismiss: () -> Unit) {

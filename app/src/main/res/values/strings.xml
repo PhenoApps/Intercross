@@ -74,6 +74,15 @@
     <string name="female">Female</string>
     <string name="male">Male</string>
     <string name="delete">Delete</string>
+    <string name="archive">Archive</string>
+    <string name="unarchive">Unarchive</string>
+    <string name="archive_event">Archive event</string>
+    <string name="unarchive_event">Unarchive event</string>
+    <string name="delete_event">Delete event</string>
+    <string name="archived_crosses">Archived Crosses</string>
+    <string name="snackbar_archived_cross">Archived: %s</string>
+    <string name="snackbar_unarchived_cross">Unarchived: %s</string>
+    <string name="snackbar_deleted_cross">Deleted: %s</string>
     <string name="delete_all">Delete all</string>
     <string name="print">Print</string>
     <string name="none">None</string>
@@ -155,6 +164,10 @@
     <string name="single_scan_description">Scan a single barcode</string>
     <string name="continuous_scan_description">Scan a sequence of barcodes</string>
     <string name="delete_cross_entry_title">Delete this cross entry?</string>
+    <string name="archive_cross_entry_title">Archive this cross entry?</string>
+    <string name="unarchive_cross_entry_title">Unarchive this cross entry?</string>
+    <string name="unarchive_selected_crosses_title">Unarchive selected crosses?</string>
+    <string name="no_archived_crosses">No archived crosses.</string>
     <string name="no_device_paired">No device paired</string>
     <string name="printer_open">Printer is open</string>
     <string name="printer_paused">Printer is paused</string>
@@ -186,6 +199,7 @@
     <string name="barcode_scan_label">Barcode Scan</string>
     <string name="events_fragment_label">Events</string>
     <string name="event_detail_label">Event</string>
+    <string name="archived_crosses_label">Archived Crosses</string>
     <string name="parent_label">Parents</string>
     <string name="settings_label">Settings</string>
     <string name="patterns_label">Patterns</string>

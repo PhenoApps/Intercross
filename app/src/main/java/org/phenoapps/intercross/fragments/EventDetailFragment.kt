@@ -198,6 +198,8 @@ class EventDetailFragment:
 
                     eventDetailLayout.event = it
 
+                    activity?.invalidateOptionsMenu()
+
                     eventDetailLayout.timestamp = if ("_" in it.timestamp) {
 
                         it.timestamp.split("_")[0]
@@ -293,6 +295,23 @@ class EventDetailFragment:
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+
+        if (::mEvent.isInitialized) {
+            menu.findItem(R.id.action_archive)?.apply {
+                if (mEvent.isArchived) {
+                    title = getString(R.string.unarchive)
+                    setIcon(R.drawable.ic_unarchive)
+                } else {
+                    title = getString(R.string.archive)
+                    setIcon(R.drawable.ic_archive)
+                }
+            }
+        }
+
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (::mEvent.isInitialized) {
@@ -317,19 +336,45 @@ class EventDetailFragment:
 
                     // update visibility of metadata section
                     mBinding.metaDataVisibility = getMetaDataVisibility(requireContext())
+
+                    return true
+                }
+                R.id.action_archive -> {
+
+                    val title = if (mEvent.isArchived) {
+                        getString(R.string.unarchive_cross_entry_title)
+                    } else {
+                        getString(R.string.archive_cross_entry_title)
+                    }
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(title)
+                        .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            if (mEvent.isArchived) {
+                                eventsList.unarchiveById(mEvent.id ?: -1L)
+                            } else {
+                                eventsList.archiveById(mEvent.id ?: -1L)
+                            }
+
+                            findNavController().popBackStack()
+                        }
+                        .show()
+
+                    return true
                 }
                 R.id.action_delete -> {
 
-                    Dialogs.onOk(AlertDialog.Builder(requireContext()),
-                            getString(R.string.delete_cross_entry_title),
-                            getString(R.string.cancel),
-                            getString(android.R.string.ok)) {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.delete_cross_entry_title)
+                        .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            eventsList.deleteById(mEvent.id ?: -1L)
+                            findNavController().popBackStack()
+                        }
+                        .show()
 
-                        eventsList.deleteById(mEvent.id ?: -1L)
-
-                        findNavController().popBackStack()
-
-                    }
+                    return true
                 }
             }
         }

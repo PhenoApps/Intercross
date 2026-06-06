@@ -1,7 +1,6 @@
 package org.phenoapps.intercross.data
 
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.data.dao.EventsDao
 import org.phenoapps.intercross.data.models.Event
@@ -34,11 +33,56 @@ class EventsRepository
         }
     }
 
-    fun deleteById(eid: Long) {
+    suspend fun deleteById(eid: Long) {
 
-        runBlocking {
+        withContext(IO) {
 
             eventsDao.deleteById(eid)
+
+        }
+    }
+
+    suspend fun deleteByIds(eids: List<Long>) {
+
+        withContext(IO) {
+
+            eventsDao.deleteByIds(eids)
+
+        }
+    }
+
+    suspend fun archiveById(eid: Long) {
+
+        withContext(IO) {
+
+            eventsDao.archiveEvent(eid)
+
+        }
+    }
+
+    suspend fun archiveByIds(eids: List<Long>) {
+
+        withContext(IO) {
+
+            eventsDao.archiveEvents(eids)
+
+        }
+    }
+
+    suspend fun unarchiveById(eid: Long) {
+
+        withContext(IO) {
+
+            eventsDao.unarchiveEvent(eid)
+
+        }
+    }
+
+    suspend fun unarchiveByIds(eids: List<Long>) {
+
+        withContext(IO) {
+
+            eventsDao.unarchiveEvents(eids)
 
         }
     }
@@ -46,6 +90,8 @@ class EventsRepository
     fun insert(event: Event): Long = eventsDao.insertEvent(event)
 
     fun loadCrosses() = eventsDao.selectAllLive()
+
+    fun selectArchivedEvents() = eventsDao.selectArchivedEvents()
 
     companion object {
         @Volatile private var instance: EventsRepository? = null

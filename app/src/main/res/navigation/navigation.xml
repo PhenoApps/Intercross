@@ -70,6 +70,19 @@
             android:id="@+id/action_from_settings_to_naming_workflow_fragment"
             app:destination="@id/behavior_preferences_fragment"
             app:popUpTo="@id/events_fragment" />
+        <action
+            android:id="@+id/action_to_archived_events_fragment"
+            app:destination="@id/archived_events_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/archived_events_fragment"
+        android:name="org.phenoapps.intercross.fragments.ArchivedEventsFragment"
+        android:label="@string/archived_crosses_label"
+        tools:layout="@layout/fragment_archived_events">
+        <action
+            android:id="@+id/action_to_event_fragment"
+            app:destination="@id/event_fragment" />
     </fragment>
 
     <fragment

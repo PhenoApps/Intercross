@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_export"
         android:title="@string/export"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_archived_crosses"
+        android:icon="@drawable/ic_archive"
+        android:title="@string/archived_crosses"
+        app:showAsAction="ifRoom" />
 </menu>

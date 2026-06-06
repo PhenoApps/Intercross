@@ -15,7 +15,61 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
 
     fun deleteById(eid: Long) {
 
-        eventRepo.deleteById(eid)
+        viewModelScope.launch {
+
+            eventRepo.deleteById(eid)
+
+        }
+
+    }
+
+    fun deleteByIds(eids: List<Long>) {
+
+        viewModelScope.launch {
+
+            eventRepo.deleteByIds(eids)
+
+        }
+
+    }
+
+    fun archiveById(eid: Long) {
+
+        viewModelScope.launch {
+
+            eventRepo.archiveById(eid)
+
+        }
+
+    }
+
+    fun archiveByIds(eids: List<Long>) {
+
+        viewModelScope.launch {
+
+            eventRepo.archiveByIds(eids)
+
+        }
+
+    }
+
+    fun unarchiveById(eid: Long) {
+
+        viewModelScope.launch {
+
+            eventRepo.unarchiveById(eid)
+
+        }
+
+    }
+
+    fun unarchiveByIds(eids: List<Long>) {
+
+        viewModelScope.launch {
+
+            eventRepo.unarchiveByIds(eids)
+
+        }
 
     }
 
@@ -37,6 +91,8 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
     val allParents = eventRepo.getAllParents()
 
     val events = eventRepo.selectAll()
+
+    val archivedEvents = eventRepo.selectArchivedEvents()
 
     val metadata = eventRepo.getMetadata()
 }

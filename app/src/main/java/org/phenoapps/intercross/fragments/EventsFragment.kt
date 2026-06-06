@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -14,21 +13,22 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.phenoapps.intercross.BuildConfig
 import org.phenoapps.intercross.activities.MainActivity
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.adapters.EventsAdapter
 import org.phenoapps.intercross.data.*
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
@@ -44,6 +44,8 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import androidx.core.content.edit
+import org.phenoapps.intercross.ui.lists.EventsList
+import org.phenoapps.intercross.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fragment_events),
@@ -90,6 +92,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
     private var mSettings: Settings = Settings()
 
     private var mEvents: List<Event> = ArrayList()
+
+    private var mArchivedEvents: List<Event> = ArrayList()
+
+    private var mScrollToTopAfterNextEventUpdate = false
 
     private var mMetadata: List<Meta> = ArrayList()
 
@@ -171,10 +177,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
             } else mBinding.firstText.setText(female)
         }
 
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
-
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
         firstHint = getFirstOrder(requireContext())
 
         secondHint = getSecondOrder(requireContext())
@@ -205,6 +207,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                 menuInflater.inflate(R.menu.menu_entry_fragment, menu)
             }
 
+            override fun onPrepareMenu(menu: Menu) {
+                menu.findItem(R.id.action_archived_crosses)?.isVisible = mArchivedEvents.isNotEmpty()
+            }
+
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_set_experiment -> {
@@ -216,6 +222,10 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                         //
                         // }
                         showCrossesExport()
+                        true
+                    }
+                    R.id.action_archived_crosses -> {
+                        findNavController().navigate(R.id.action_to_archived_events_fragment)
                         true
                     }
                     else -> false
@@ -275,7 +285,17 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                     }
                 }
 
-                (mBinding.recyclerView.adapter as? EventsAdapter)?.submitList(it)
+            }
+        }
+
+        viewModel.archivedEvents.observe(viewLifecycleOwner) {
+
+            it?.let {
+
+                mArchivedEvents = it
+
+                activity?.invalidateOptionsMenu()
+
             }
         }
 
@@ -424,7 +444,7 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
     private fun FragmentEventsBinding.setupUI() {
 
-        setupRecyclerView()
+        setupComposeEventsList()
 
         setupTextInput()
 
@@ -470,43 +490,68 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
 
     }
 
-    private fun FragmentEventsBinding.setupRecyclerView() {
+    private fun FragmentEventsBinding.setupComposeEventsList() {
+        composeEventsList.setContent {
+            AppTheme {
+                val events by viewModel.events.observeAsState(emptyList())
+                val listState = rememberLazyListState()
+                val firstEventId = remember(events) { events.firstOrNull()?.id }
 
-        //setup recycler adapter
-        recyclerView.adapter = EventsAdapter(this@EventsFragment, viewModel, this@EventsFragment)
-
-        val undoString = getString(R.string.undo)
-
-        //setup on item swipe to delete
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-                (recyclerView.adapter as EventsAdapter)
-                        .currentList[viewHolder.adapterPosition].also { event ->
-
-                    event.id?.let {
-
-                        viewModel.deleteById(eid = it)
-
-                        mSnackbar.push(SnackbarQueue.SnackJob(root, event.eventDbId, undoString) {
-
-                            scope.launch {
-                                CrossUtil(requireContext()).submitCrossEvent(activity,
-                                    event.femaleObsUnitDbId, event.maleObsUnitDbId,
-                                    event.eventDbId, mSettings, settingsModel, viewModel,
-                                    mParents, parentsList, mWishlistProgress, mMetadata, metaValuesViewModel
-                                )
-                            }
-                        })
+                LaunchedEffect(firstEventId) {
+                    if (mScrollToTopAfterNextEventUpdate && firstEventId != null) {
+                        listState.animateScrollToItem(0)
+                        mScrollToTopAfterNextEventUpdate = false
                     }
                 }
+
+                EventsList(
+                    events = events,
+                    onEventClick = { eventId ->
+                        onEventClick(eventId)
+                    },
+                    listState = listState,
+                    enableSwipeStartToEnd = true,
+                    enableSwipeEndToStart = true,
+                    startToEndIconRes = R.drawable.ic_archive,
+                    endToStartIconRes = R.drawable.ic_delete,
+                    startToEndContentDescription = getString(R.string.archive_event),
+                    endToStartContentDescription = getString(R.string.delete_event),
+                    onSwipeStartToEnd = { event ->
+                        event.id?.let { eid ->
+                            viewModel.archiveById(eid)
+
+                            mSnackbar.push(SnackbarQueue.SnackJob(
+                                mBinding.root,
+                                getString(R.string.snackbar_archived_cross, event.eventDbId),
+                                getString(R.string.undo)
+                            ) {
+                                viewModel.unarchiveById(eid)
+                            })
+                        }
+                    },
+                    onSwipeEndToStart = { event ->
+                        event.id?.let { eid ->
+                            viewModel.deleteById(eid)
+
+                            mSnackbar.push(SnackbarQueue.SnackJob(
+                                mBinding.root,
+                                getString(R.string.snackbar_deleted_cross, event.eventDbId),
+                                getString(R.string.undo)
+                            ) {
+
+                                scope.launch {
+                                    CrossUtil(requireContext()).submitCrossEvent(activity,
+                                        event.femaleObsUnitDbId, event.maleObsUnitDbId,
+                                        event.eventDbId, mSettings, settingsModel, viewModel,
+                                        mParents, parentsList, mWishlistProgress, mMetadata, metaValuesViewModel
+                                    )
+                                }
+                            })
+                        }
+                    }
+                )
             }
-        }).attachToRecyclerView(recyclerView)
+        }
     }
 
     private fun resetDataEntry() {
@@ -809,6 +854,8 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                                         metaValuesViewModel
                                     )
 
+                                mScrollToTopAfterNextEventUpdate = true
+
                                 activity?.runOnUiThread {
 
                                     checkPrefToOpenCrossEvent(findNavController(),
@@ -820,10 +867,6 @@ class EventsFragment : IntercrossBaseFragment<FragmentEventsBinding>(R.layout.fr
                 }
 
                 resetDataEntry()
-
-                Handler().postDelayed({
-                    mBinding.recyclerView.scrollToPosition(0)
-                }, 250)
 
             } else Dialogs.notify(AlertDialog.Builder(requireContext()), getString(R.string.cross_id_already_exists_as_event))
 

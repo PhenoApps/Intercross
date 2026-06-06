@@ -21,7 +21,7 @@ interface EventsDao : BaseDao<Event> {
     @Query("SELECT * FROM events WHERE events.eid == :eid")
     suspend fun getEvent(eid: Long?): Event
 
-    @Query("SELECT * FROM events ORDER BY date DESC")
+    @Query("SELECT * FROM events WHERE isArchived = 0  ORDER BY date DESC")
     fun selectAll(): LiveData<List<Event>>
 
     @Query("""
@@ -30,7 +30,7 @@ interface EventsDao : BaseDao<Event> {
             FROM events as y
             WHERE y.mom = x.mom and y.dad = x.dad) as count
         FROM events as x, parents as male, parents as female
-        WHERE x.dad = male.codeId and x.mom = female.codeId
+        WHERE x.dad = male.codeId and x.mom = female.codeId AND x.isArchived = 0
         GROUP BY x.mom, "momReadable", x.dad, "dadReadable"
     """)
     fun getParentCount(): LiveData<List<ParentCount>>
@@ -40,7 +40,7 @@ interface EventsDao : BaseDao<Event> {
         x.person as "person", x.date as "date",
         COUNT(*) as count
     FROM events as x, parents as male, parents as female
-    WHERE x.dad = male.codeId and x.mom = female.codeId
+    WHERE x.dad = male.codeId and x.mom = female.codeId AND x.isArchived = 0
     GROUP BY x.mom, "momReadable", x.dad, "dadReadable", x.person, x.date
 """)
     fun getAllParents(): LiveData<List<ParentCount>>
@@ -79,6 +79,9 @@ interface EventsDao : BaseDao<Event> {
     @Query("DELETE FROM events WHERE events.eid = :eid")
     suspend fun deleteById(eid: Long)
 
+    @Query("DELETE FROM events WHERE events.eid IN (:eids)")
+    suspend fun deleteByIds(eids: List<Long>)
+
     @Query("SELECT DISTINCT x.codeId FROM events as x WHERE x.codeId = :code")
     fun getEventsWithCode(code: String): List<String>
 
@@ -103,4 +106,22 @@ interface EventsDao : BaseDao<Event> {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertEvent(event: Event): Long
+
+    @Query("UPDATE events SET isArchived = 1 WHERE eid = :eid")
+    suspend fun archiveEvent(eid: Long)
+
+    @Query("UPDATE events SET isArchived = 1 WHERE eid IN (:eids)")
+    suspend fun archiveEvents(eids: List<Long>)
+
+    @Query("UPDATE events SET isArchived = 0 WHERE eid = :eid")
+    suspend fun unarchiveEvent(eid: Long)
+
+    @Query("UPDATE events SET isArchived = 0 WHERE eid IN (:eids)")
+    suspend fun unarchiveEvents(eids: List<Long>)
+
+    @Query("SELECT * FROM events WHERE isArchived = 0 ORDER BY date DESC")
+    fun selectActiveEvents(): LiveData<List<Event>>
+
+    @Query("SELECT * FROM events WHERE isArchived = 1 ORDER BY date DESC")
+    fun selectArchivedEvents(): LiveData<List<Event>>
 }

@@ -38,6 +38,8 @@ data class Event(
 
         var sex: Int = -1, //by default sex is unknown
 
+        var isArchived: Boolean = false,
+
         @ColumnInfo(name = "eid")
         @PrimaryKey(autoGenerate = true)
         var id: Long? = null): BaseTable() {

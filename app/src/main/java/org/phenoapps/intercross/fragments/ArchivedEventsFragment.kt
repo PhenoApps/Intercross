@@ -7,7 +7,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.os.bundleOf
@@ -38,7 +37,7 @@ class ArchivedEventsFragment :
 
     private var selectedEventIds by mutableStateOf<Set<Long>>(emptySet())
 
-    private var archivedEvents: List<Event> = emptyList()
+    private var archivedEvents by mutableStateOf<List<Event>>(emptyList())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,10 +65,8 @@ class ArchivedEventsFragment :
     private fun FragmentArchivedEventsBinding.setupComposeArchivedEventsList() {
         composeArchivedEventsList.setContent {
             AppTheme {
-                val events by viewModel.archivedEvents.observeAsState(emptyList())
-
                 EventsList(
-                    events = events,
+                    events = archivedEvents,
                     onEventClick = { eventId ->
                         findNavController().navigate(
                             R.id.event_fragment,

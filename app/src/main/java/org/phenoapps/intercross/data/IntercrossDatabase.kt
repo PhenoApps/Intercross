@@ -8,13 +8,15 @@ import androidx.room.TypeConverters
 import org.phenoapps.intercross.data.dao.*
 import org.phenoapps.intercross.data.migrations.MigrationV2MetaData
 import org.phenoapps.intercross.data.migrations.MigrationV3WishlistView
-import org.phenoapps.intercross.data.migrations.MigrationV4ArchivedCrosses
+import org.phenoapps.intercross.data.migrations.MigrationV4UniqueWishType
+import org.phenoapps.intercross.data.migrations.MigrationV5ArchivedCrosses
 import org.phenoapps.intercross.data.models.*
+import kotlin.jvm.java
 
 @Database(entities = [Event::class, Parent::class,
     Wishlist::class, Settings::class, PollenGroup::class,
     Meta::class, MetadataValues::class],
-        views = [WishlistView::class], version = 4, exportSchema = true)
+        views = [WishlistView::class], version = 5, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class IntercrossDatabase : RoomDatabase() {
 
@@ -45,7 +47,8 @@ abstract class IntercrossDatabase : RoomDatabase() {
             return Room.databaseBuilder(ctx, IntercrossDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MigrationV2MetaData()) //v1 -> v2 migration added JSON based metadata
                 .addMigrations(MigrationV3WishlistView()) // v2 -> v3 migration for WishlistView
-                .addMigrations(MigrationV4ArchivedCrosses()) // v3 -> v4 added isArchived column to events table
+                .addMigrations(MigrationV4UniqueWishType()) // v3 -> v4 migration for unique wishlist type
+                .addMigrations(MigrationV5ArchivedCrosses()) // v4 -> v5 added isArchived column to events table
                 .setJournalMode(JournalMode.TRUNCATE) //truncate mode makes it easier to export/import database w/o having to manage WAL files.
                 .build()
         }

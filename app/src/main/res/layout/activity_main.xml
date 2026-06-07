@@ -48,8 +48,17 @@
             app:layout_constraintStart_toEndOf="@id/camera_scrim_left"
             app:layout_constraintEnd_toStartOf="@id/camera_scrim_right"
             app:layout_constraintTop_toBottomOf="@id/main_tb"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
             tools:ignore="FragmentTagUsage" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:menu="@menu/menu_bot_nav"
+            app:layout_constraintStart_toEndOf="@id/camera_scrim_left"
+            app:layout_constraintEnd_toStartOf="@id/camera_scrim_right"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

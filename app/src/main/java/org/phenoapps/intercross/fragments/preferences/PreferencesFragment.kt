@@ -60,6 +60,7 @@ class PreferencesFragment : BasePreferenceFragment(R.xml.preferences) {
                     R.xml.behavior_preferences,
                     R.xml.printing_preferences,
                     R.xml.database_preferences,
+                    R.xml.layout_preferences
                 ).forEach {
                     this?.index(it)
                 }
@@ -77,6 +78,18 @@ class PreferencesFragment : BasePreferenceFragment(R.xml.preferences) {
                     findNavController().navigate(
                         PreferencesFragmentDirections
                             .actionFromPreferencesFragmentToProfileFragment()
+                    )
+                    true
+                }
+            }
+        }
+
+        with(findPreference<PreferenceScreen>(getString(R.string.root_layout))) {
+            this?.let { it ->
+                it.setOnPreferenceClickListener {
+                    findNavController().navigate(
+                        PreferencesFragmentDirections
+                            .actionFromPreferencesFragmentToLayoutFragment()
                     )
                     true
                 }
@@ -123,9 +136,8 @@ class PreferencesFragment : BasePreferenceFragment(R.xml.preferences) {
         with(findPreference<PreferenceScreen>(getString(R.string.root_brapi))) {
             this?.let { it ->
                 it.setOnPreferenceClickListener {
-                    //TODO
-//                    findNavController().navigate(SettingsFragmentDirections
-//                        .actionFromSettingsToBrapiFragment())
+                    findNavController().navigate(PreferencesFragmentDirections
+                        .actionFromSettingsToBrapiFragment())
 
                     true
                 }

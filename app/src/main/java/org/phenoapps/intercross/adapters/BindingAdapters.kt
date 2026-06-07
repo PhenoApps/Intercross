@@ -39,13 +39,14 @@ fun bindCrossTypeImage(view: ImageView, event: Event?) {
 
 @BindingAdapter("setQRCode")
 fun bindQRCodeImage(view: ImageView, code: String?) {
-
-    code?.let {
-
-        view.tag = code
-
-        AsyncLoadBarcode(view, code).execute(code)
+    if (code.isNullOrBlank()) {
+        view.tag = null
+        view.setImageDrawable(null)
+        return
     }
+
+    view.tag = code
+    AsyncLoadBarcode(view, code).execute(code)
 }
 
 @BindingAdapter("layoutMarginStart")

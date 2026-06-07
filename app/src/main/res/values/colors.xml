@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF5722</color>
     <color name="colorAccentTransparent">#42FF5722</color>
     <color name="colorDisabled">#FBE9E7</color>
+    <color name="patternPrefixColor">#E53935</color>
+    <color name="patternSuffixColor">#1E88E5</color>
 
     <color name="progressBlank">#AAAAAAAA</color>
     <color name="progressStart">#90FFFF00</color>
@@ -15,5 +17,9 @@
     <color name="progressMoreThanTwoThird">#FFEB3B</color>
     <color name="progressLessThanTwoThird">#FF9800</color>
     <color name="progressLessThanOneThird">#F44336</color>
+
+    <color name="card_stroke">#FFE4DCCB</color>
+    <color name="card_meta_label">#FF8C877B</color>
+    <color name="card_meta_value">#FF1E1E1A</color>
 
 </resources>

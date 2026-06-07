@@ -2,37 +2,53 @@ package org.phenoapps.intercross.util
 
 import android.Manifest
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
+import androidx.navigation.fragment.findNavController
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
+import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 import org.phenoapps.intercross.dialogs.FileExploreDialogFragment
 import org.phenoapps.intercross.dialogs.ListAddDialog
 import org.phenoapps.utils.BaseDocumentTreeUtil.Companion.getDirectory
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
-import javax.inject.Inject
 
-class ImportUtil (private val context: Context, private val importDirectory: Int, private val importDialogTitle: String) {
+class ImportUtil(
+    private val context: Context,
+    private val importDirectory: Int,
+    private val importDialogTitle: String,
+    private val brapiImportMode: Int = BRAPI_MODE_WISHLIST
+) {
 
-    @Inject
-    lateinit var mPref: SharedPreferences
+    companion object {
+        const val BRAPI_MODE_WISHLIST = 0
+        const val BRAPI_MODE_PARENTS = 1
+        const val BRAPI_MODE_IMPORT_CROSSES = 2
+        const val BRAPI_MODE_EXPORT_CROSSES = 3
+        const val IMPORT_MODE_ARG = "mode"
+    }
 
-    @Inject
-    lateinit var mKeyUtil: KeyUtil
+    private val prefs by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    private val keyUtil by lazy {
+        KeyUtil(context)
+    }
 
     fun showImportDialog(fragment: Fragment) {
         var importArray: Array<String?> = arrayOf(
             context.getString(R.string.import_source_local),
-            // context.getString(R.string.import_source_cloud),
         )
 
-        if (mPref.getBoolean(mKeyUtil.brapiEnabled, false)) {
-            val displayName = mPref.getString(
-                mKeyUtil.brapiDisplayName,
+        if (prefs.getBoolean(keyUtil.brapiEnabled, false)) {
+            val displayName = prefs.getString(
+                keyUtil.brapiDisplayName,
                 context.getString(R.string.brapi_edit_display_name_default)
             ) ?: context.getString(R.string.brapi_edit_display_name_default)
 
@@ -43,7 +59,6 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
 
         val icons = IntArray(importArray.size).apply {
             this[0] = R.drawable.ic_file_generic
-            // this[1] = R.drawable.ic_file_cloud
             if (importArray.size > 1) {
                 this[1] = R.drawable.ic_adv_brapi
             }
@@ -53,12 +68,15 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
             AdapterView.OnItemClickListener { _, _, position, _ ->
                 when (position) {
                     0 -> loadLocalPermission(fragment)
-                    // 1 -> loadCloud()
-                    // 2 ->loadBrAPI()
+                    1 -> {
+                        fragment.findNavController().navigate(
+                            R.id.global_action_to_wishlist_import,
+                            bundleOf(IMPORT_MODE_ARG to brapiImportMode)
+                        )
+                    }
                 }
             }
 
-        // TODO: remove this array size checking when BrAPI is added in the app
         if (importArray.size == 1) loadLocalPermission(fragment)
         else fragment.activity?.let {
             val dialog = ListAddDialog(it, context.getString(R.string.import_file), importArray, icons, onItemClickListener)
@@ -87,20 +105,22 @@ class ImportUtil (private val context: Context, private val importDirectory: Int
 
     private fun loadLocal(fragment: Fragment) {
         try {
-            fragment.let {
-                val importDir = getDirectory(context, importDirectory)
-                if (importDir != null && importDir.exists()) {
-                    FileExploreDialogFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(getString(R.string.dialog_title), importDialogTitle)
-                            putString(getString(R.string.path), importDir.uri.toString())
-                            putStringArray(getString(R.string.include), arrayOf("csv", "xls", "xlsx"))
-                        }
-                        setOnFileSelectedListener { uri ->
-                            (it.activity as MainActivity).importFromUri(uri)
-                        }
-                    }.show(it.parentFragmentManager, FileExploreDialogFragment.TAG)
+            val appContext: Context = context
+            val importDir = getDirectory(appContext, importDirectory)
+            if (importDir != null && importDir.exists()) {
+                val dialogTitleKey = appContext.getString(R.string.dialog_title)
+                val pathKey = appContext.getString(R.string.path)
+                val includeKey = appContext.getString(R.string.include)
+                val dialog = FileExploreDialogFragment()
+                dialog.arguments = Bundle().apply {
+                    putString(dialogTitleKey, importDialogTitle)
+                    putString(pathKey, importDir.uri.toString())
+                    putStringArray(includeKey, arrayOf("csv", "xls", "xlsx"))
                 }
+                dialog.setOnFileSelectedListener { uri ->
+                    (fragment.activity as MainActivity).importFromUri(uri)
+                }
+                dialog.show(fragment.parentFragmentManager, FileExploreDialogFragment.TAG)
             }
         } catch (e: Exception) {
             e.printStackTrace()

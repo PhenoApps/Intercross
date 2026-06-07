@@ -6,6 +6,7 @@ import org.phenoapps.intercross.fragments.CrossTrackerFragment.WishlistItem
 
 interface CrossController {
     fun onCrossClicked(male: String, female: String)
+    fun onCrossLongClicked(male: String, female: String, maleId: String, femaleId: String)
     fun onPersonChipClicked(persons: List<CrossTrackerFragment.PersonCount>, crossCount: Int)
     fun onDateChipClicked(dates: List<CrossTrackerFragment.DateCount>)
     fun onWishlistProgressChipClicked(wishlistItem: WishlistItem)

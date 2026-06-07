@@ -1,13 +1,13 @@
 package org.phenoapps.intercross.application;
 
-import androidx.multidex.MultiDexApplication;
+import android.app.Application;
 
 import org.phenoapps.intercross.BuildConfig;
 
 import dagger.hilt.android.HiltAndroidApp;
 
 @HiltAndroidApp
-public class Intercross extends MultiDexApplication {
+public class Intercross extends Application {
 
     public Intercross() {
         if (BuildConfig.DEBUG) {

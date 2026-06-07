@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -47,6 +48,7 @@ import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
 import org.phenoapps.intercross.data.models.Parent
+import org.phenoapps.intercross.util.ImportUtil
 import org.phenoapps.intercross.data.models.PollenGroup
 import org.phenoapps.intercross.data.models.Settings
 import org.phenoapps.intercross.data.models.Wishlist
@@ -80,6 +82,7 @@ import java.io.File
 import javax.inject.Inject
 import androidx.core.content.edit
 import androidx.navigation.findNavController
+import androidx.navigation.navOptions
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
@@ -141,7 +144,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             try {
 
-                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, mParents, mGroups, mMetadata, mMetaValues)
+                val parentIds = (mEvents.map { it.maleObsUnitDbId } + mEvents.map { it.femaleObsUnitDbId })
+                val filteredParents = mParents.filter { it.codeId in parentIds }
+                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, filteredParents, mGroups, mMetadata, mMetaValues)
 
             } catch (e: Exception) {
 
@@ -464,6 +469,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
         mNavController = findNavController(R.id.nav_fragment)
 
+        setupBottomNavigation()
+
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         // toolbar for search screen
@@ -479,7 +486,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         startObservers()
 
         mBinding.mainTb.setNavigationOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -499,6 +506,61 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayShowHomeEnabled(false)
         supportActionBar?.show()
+    }
+
+    private fun setupBottomNavigation() {
+        val bottomNav = mBinding.bottomNavBar
+
+        // Manual setup without animations or state save/restore to avoid
+        // TabLayout item inflation bug in ParentsFragment when navigating back
+        bottomNav.setOnItemSelectedListener { item ->
+            val currentDestId = mNavController.currentDestination?.id
+            if (item.itemId != currentDestId) {
+                val navOptions = androidx.navigation.navOptions {
+                    anim {
+                        enter = 0
+                        exit = 0
+                        popEnter = 0
+                        popExit = 0
+                    }
+                    popUpTo(R.id.events_fragment) {
+                        saveState = false
+                    }
+                    launchSingleTop = true
+                    restoreState = false
+                }
+                mNavController.navigate(item.itemId, null, navOptions)
+            }
+            true
+        }
+
+        // Sync bottom nav selection when destination changes (e.g. back press)
+        mNavController.addOnDestinationChangedListener { _, destination, _ ->
+            val menu = bottomNav.menu
+            for (i in 0 until menu.size()) {
+                val menuItem = menu.getItem(i)
+                if (menuItem.itemId == destination.id) {
+                    menuItem.isChecked = true
+                    break
+                }
+            }
+
+            // Define which destinations show the bottom nav bar
+            val topLevelDestinations = setOf(
+                R.id.events_fragment,
+                R.id.cross_tracker_fragment,
+                R.id.parents_fragment,
+                R.id.summary_fragment,
+                R.id.preferences_fragment,
+                R.id.crossblock_fragment,
+                R.id.about_fragment
+            )
+            bottomNav.visibility = if (destination.id in topLevelDestinations) View.VISIBLE else View.GONE
+        }
+    }
+
+    fun getBottomNavView(): com.google.android.material.bottomnavigation.BottomNavigationView {
+        return mBinding.bottomNavBar
     }
 
     private fun startObservers() {
@@ -598,28 +660,38 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         //}
     }
 
-    fun startExport(fileName: String) {
-        exportUtil.exportCrosses(eventsModel, mEvents, mParents, mGroups, mMetadata, mMetaValues, fileName)
-    }
-
     fun showExportDialog(onDismiss: () -> Unit) {
 
-        //TODO
-        //val tokenCheck = mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null)
+        val tokenCheck = mPref.getString(mKeyUtil.brapiToken, null)
         val importCheck = mPref.getString(mKeyUtil.brapiHasBeenImported, null)
         val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
 
-        if (importCheck != null) { //(tokenCheck != null || importCheck != null) {
+        if (tokenCheck != null || importCheck != null) {
+
+            val options = arrayOf(
+                getString(R.string.dialog_export_option_local),
+                getString(R.string.dialog_export_option_brapi_export),
+                getString(R.string.dialog_export_option_brapi_import)
+            )
 
             AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_export_title)
-                .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
+                .setSingleChoiceItems(options, 0) { dialog, which ->
                     when (which) {
                         0 -> {
                             exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
                         }
-                        else -> {
-                            mNavController.navigate(R.id.global_action_to_brapi_export)
+                        1 -> {
+                            mNavController.navigate(
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_EXPORT_CROSSES)
+                            )
+                        }
+                        2 -> {
+                            mNavController.navigate(
+                                R.id.global_action_to_brapi_cross_projects,
+                                bundleOf(ImportUtil.IMPORT_MODE_ARG to ImportUtil.BRAPI_MODE_IMPORT_CROSSES)
+                            )
                         }
                     }
 
@@ -650,7 +722,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             "summary" -> {
                 if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-                else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
+                else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
             }
@@ -661,7 +733,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                         getString(R.string.summary_and_wishlist_empty))
             }
             "wishlist" -> {
-                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
+                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
                 else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
                         getString(R.string.summary_and_wishlist_empty))
@@ -680,7 +752,8 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
                 }
 
                 doubleBackToExitPressedOnce = true
-                Toast.makeText(this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity,
+                    getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
 
                 Handler(Looper.getMainLooper()).postDelayed(
                     { doubleBackToExitPressedOnce = false },
@@ -785,12 +858,19 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
      */
     fun applyBottomInsets(root: View) {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(
+            val systemInsets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or
                         WindowInsetsCompat.Type.displayCutout()
             )
 
-            root.updatePadding(bottom = insets.bottom)
+            val imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // if keyboard is visible, use ime insets, otherwise use system insets
+            val bottomInsets =
+                if (imeInsets.bottom > 0) imeInsets.bottom
+                else systemInsets.bottom
+
+            root.updatePadding(bottom = bottomInsets)
 
             windowInsets
         }

@@ -1,12 +1,12 @@
 package org.phenoapps.intercross.adapters
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.databinding.SimpleListItemBinding
 import org.phenoapps.intercross.interfaces.OnSimpleItemClicked
@@ -46,9 +46,6 @@ class SimpleListAdapter(private val listener: OnSimpleItemClicked)
 
             with(holder) {
 
-                if (mSelectedPosition == position) itemView.setBackgroundColor(Color.parseColor("#6000ee00"))
-                else itemView.setBackgroundResource(R.drawable.text_cell)
-
                 holder.itemView.setOnLongClickListener {
 
                     listener.onItemLongClicked(item)
@@ -68,7 +65,7 @@ class SimpleListAdapter(private val listener: OnSimpleItemClicked)
                     this@SimpleListAdapter.listener.onItemClicked(item)
                 }
 
-                bind(item)
+                bind(item, mSelectedPosition == position)
             }
         }
     }
@@ -76,9 +73,10 @@ class SimpleListAdapter(private val listener: OnSimpleItemClicked)
     inner class ViewHolder(private val binding: SimpleListItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(pair: Pair<String, String>) {
+        fun bind(pair: Pair<String, String>, isSelected: Boolean) {
 
             binding.name = pair.second
+            (binding.root as? MaterialCardView)?.isChecked = isSelected
         }
     }
 }

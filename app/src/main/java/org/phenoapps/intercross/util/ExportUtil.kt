@@ -71,6 +71,8 @@ class ExportUtil@Inject constructor(@ActivityContext private val context: Contex
     private val crossIdHeader: String by lazy { context.getString(R.string.crosses_export_id_header) }
     private val crossMomHeader: String by lazy { context.getString(R.string.crosses_export_mom_header) }
     private val crossDadHeader: String by lazy { context.getString(R.string.crosses_export_dad_header) }
+    private val crossMomNameHeader: String by lazy { context.getString(R.string.crosses_export_mom_name_header) }
+    private val crossDadNameHeader: String by lazy { context.getString(R.string.crosses_export_dad_name_header) }
     private val crossTimestampHeader: String by lazy { context.getString(R.string.crosses_export_date_header) }
     private val crossPersonHeader: String by lazy { context.getString(R.string.crosses_export_person_header) }
     private val crossExperimentHeader: String by lazy { context.getString(R.string.crosses_export_experiment_header) }
@@ -122,18 +124,50 @@ class ExportUtil@Inject constructor(@ActivityContext private val context: Contex
                                 context.contentResolver.openOutputStream(docFile.uri)?.use { stream ->
                                     val writer = OutputStreamWriter(stream)
 
-                                    val properties = if (metadata.isNotEmpty()) {
+                                    // Check if parents have alternative names (name differs from codeId)
+                                    val hasAlternativeNames = parents.any { it.name != it.codeId }
+
+                                    // Check if metadata collection is enabled
+                                    val metadataEnabled = mPref.getBoolean(
+                                        context.getString(R.string.key_pref_behavior_collect_additional_info), false
+                                    )
+
+                                    // Build name headers if alternative names exist
+                                    val nameHeaders = if (hasAlternativeNames) {
+                                        ",$crossMomNameHeader,$crossDadNameHeader"
+                                    } else ""
+
+                                    // Only include metadata properties if metadata is enabled
+                                    val properties = if (metadataEnabled && metadata.isNotEmpty()) {
                                         metadata.joinToString(",", ",") { it.property }
                                     } else ""
                                     val propMap = metadata.map { it.id to it.property }
 
-                                    // add metadata properties as headers to the export file
-                                    writer.write("$eventModelHeaderString$properties\n")
+                                    // Build parent lookup map for name resolution
+                                    val parentNameMap = parents.associate { it.codeId to it.name }
+
+                                    // add headers to the export file
+                                    writer.write("$eventModelHeaderString$nameHeaders$properties\n")
 
                                     crosses.forEach { cross ->
-                                        val values = getMetadataValues(cross, metadata, metaValues, propMap)
-                                        val valueString = if (values.isNotEmpty()) {
-                                            values.joinToString(",", ",") { it }
+                                        // Build metadata values string only if metadata is enabled
+                                        val valueString = if (metadataEnabled && metadata.isNotEmpty()) {
+                                            val values = getMetadataValues(cross, metadata, metaValues, propMap)
+                                            if (values.isNotEmpty()) {
+                                                values.joinToString(",", ",") { it }
+                                            } else ""
+                                        } else ""
+
+                                        // Build name columns if alternative names exist
+                                        val nameColumns = if (hasAlternativeNames) {
+                                            val femaleName = parentNameMap[cross.femaleObsUnitDbId] ?: ""
+                                            val maleName = if (groups.any { it.codeId == cross.maleObsUnitDbId }) {
+                                                // For pollen groups, use the group name or code
+                                                groups.find { it.codeId == cross.maleObsUnitDbId }?.name ?: ""
+                                            } else {
+                                                parentNameMap[cross.maleObsUnitDbId] ?: ""
+                                            }
+                                            ",$femaleName,$maleName"
                                         } else ""
 
                                         if (groups.any { it.codeId == cross.maleObsUnitDbId }) {
@@ -144,9 +178,9 @@ class ExportUtil@Inject constructor(@ActivityContext private val context: Contex
                                                         it?.codeId
                                                     }
                                                 }.joinToString(";", "{", "}")
-                                            writer.write("${cross.toPollenGroupString(males, groupName)}$valueString\n")
+                                            writer.write("${cross.toPollenGroupString(males, groupName)}$nameColumns$valueString\n")
                                         } else {
-                                            writer.write("$cross$valueString\n")
+                                            writer.write("$cross$nameColumns$valueString\n")
                                         }
 
                                     }

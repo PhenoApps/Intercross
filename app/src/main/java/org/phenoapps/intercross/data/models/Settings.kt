@@ -13,7 +13,7 @@ data class Settings (
     var startFrom: Boolean = false,
     var isAutoIncrement: Boolean = false,
     var pad: Int = 0,
-    var number: Int = 0,
+    var number: Int = 1,
     var prefix: String = String(),
     var suffix: String = String(),
     var allowBlank: Boolean = false,

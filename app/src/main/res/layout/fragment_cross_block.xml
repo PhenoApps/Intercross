@@ -28,7 +28,7 @@
             android:layout_margin="8dp"
             android:background="@color/progressBlank"
             android:text="@string/no_crosses_made"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/legend_red"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view" />
@@ -41,7 +41,7 @@
             android:layout_margin="8dp"
             android:background="@color/progressLessThanOneThird"
             android:text="@string/wishlist_less_than_one_third"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/legend_orange"
             app:layout_constraintStart_toEndOf="@id/legend_blank"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
@@ -54,7 +54,7 @@
             android:layout_margin="8dp"
             android:background="@color/progressLessThanTwoThird"
             android:text="@string/wishlist_less_than_two_third"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/legend_yellow"
             app:layout_constraintStart_toEndOf="@id/legend_red"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
@@ -67,7 +67,7 @@
             android:layout_margin="8dp"
             android:background="@color/progressMoreThanTwoThird"
             android:text="@string/wishlist_more_than_two_third"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/legend_green"
             app:layout_constraintStart_toEndOf="@id/legend_orange"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
@@ -80,7 +80,7 @@
             android:layout_margin="8dp"
             android:background="@color/progressMin"
             android:text="@string/wishlist_achieved_legend_label"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/legend_dark_green"
             app:layout_constraintStart_toEndOf="@id/legend_yellow"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view"/>
@@ -93,19 +93,10 @@
             android:layout_margin="8dp"
             android:background="@color/progressMax"
             android:text="@string/wishlist_maximum_met_legend_label"
-            app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/legend_green"
             app:layout_constraintTop_toBottomOf="@id/fragment_crossblock_table_view" />
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:menu="@menu/menu_bot_nav"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

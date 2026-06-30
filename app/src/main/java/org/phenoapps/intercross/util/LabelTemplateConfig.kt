@@ -109,7 +109,7 @@ data class LabelTemplateConfig(
             "^LL$heightDots",
             "^LH$marginX,$marginY^FS",
             "^FO$idX,$idY^A0,$textHeight,$textWidth^FD${primaryIdPlaceholder()}^FS",
-            "^FO$barcodeX,$barcodeY^BQN,2,$barcodeMagnification,H^FDHA,${primaryIdPlaceholder()}^FS",
+            "^FO$barcodeX,$barcodeY^BQN,2,$barcodeMagnification,H^FDQA,${primaryIdPlaceholder()}^FS",
             "^FO$dateX,$dateY^A0,$textHeight,$textWidth^FD${footerPlaceholder()}^FS",
             "^XZ",
         ).joinToString("\n")

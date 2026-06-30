@@ -1,4 +1,4 @@
-package org.phenoapps.intercross.ui.labels
+﻿package org.phenoapps.intercross.ui.labels
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
@@ -50,6 +50,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
@@ -80,6 +85,7 @@ import java.io.File
 import java.io.FileOutputStream
 import android.net.Uri
 import androidx.compose.material3.AlertDialog
+import org.phenoapps.intercross.ui.theme.AppTheme
 import org.phenoapps.intercross.ui.theme.colors.DefaultAppColors
 import org.phenoapps.intercross.ui.theme.toMaterialColorScheme
 import org.phenoapps.intercross.ui.theme.toMaterialTypography
@@ -98,6 +104,7 @@ fun LabelTemplateEditorScreen(
     onDetectDpi: () -> Unit,
     onRenderPreview: () -> Unit,
     onMessageShown: () -> Unit,
+    topBarState: org.phenoapps.intercross.ui.app.TopBarState? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val exportSuccessText = stringResource(R.string.export_success)
@@ -131,6 +138,42 @@ fun LabelTemplateEditorScreen(
     }
 
     Scaffold(
+        topBar = {
+            if (topBarState != null) {
+                @OptIn(ExperimentalMaterial3Api::class)
+                (TopAppBar(
+                    title = {
+                        Text(topBarState.title ?: topBarState.titleRes?.let { stringResource(it) }.orEmpty())
+                    },
+                    navigationIcon = {
+                        if (topBarState.showBack) {
+                            IconButton(onClick = { topBarState.onBack?.invoke() }) {
+                                Icon(painterResource(R.drawable.arrow_back_24px), contentDescription = stringResource(R.string.navigate_back))
+                            }
+                        }
+                    },
+                    actions = {
+                        topBarState.actions.forEach { action ->
+                            if (action.iconRes != null) {
+                                IconButton(onClick = { action.onClick?.invoke() }) {
+                                    Icon(painterResource(action.iconRes), contentDescription = stringResource(action.labelRes))
+                                }
+                            } else {
+                                TextButton(onClick = { action.onClick?.invoke() }) {
+                                    Text(stringResource(action.labelRes))
+                                }
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = AppTheme.colors.primary,
+                        titleContentColor = AppTheme.colors.surface.topBarContentColor,
+                        actionIconContentColor = AppTheme.colors.surface.topBarContentColor,
+                        navigationIconContentColor = AppTheme.colors.surface.topBarContentColor,
+                    ),
+                ))
+            }
+        },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
@@ -885,6 +928,17 @@ fun ActionRowPreview() {
 
 @Preview(showBackground = true)
 @Composable
+fun LabelMediaTypePickerPreview() {
+    IntercrossPreviewTheme {
+        LabelMediaTypePicker(
+            selectedMedia = LabelMediaType.CONTINUOUS,
+            onSelect = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun LabelTemplateEditorScreenPreview() {
     val sampleConfig = LabelTemplateConfig(
         name = "Sample 2x1",
@@ -898,6 +952,42 @@ fun LabelTemplateEditorScreenPreview() {
             ^XZ
         """.trimIndent(),
         labelType = LabelTemplateType.CROSS.name
+    )
+
+    val sampleUiState = LabelTemplateUiState(
+        config = sampleConfig,
+        savedTemplates = listOf(sampleConfig),
+        deviceName = "Zebra ZQ620",
+        printerDetails = "203 dpi, 2x1 in"
+    )
+
+    IntercrossPreviewTheme {
+        LabelTemplateEditorScreen(
+            uiState = sampleUiState,
+            onConfigChange = {},
+            onSelectSavedTemplate = { _, _ -> },
+            onSaveTemplate = {},
+            onImportZpl = {},
+            onDetectDpi = {},
+            onRenderPreview = {},
+            onMessageShown = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LabelTemplateEditorParentPreview() {
+    val sampleConfig = LabelTemplateConfig(
+        name = "Parent Label",
+        rawZpl = """
+            ^XA
+            ^PW406
+            ^FO0,0^A0,25,20^FD{parentCode}^FS
+            ^FO0,30^A0,25,20^FD{parentName}^FS
+            ^XZ
+        """.trimIndent(),
+        labelType = LabelTemplateType.PARENT.name
     )
 
     val sampleUiState = LabelTemplateUiState(

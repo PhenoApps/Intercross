@@ -25,7 +25,7 @@ data class ZplTemplate(
                     zplCode = """
                         ^XA
                         ^FO0,0^A0,25,20^FD{crossId}^FS
-                        ^FO140,30^BQN,2,3,H^FDHA,{crossId}^FS
+                        ^FO140,30^BQN,2,3,H^FDQA,{crossId}^FS
                         ^FO140,170^A0,25,20^FD{date}^FS
                         ^XZ
                     """.trimIndent(),
@@ -37,7 +37,7 @@ data class ZplTemplate(
                     zplCode = """
                         ^XA
                         ^FO0,0^A0,35,28^FD{crossId}^FS
-                        ^FO210,40^BQN,2,5,H^FDHA,{crossId}^FS
+                        ^FO210,40^BQN,2,5,H^FDQA,{crossId}^FS
                         ^FO210,300^A0,32,24^FD{date}^FS
                         ^XZ
                     """.trimIndent(),
@@ -49,7 +49,7 @@ data class ZplTemplate(
                     zplCode = """
                         ^XA
                         ^FO0,0^A0,25,20^FD{parentId}^FS
-                        ^FO140,30^BQN,2,3,H^FDHA,{parentId}^FS
+                        ^FO140,30^BQN,2,3,H^FDQA,{parentId}^FS
                         ^FO0,150^A0,22,18^FD{parentName}^FS
                         ^XZ
                     """.trimIndent(),
@@ -67,7 +67,7 @@ data class ZplTemplate(
                         ^FO0,70^FD{maleId}^FS
                         ^FO200,50
                         ^BQN,2,3,H
-                        ^FDHA,{crossId}^FS
+                        ^FDQA,{crossId}^FS
                         ^FO0,155^FD{date}^FS
                         ^XZ
                     """.trimIndent(),

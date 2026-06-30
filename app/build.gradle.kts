@@ -1,10 +1,9 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.google.services)
@@ -12,6 +11,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -34,9 +34,7 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
         buildConfig = true
-        viewBinding = true
         compose = true
     }
 
@@ -48,6 +46,7 @@ android {
         versionName = libs.versions.versionName.get()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testNamespace = "org.phenoapps.intercross.test"
         manifestPlaceholders["appAuthRedirectScheme"] = "fieldbook"
 
         ksp {
@@ -85,10 +84,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
-    }
-
     kotlin {
         jvmToolchain(21)
     }
@@ -97,11 +92,20 @@ android {
         abortOnError = false
         disable += "MissingTranslation"
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
     // Local libs
     implementation(fileTree(mapOf("include" to listOf("*.jar", "*.aar"), "dir" to "libs")))
+    implementation(libs.screenshot.validation.api)
 
     // Room
     ksp(libs.androidx.room.compiler)
@@ -148,6 +152,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.windowSizeClass)
     implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.lazytable)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Hilt
@@ -155,9 +161,8 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     // Firebase
-    implementation(libs.firebase.crash)
-    implementation(libs.firebase.core)
-    implementation(libs.firebase.analytics.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
     // Google / Material
@@ -184,7 +189,11 @@ dependencies {
     implementation(libs.jackson.databind)
 
     // QR / Barcode
-    implementation(libs.zxing.android.embedded)
+    implementation(libs.zxing.android.embedded) // QR code generation in CrossListItem
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
 
     // Coroutines
     implementation(libs.kotlin.coroutines.core)
@@ -230,4 +239,10 @@ dependencies {
 
     // Navigation testing
     androidTestImplementation(libs.androidx.navigation.testing)
+
+    // Screenshot Testing
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }
+
+apply(from = "../gradle/screenshots.gradle.kts")

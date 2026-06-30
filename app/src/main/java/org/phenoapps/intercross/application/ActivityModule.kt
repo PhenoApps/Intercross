@@ -1,4 +1,4 @@
-package org.phenoapps.intercross.application;
+package org.phenoapps.intercross.application
 
 import android.content.Context
 import android.content.SharedPreferences

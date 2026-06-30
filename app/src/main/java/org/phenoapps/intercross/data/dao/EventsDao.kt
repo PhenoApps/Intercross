@@ -21,16 +21,19 @@ interface EventsDao : BaseDao<Event> {
     @Query("SELECT * FROM events WHERE events.eid == :eid")
     suspend fun getEvent(eid: Long?): Event
 
-    @Query("SELECT * FROM events ORDER BY date DESC")
+    @Query("SELECT * FROM events WHERE archived = 0 ORDER BY date DESC")
     fun selectAll(): LiveData<List<Event>>
+
+    @Query("SELECT * FROM events WHERE archived = 1 ORDER BY date DESC")
+    fun selectArchived(): LiveData<List<Event>>
 
     @Query("""
         SELECT DISTINCT x.mom, female.name as "momReadable", x.dad, male.name as "dadReadable", MAX(x.person) as "person", MAX(x.date) as "date",
             (SELECT COUNT(*)
             FROM events as y
-            WHERE y.mom = x.mom and y.dad = x.dad) as count
+            WHERE y.archived = 0 and y.mom = x.mom and y.dad = x.dad) as count
         FROM events as x, parents as male, parents as female
-        WHERE x.dad = male.codeId and x.mom = female.codeId
+        WHERE x.archived = 0 and x.dad = male.codeId and x.mom = female.codeId
         GROUP BY x.mom, "momReadable", x.dad, "dadReadable"
     """)
     fun getParentCount(): LiveData<List<ParentCount>>
@@ -40,7 +43,7 @@ interface EventsDao : BaseDao<Event> {
         x.person as "person", x.date as "date",
         COUNT(*) as count
     FROM events as x, parents as male, parents as female
-    WHERE x.dad = male.codeId and x.mom = female.codeId
+    WHERE x.archived = 0 and x.dad = male.codeId and x.mom = female.codeId
     GROUP BY x.mom, "momReadable", x.dad, "dadReadable", x.person, x.date
 """)
     fun getAllParents(): LiveData<List<ParentCount>>
@@ -78,6 +81,12 @@ interface EventsDao : BaseDao<Event> {
 
     @Query("DELETE FROM events WHERE events.eid = :eid")
     suspend fun deleteById(eid: Long)
+
+    @Query("UPDATE events SET archived = 1 WHERE eid IN (:ids)")
+    suspend fun archiveByIds(ids: List<Long>)
+
+    @Query("UPDATE events SET archived = 0 WHERE eid IN (:ids)")
+    suspend fun unarchiveByIds(ids: List<Long>)
 
     @Query("SELECT DISTINCT x.codeId FROM events as x WHERE x.codeId = :code")
     fun getEventsWithCode(code: String): List<String>

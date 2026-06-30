@@ -9,20 +9,22 @@ import org.phenoapps.intercross.data.dao.*
 import org.phenoapps.intercross.data.migrations.MigrationV2MetaData
 import org.phenoapps.intercross.data.migrations.MigrationV3WishlistView
 import org.phenoapps.intercross.data.migrations.MigrationV4UniqueWishType
+import org.phenoapps.intercross.data.migrations.MigrationV5DropSettings
+import org.phenoapps.intercross.data.migrations.MigrationV6AddMetaIcon
+import org.phenoapps.intercross.data.migrations.MigrationV7ArchiveEvents
 import org.phenoapps.intercross.data.models.*
 import kotlin.jvm.java
 
 @Database(entities = [Event::class, Parent::class,
-    Wishlist::class, Settings::class, PollenGroup::class,
+    Wishlist::class, PollenGroup::class,
     Meta::class, MetadataValues::class],
-        views = [WishlistView::class], version = 3, exportSchema = true)
+        views = [WishlistView::class], version = 7, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class IntercrossDatabase : RoomDatabase() {
 
     abstract fun eventsDao(): EventsDao
     abstract fun parentsDao(): ParentsDao
     abstract fun wishlistDao(): WishlistDao
-    abstract fun settingsDao(): SettingsDao
     abstract fun pollenGroupDao(): PollenGroupDao
     abstract fun metadataDao(): MetadataDao
     abstract fun metaValuesDao(): MetaValuesDao
@@ -47,6 +49,9 @@ abstract class IntercrossDatabase : RoomDatabase() {
                 .addMigrations(MigrationV2MetaData()) //v1 -> v2 migration added JSON based metadata
                 .addMigrations(MigrationV3WishlistView()) // v2 -> v3 migration for WishlistView
                 .addMigrations(MigrationV4UniqueWishType()) // v3 -> v4 migration for unique wishlist type
+                .addMigrations(MigrationV5DropSettings(ctx)) // v4 -> v5 migration drops settings table
+                .addMigrations(MigrationV6AddMetaIcon()) // v5 -> v6 migration adds icon to metadata
+                .addMigrations(MigrationV7ArchiveEvents()) // v6 -> v7 migration adds event archiving
                 .setJournalMode(JournalMode.TRUNCATE) //truncate mode makes it easier to export/import database w/o having to manage WAL files.
                 .build()
         }

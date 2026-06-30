@@ -1,18 +1,8 @@
-package org.phenoapps.intercross.application;
+package org.phenoapps.intercross.application
 
-import android.app.Application;
-
-import org.phenoapps.intercross.BuildConfig;
-
-import dagger.hilt.android.HiltAndroidApp;
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+import org.phenoapps.intercross.BuildConfig
 
 @HiltAndroidApp
-public class Intercross extends Application {
-
-    public Intercross() {
-        if (BuildConfig.DEBUG) {
-            //StrictMode.enableDefaults();
-            //un-comment to enable strict warnings in logcat
-        }
-    }
-}
+class Intercross : Application()

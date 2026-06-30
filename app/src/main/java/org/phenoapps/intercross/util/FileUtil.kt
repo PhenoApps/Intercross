@@ -138,7 +138,7 @@ class FileUtil @Inject constructor(
 
         if (lines.isNotEmpty()) {
 
-            val headers = lines[0].split(",").map { it -> it.replace(" ", "") }
+            val headers = lines[0].split(",").map { it.replace(" ", "") }
 
             //ensure the headers size > 0
             if (headers.isNotEmpty()) {

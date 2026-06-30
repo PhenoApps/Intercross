@@ -17,6 +17,7 @@ val DefaultAppColors = AppColors(
         border = BaseColors.Border,
         iconTint = BaseColors.IconTint,
         iconFillTint = BaseColors.IconFillTint,
+        topBarContentColor = BaseColors.TopBarContent,
     ),
 
     text = TextColors(

@@ -19,13 +19,14 @@ object BaseColors {
     val Accent = Color(0xFFFF5722)
     val AccentTransparent = Color(0x42FF5722)
     val Disabled = Color(0xFFFBE9E7)
-    val Background = Color.White
+    val Background = Color(0xFFECEFF1)
     val LightGrayColor = LightGray
 
     // surface
     val Border = Color.Black
     val IconTint = Color.Black
     val IconFillTint = Color.Black
+    val TopBarContent = Color.White
 
     // text
     val TextLight = Color.Black

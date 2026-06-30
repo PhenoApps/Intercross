@@ -65,6 +65,8 @@
     <string name="key_pref_behavior_sound_notifications">&package;SOUND_NOTIFICATIONS</string>
     <string name="key_pref_behavior_open_cross_immediately">&package;OPEN_CROSS_IMMEDIATELY</string>
     <string name="key_pref_behavior_commutative_crossing">&package;COMMUTATIVE_CROSSING</string>
+    <string name="key_pref_behavior_barcode_formats">&package;BARCODE_FORMATS</string>
+    <string name="key_pref_behavior_barcode_flash">&package;BARCODE_FLASH</string>
 
     <!-- Printing preference keys -->
     <string name="key_pref_printer_category">&package;PRINTER_CATEGORY</string>

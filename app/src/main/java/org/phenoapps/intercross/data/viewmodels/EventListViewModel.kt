@@ -28,6 +28,24 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
         }
     }
 
+    fun archiveByIds(ids: List<Long>) {
+
+        viewModelScope.launch {
+
+            eventRepo.archiveByIds(ids)
+
+        }
+    }
+
+    fun unarchiveByIds(ids: List<Long>) {
+
+        viewModelScope.launch {
+
+            eventRepo.unarchiveByIds(ids)
+
+        }
+    }
+
     fun getRowid(e: Event): Long = eventRepo.getRowid(e)
 
     fun insert(item: Event): Long = eventRepo.insert(item)
@@ -37,6 +55,8 @@ class EventListViewModel(private val eventRepo: EventsRepository): BaseViewModel
     val allParents = eventRepo.getAllParents()
 
     val events = eventRepo.selectAll()
+
+    val archivedEvents = eventRepo.selectArchived()
 
     val metadata = eventRepo.getMetadata()
 }

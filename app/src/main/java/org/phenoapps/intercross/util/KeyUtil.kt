@@ -22,10 +22,6 @@ class KeyUtil @Inject constructor(
     val loadSampleParents by key(R.string.key_load_sample_parents)
     val loadSampleWishlist by key(R.string.key_load_sample_wishlist)
 
-    //non preference keys
-    //boolean value to determine if brapi has been imported previously
-    val brapiHasBeenImported by key(R.string.key_brapi_has_been_imported)
-
     // brapi preferences
     val brapiEnabled by key(R.string.key_pref_brapi_enabled)
     val brapiDisplayName by key(R.string.key_pref_brapi_display_name)
@@ -49,6 +45,8 @@ class KeyUtil @Inject constructor(
     val soundNotificationKey by key(R.string.key_pref_behavior_sound_notifications)
     val openCrossAfterCreateKey by key(R.string.key_pref_behavior_open_cross_immediately)
     val commutativeCrossingKey by key(R.string.key_pref_behavior_commutative_crossing)
+    val barcodeFormatsKey by key(R.string.key_pref_behavior_barcode_formats)
+    val barcodeFlashKey by key(R.string.key_pref_behavior_barcode_flash)
 
     // person and experiment preferences
     val profileRootKey by key(R.string.root_profile)

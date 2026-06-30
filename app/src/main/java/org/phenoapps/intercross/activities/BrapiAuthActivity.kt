@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,8 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
@@ -121,23 +124,32 @@ class BrapiAuthActivity : AppCompatActivity() {
             putString(keyUtil.brapiToken, null)
         }
 
+        if (ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_LOCAL_NETWORK")
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf("android.permission.ACCESS_LOCAL_NETWORK"),
+                109
+            )
+        }
+
         val flow: String = sharedPreferences.getString(keyUtil.brapiFlow, "") ?: ""
         val responseType: String =
             if (flow == getString(R.string.preferences_brapi_oidc_flow_oauth_implicit)) ResponseTypeValues.TOKEN else ResponseTypeValues.CODE
 
         try {
             val clientId: String =
-                sharedPreferences.getString(keyUtil.brapiClient, "fieldbook") ?: "fieldbook"
+                sharedPreferences.getString(keyUtil.brapiClient, "intercross") ?: "intercross"
             val scope: String = sharedPreferences.getString(keyUtil.brapiScope, "") ?: ""
 
             // Authorization code flow works better with custom URL scheme fieldbook://app/auth
             // https://github.com/openid/AppAuth-Android/issues?q=is%3Aissue+intent+null
             val redirectURI =
                 if (flow == getString(R.string.preferences_brapi_oidc_flow_oauth_implicit))
-                    "https://phenoapps.org/field-book".toUri()
-                else "fieldbook://app/auth".toUri()
+                    "https://phenoapps.org/intercross".toUri()
+                else "intercross://app/auth".toUri()
 
-            authUtil?.getAuthServiceConfiguration { authorizationServiceConfiguration, ex ->
+            authUtil.getAuthServiceConfiguration { authorizationServiceConfiguration, ex ->
                 if (ex != null) {
                     Log.e("BrAPIService", "failed to fetch configuration", ex)
                     authError(ex)
@@ -217,7 +229,7 @@ class BrapiAuthActivity : AppCompatActivity() {
             val url: String = sharedPreferences.getString(
                 keyUtil.brapiUrl,
                 ""
-            ) + "/brapi/authorize?display_name=Field Book&return_url=fieldbook://"
+            ) + "/brapi/authorize?display_name=Intercross&return_url=intercross://"
             try {
                 // Go to url with the default browser
                 val uri = url.toUri()
@@ -346,6 +358,6 @@ class BrapiAuthActivity : AppCompatActivity() {
         //first number that came to Pete's head --IRRI hackathon '25
         var END_SESSION_REQUEST_CODE: Int = 456
 
-        var REDIRECT_URI: String = "fieldbook://app/auth"
+        var REDIRECT_URI: String = "intercross://app/auth"
     }
 }

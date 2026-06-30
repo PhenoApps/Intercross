@@ -17,8 +17,8 @@ import org.phenoapps.intercross.brapi.service.BrAPIService;
 public class BrapiAuthDialog extends Dialog implements View.OnClickListener {
 
     private SharedPreferences preferences;
-    private String target;
-    private Context context;
+    private final String target;
+    private final Context context;
 
     public BrapiAuthDialog(@NonNull Context context, String target) {
         super(context);
@@ -45,23 +45,17 @@ public class BrapiAuthDialog extends Dialog implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        //TODO
-//        switch (view.getId()) {
-//            case R.id.brapi_auth_cancel_btn:
-//                // Cancel
-//                dismiss();
-//                break;
-//
-//            case R.id.brapi_auth_btn:
-//
-//                // Start our brapi authentication process.
-//                dismiss();
-//                // Show our error message if it exists
-//                BrapiControllerResponse brapiControllerResponse = BrAPIService.authorizeBrAPI(preferences, context, target);
-//                processBrapiControllerMessage(brapiControllerResponse);
-//                break;
-//
-//        }
+        int id = view.getId();
+        if (id == R.id.brapi_auth_cancel_btn) {
+            // Cancel
+            dismiss();
+        } else if (id == R.id.brapi_auth_btn) {
+            // Start our brapi authentication process.
+            dismiss();
+            // Show our error message if it exists
+            BrapiControllerResponse brapiControllerResponse = BrAPIService.authorizeBrAPI(preferences, context, target);
+            processBrapiControllerMessage(brapiControllerResponse);
+        }
     }
 
     private void processBrapiControllerMessage(BrapiControllerResponse brapiControllerResponse) {

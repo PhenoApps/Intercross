@@ -24,20 +24,15 @@ import java.net.URL;
 
 public interface BrAPIService {
 
-    public static BrapiControllerResponse authorizeBrAPI(SharedPreferences sharedPreferences, Context context, String target) {
+    static BrapiControllerResponse authorizeBrAPI(SharedPreferences sharedPreferences, Context context, String target) {
         KeyUtil keyUtil = new KeyUtil(context);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        //TODO
-//        editor.putString(keyUtil.getBrapiKeys().getBrapiTokenKey(), null);
-//        editor.apply();
 
         if (target == null) {
             target = "";
         }
 
         try {
-            //TODO parameterize this name or use Application label
-            String url = ""; //TODO PreferenceManager.getDefaultSharedPreferences(context).getString(keyUtil.getBrapiKeys().getBrapiUrlKey(), "") + "/brapi/authorize?display_name=Intercross&return_url=intercross://%s";
+            String url = PreferenceManager.getDefaultSharedPreferences(context).getString(keyUtil.getBrapiUrl(), "") + "/brapi/authorize?display_name=Intercross&return_url=intercross://%s";
             url = String.format(url, target);
             try {
                 // Go to url with the default browser
@@ -63,7 +58,7 @@ public interface BrAPIService {
     }
 
     // Returns true on successful parsing. False otherwise.
-    public static BrapiControllerResponse checkBrapiAuth(Activity activity) {
+    static BrapiControllerResponse checkBrapiAuth(Activity activity) {
 
         KeyUtil keyUtil = new KeyUtil(activity);
 
@@ -92,13 +87,13 @@ public interface BrAPIService {
                     return new BrapiControllerResponse(false, "No access token received in response from host.");
                 }
 
-                //TODO editor.putString(keyUtil.getBrapiKeys().getBrapiTokenKey(), token);
+                editor.putString(keyUtil.getBrapiToken(), token);
                 editor.apply();
 
                 return new BrapiControllerResponse(true, activity.getString(R.string.brapi_auth_success));
             } else {
                 SharedPreferences.Editor editor = prefs.edit();
-                //TODO editor.putString(keyUtil.getBrapiKeys().getBrapiTokenKey(), null);
+                editor.putString(keyUtil.getBrapiToken(), null);
                 editor.apply();
 
                 return new BrapiControllerResponse(false, activity.getString(R.string.brapi_auth_deny));
@@ -111,26 +106,22 @@ public interface BrAPIService {
     }
 
     // Helper functions for brapi configurations
-    public static Boolean isLoggedIn(Context context) {
+    static Boolean isLoggedIn(Context context) {
 
         KeyUtil keyUtil = new KeyUtil(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String auth_token = ""; //TODO prefs.getString(keyUtil.getBrapiKeys().getBrapiTokenKey(), "");
+        String auth_token = prefs.getString(keyUtil.getBrapiToken(), "");
 
-        if (auth_token == null || auth_token == "") {
-            return false;
-        }
-
-        return true;
+        return auth_token != null && auth_token != "";
     }
 
-    public static Boolean hasValidBaseUrl(Context context) {
+    static Boolean hasValidBaseUrl(Context context) {
         String url = getBrapiUrl(context);
 
         return Patterns.WEB_URL.matcher(url).matches();
     }
 
-    public static Boolean checkMatchBrapiUrl(Context context, String dataSource) {
+    static Boolean checkMatchBrapiUrl(Context context, String dataSource) {
 
         try {
             URL externalUrl = new URL(getBrapiUrl(context));
@@ -144,7 +135,7 @@ public interface BrAPIService {
 
     }
 
-    public static String getHostUrl(Context context) {
+    static String getHostUrl(Context context) {
         try {
             String brapiURL = getBrapiUrl(context);
             URL externalUrl = new URL(brapiURL);
@@ -155,7 +146,7 @@ public interface BrAPIService {
         }
     }
 
-    public static String getBrapiUrl(Context context) {
+    static String getBrapiUrl(Context context) {
         KeyUtil keyUtil = new KeyUtil(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String baseURL = prefs.getString(keyUtil.getBrapiUrl(), "https://test-server.brapi.org");
@@ -163,11 +154,11 @@ public interface BrAPIService {
         return baseURL + path;
     }
 
-    public static boolean isConnectionError(int code) {
+    static boolean isConnectionError(int code) {
         return code == 401 || code == 403 || code == 404;
     }
 
-    public static void handleConnectionError(Context context, int code) {
+    static void handleConnectionError(Context context, int code) {
         ApiError apiError = ApiError.processErrorCode(code);
         String toastMsg = "";
 

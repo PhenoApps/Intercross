@@ -40,7 +40,7 @@ public class BrAPIServiceV2 implements BrAPIService {
 
     public final ObservationUnitsApi observationUnitsApi;
 
-    private KeyUtil mKeyUtil;
+    private final KeyUtil mKeyUtil;
 
     public BrAPIServiceV2(Context context) {
         this.mKeyUtil = new KeyUtil(context);

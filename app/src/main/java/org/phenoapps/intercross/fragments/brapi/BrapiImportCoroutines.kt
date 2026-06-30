@@ -18,6 +18,7 @@ import org.brapi.v2.model.pheno.BrAPIObservationUnit
 import org.phenoapps.intercross.brapi.service.BrAPIServiceV2
 import org.phenoapps.intercross.brapi.service.BrapiPaginationManager
 import org.brapi.v2.model.germ.BrAPICross
+import org.brapi.v2.model.germ.response.BrAPICrossesListResponse
 import org.brapi.v2.model.pheno.response.BrAPIObservationUnitListResponse
 import org.phenoapps.intercross.brapi.service.BrapiV2ApiCallBack
 
@@ -92,6 +93,46 @@ suspend fun BrAPIServiceV2.awaitCrosses(
     )
 }
 
+suspend fun BrAPIServiceV2.awaitCrossingProject(
+    crossingProjectDbId: String
+): List<BrAPICrossingProject> = suspendCancellableCoroutine { continuation ->
+    getCrossingProject(
+        crossingProjectDbId,
+        { projects ->
+            if (continuation.isActive) {
+                continuation.resume(projects)
+            }
+            null
+        },
+        { fail ->
+            if (continuation.isActive) {
+                continuation.resumeWithException(BrapiRequestException(fail))
+            }
+            null
+        }
+    )
+}
+
+suspend fun BrAPIServiceV2.awaitPostCrosses(
+    crosses: List<BrAPICross>
+): BrAPICrossesListResponse = suspendCancellableCoroutine { continuation ->
+    postCrosses(
+        crosses,
+        { response ->
+            if (continuation.isActive) {
+                continuation.resume(response)
+            }
+            null
+        },
+        { fail ->
+            if (continuation.isActive) {
+                continuation.resumeWithException(BrapiRequestException(fail))
+            }
+            null
+        }
+    )
+}
+
 suspend fun fetchAllPagesParallelWithProgress(
     pageSize: Int = 100,
     maxParallel: Int = 4,
@@ -115,12 +156,8 @@ suspend fun fetchAllPagesParallelWithProgress(
     var completedPages = 1
 
     // parallel fetches for pages 2..N
-
-
-    //TODO TEMP TO END EARLY
-    val deferred = (2..10).map { page ->
-
-//    val deferred = (2..totalPages).map { page ->
+    //val deferred = (2..10).map { page ->
+    val deferred = (2..totalPages).map { page ->
         async(Dispatchers.IO) {
             semaphore.withPermit {
                 try {

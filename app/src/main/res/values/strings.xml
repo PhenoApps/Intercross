@@ -629,7 +629,7 @@
     <string name="menu_cross_count_expand_less_title">Expand Less</string>
     <string name="menu_cross_count_expand_more_title">Expand More</string>
     <string name="date">Date</string>
-    <string name="progress">Progress</string>
+    <string name="wish_progress">Progress</string>
     <string name="minimum">Minimum</string>
     <string name="maximum">Maximum</string>
     <string name="completed"></string>

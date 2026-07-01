@@ -34,6 +34,13 @@ val AllSettingsItems: List<SettingsSearchItem> = listOf(
 
     // Behavior
     SettingsSearchItem(R.string.prefs_behavior_allow_blank_male_title, R.drawable.ic_setting_pattern_create, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_scan_male_first_title, R.drawable.ic_setting_male_blank, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_barcode_formats_title, R.drawable.ic_trait_barcode, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_create_cross_id_pattern_title, R.drawable.ic_setting_pattern_create, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.frag_manage_metadata_title, R.drawable.ic_update_black_24dp, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_sound_notifications_title, R.drawable.ic_setting_sound, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_open_cross_title, R.drawable.ic_book_open, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
+    SettingsSearchItem(R.string.prefs_behavior_commutative_crossing_title, R.drawable.ic_receipt_long_black_24dp, SettingsPage.BEHAVIOR, R.string.prefs_behavior_title),
 
     // Printing
     SettingsSearchItem(R.string.prefs_zebra_device_title, R.drawable.ic_setting_print_connect, SettingsPage.PRINTING, R.string.prefs_printing_title),
@@ -41,6 +48,7 @@ val AllSettingsItems: List<SettingsSearchItem> = listOf(
     SettingsSearchItem(R.string.zpl_label_setup_title, R.drawable.ic_receipt_long_black_24dp, SettingsPage.PRINTING, R.string.prefs_printing_title),
     SettingsSearchItem(R.string.prefs_cross_zpl_template_title, R.drawable.ic_receipt_long_black_24dp, SettingsPage.PRINTING, R.string.prefs_printing_title),
     SettingsSearchItem(R.string.prefs_parent_zpl_template_title, R.drawable.ic_receipt_long_black_24dp, SettingsPage.PRINTING, R.string.prefs_printing_title),
+    SettingsSearchItem(R.string.prefs_label_request_title, R.drawable.ic_about_github, SettingsPage.PRINTING, R.string.prefs_printing_title),
 
     // Database
     SettingsSearchItem(R.string.storage_definer_title, R.drawable.ic_folder_lock, SettingsPage.DATABASE, R.string.prefs_database_title),

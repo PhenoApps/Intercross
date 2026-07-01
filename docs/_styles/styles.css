@@ -1,10 +1,15 @@
 .screenshot {
     display: block;
     margin: auto;
+    width: 100%;
+    height: auto;
 }
 
 .screenshot-caption {
     text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
 }
 
 .icon {
@@ -15,4 +20,55 @@
 .icon-title {
   vertical-align: middle;
   width: 40px;
+}
+
+/* Device Frame for Screenshots */
+.screenshot-frame {
+    position: relative;
+    display: block;
+    margin: 20px auto;
+    max-width: 350px; /* Typical mobile width */
+    width: 100%;
+    aspect-ratio: 9/19.5; /* Typical phone aspect ratio */
+    background: #000;
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 0 2px #333;
+}
+
+.screenshot-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 24px;
+    background: #000;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    z-index: 10;
+}
+
+.screenshot-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 28px;
+    display: block;
+}
+
+/* Side-by-side screenshot rows */
+.screenshot-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+.screenshot-row .screenshot-frame {
+    flex: 0 0 auto;
+    margin: 10px 0;
 }

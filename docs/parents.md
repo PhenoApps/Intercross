@@ -4,52 +4,95 @@
 
 ## Overview
 
-The Parents section allows you to manage all parent plants used in your crossing program.
+The Parents section is where you manage all parent plants used in your breeding program. You can view parents by type (female/male), create new parents, configure pollen groups, and print parent labels.
 
 <figure class="image">
-    <img class="screenshot" src="_static/images/parents_list.png" width="350px">
-    <figcaption class="screenshot-caption"><i>Parents list view</i></figcaption>
+    <div class="screenshot-frame">
+        <img class="screenshot" src="_static/images/parents_populated.png">
+    </div>
+    <figcaption class="screenshot-caption"><i>Parents list with All Parents, Female, and Male tabs</i></figcaption>
 </figure>
 
-## Managing Parents
+## Parent List
 
-Parents are added automatically when recording crosses and can also be created manually or imported from a CSV file by pressing the <img class="icon" src="_static/icons/plus.png"> icon in the lower right.
+The parent list displays all registered parents with:
+- **Selection checkbox** — Select multiple parents for batch operations
+- **Parent name** — Human-readable name (e.g., "Honeycrisp")
+- **Parent code** — Unique barcode ID (e.g., "HC001")
+- **Type indicator** — Pink circle with ♀ for female, blue circle with ♂ for male
+- **Cross count** — Number of crosses this parent has been involved in
 
-## Parent Information
+### Tabs
 
-Each parent has:
-- A unique barcode ID
-- A human-readable name (optional)
-- Sex information (used for crossing)
+Navigate between parent types:
+- **All Parents** — Shows both male and female parents
+- **Female** — Shows only female parents
+- **Male** — Shows only male parents
 
-## Label Printing
+## Creating a Parent
 
-You can print parent labels directly from Intercross:
-1. Select a parent from the list
-2. Press the <img class="icon" src="_static/icons/printer.png"> icon
-3. Connect to a Zebra printer
-4. Print the label
+Tap the **+** button in the bottom right to create a new parent.
 
-## Name Replacement
+### Female Parent
 
-When parent names are available, they can replace barcodes in the interface for easier identification.
-For example, in the sample files, `15RPN00001` will display as `Kharkof` throughout the app.
+<figure class="image">
+    <div class="screenshot-frame">
+        <img class="screenshot" src="_static/images/parent_creator_female.png">
+    </div>
+    <figcaption class="screenshot-caption"><i>Create Female Parent form</i></figcaption>
+</figure>
+
+Fill in:
+- **Code** — Unique barcode ID for the parent
+- **Name** — Human-readable name
+
+### Male Parent
+
+<figure class="image">
+    <div class="screenshot-frame">
+        <img class="screenshot" src="_static/images/parent_creator_male.png">
+    </div>
+    <figcaption class="screenshot-caption"><i>Create Male Parent form with pollen group option</i></figcaption>
+</figure>
+
+For male parents, you can also:
+- **Add Male Group** — Configure a pollen group containing multiple male parents for bulk pollination
+
+## Pollen Groups
+
+Pollen groups allow you to define a pool of male parents for open pollination crosses.
+
+<figure class="image">
+    <div class="screenshot-frame">
+        <img class="screenshot" src="_static/images/pollen_manager.png">
+    </div>
+    <figcaption class="screenshot-caption"><i>Pollen Manager showing selected males in a pollen group</i></figcaption>
+</figure>
+
+### Managing Pollen Groups
+
+1. Create a new pollen group with a unique code (e.g., "PG001")
+2. Select which male parents belong to the group
+3. Save the group configuration
+
+When making crosses, you can reference the pollen group code instead of individual male parent IDs.
 
 ## Importing Parents
 
-<figure class="image">
-    <img class="screenshot" src="_static/images/import_parent.png" width="350px">
-    <figcaption class="screenshot-caption"><i>File import screen</i></figcaption>
-</figure>
+Parents can be imported from CSV files saved in the `parents_import` folder.
 
-The Parents import file format is a CSV containing a list of parents, with columns corresponding to:
-- Unique ID
-- Name
-- Sex (coded as `0 = female`, `1 = male`)
+The import format should include:
+- **Unique ID** — Barcode identifier
+- **Name** — Human-readable name
+- **Sex** — `0` for female, `1` for male
 
 Example:
-```
+```csv
 id,name,sex
-15RPN00001,Kharkof,0
-15RPN00002,Blueboy,1
+HC001,Honeycrisp,0
+FJ003,Fuji,1
 ```
+
+## Label Printing
+
+Select parents from the list and tap the **printer icon** to print parent labels directly to a connected Zebra printer.

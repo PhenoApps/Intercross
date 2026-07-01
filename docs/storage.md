@@ -6,11 +6,6 @@
 
 Intercross requires storage permissions to save and manage your crossing data, import files, and export results.
 
-<figure class="image">
-    <img class="screenshot" src="_static/images/storage_structure.png" width="350px">
-    <figcaption class="screenshot-caption"><i>Storage folder structure</i></figcaption>
-</figure>
-
 ## Initial Setup
 
 When you first launch Intercross, you'll be guided through a setup process that includes requesting necessary permissions and selecting or creating a default storage location.

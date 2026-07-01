@@ -1,16 +1,24 @@
 * [Home](/)
-* Structure
-  * [Storage](storage.md)
-  * [Parents](parents.md)
-  * [Crosses](crosses.md)
-* Function
+* Getting Started
+  * [App Intro](intro.md)
   * [Home](home.md)
+  * [Crosses](crosses.md)
+  * [Cross Detail](cross_detail.md)
+  * [Parents](parents.md)
+  * [Summary](graphs.md)
+* Data
   * [Export](export.md)
+  * [Storage](storage.md)
 * Settings
-  * [Profile](settings/profile.md)
-  * [Behavior](settings/behavior.md)
-  * [Printing](settings/printing.md)
-  * [Database](settings/database.md)
-* Extra
-  * [Graphs](graphs.md)
+  * [Settings Hub](hub.md)
+  * [Profile](profile.md)
+  * [Behavior](behavior.md)
+  * [Pattern](pattern.md)
+  * [Metadata](metadata.md)
+  * [Layout](layout.md)
+  * [Appearance](appearance.md)
+  * [Printing](printing.md)
+  * [Label Templates](labels.md)
+  * [Database](database.md)
+  * [BrAPI](brapi.md)
   * [About](about.md)

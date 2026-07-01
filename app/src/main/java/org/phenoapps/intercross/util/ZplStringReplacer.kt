@@ -72,7 +72,6 @@ object ZplStringReplacer {
             zpl,
             mapOf(
                 "{crossId}" to event.cross.eventDbId,
-                "{readableName}" to event.cross.readableName,
                 "{femaleId}" to event.cross.femaleObsUnitDbId,
                 "{maleId}" to event.cross.maleObsUnitDbId,
                 "{femaleName}" to event.parents.momReadableName,

@@ -4,6 +4,8 @@ val screenshotRenameMap = mapOf(
     "EventsScreenEmptyScreenshot" to "events_empty.png",
     "EventsScreenSelectedScreenshot" to "events_selected.png",
     "EventsScreenArchivedScreenshot" to "events_archived.png",
+    "EventsScreenArchivedSelectedScreenshot" to "events_archived_selected.png",
+    "EventsScreenPersonSelectionScreenshot" to "events_person_selection.png",
     "EventDetailPopulatedScreenshot" to "event_detail.png",
     "MetadataCollectionScreenshot" to "metadata_collection.png",
     "CrossTrackerPopulatedScreenshot" to "cross_tracker_populated.png",
@@ -54,6 +56,10 @@ val screenshotRenameMap = mapOf(
     "BarcodeSingleScanScreenshot" to "barcode_single_scan.png",
     "BarcodeContinuousScanScreenshot" to "barcode_continuous_scan.png",
     "BarcodeSearchScreenshot" to "barcode_search.png",
+    "BarcodeIndicatorWaitingFemaleScreenshot" to "barcode_indicator_waiting_female.png",
+    "BarcodeIndicatorWaitingMaleScreenshot" to "barcode_indicator_waiting_male.png",
+    "BarcodeIndicatorWaitingCrossScreenshot" to "barcode_indicator_waiting_cross.png",
+    "BarcodeIndicatorCooldownScreenshot" to "barcode_indicator_cooldown.png",
 
     // BrAPI
     "BrapiProjectsScreenshot" to "brapi_projects.png",
@@ -68,6 +74,11 @@ val screenshotRenameMap = mapOf(
 
     // Cross Dates Calendar
     "CrossDatesCalendarDialogScreenshot" to "cross_dates_calendar_dialog.png",
+
+    // App Intro
+    "AppIntroWelcomeScreenshot" to "app_intro_welcome.png",
+    "AppIntroRequiredSetupScreenshot" to "app_intro_required_setup.png",
+    "AppIntroOptionalSetupScreenshot" to "app_intro_optional_setup.png",
 )
 
 // Regex to extract function name from generated filename like:

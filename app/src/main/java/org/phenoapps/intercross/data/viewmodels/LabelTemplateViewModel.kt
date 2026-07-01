@@ -84,6 +84,25 @@ class LabelTemplateViewModel @Inject constructor(
         if (previousConfig.heightInches != config.heightInches) {
             updatePrinterHeight(config.heightDots)
         }
+
+        if (previousConfig.type != config.type) {
+            // When switching types, auto-select the first available template of the new type
+            val firstOfNewType = _uiState.value.savedTemplates.firstOrNull { it.type == config.type }
+            if (firstOfNewType != null) {
+                _uiState.update {
+                    it.copy(
+                        config = firstOfNewType,
+                        selectedTemplateName = firstOfNewType.name,
+                        activeTemplateName = activeTemplateNameFor(firstOfNewType.type),
+                        previewBitmap = null,
+                        previewMessage = null,
+                        message = null,
+                    )
+                }
+                return
+            }
+        }
+
         val updatedConfig = if (
             previousConfig.type != config.type &&
             ZplStringReplacer.hasPlaceholdersForOtherType(config.toZpl(), config.type)
@@ -336,6 +355,7 @@ class LabelTemplateViewModel @Inject constructor(
                     rawZpl = it,
                 )
             }
+            ?: allTemplates.firstOrNull { it.type == LabelTemplateType.CROSS }
             ?: allTemplates.firstOrNull()
             ?: LabelTemplateConfig(name = defaultName)
 

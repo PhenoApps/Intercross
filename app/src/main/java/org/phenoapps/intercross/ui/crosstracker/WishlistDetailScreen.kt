@@ -460,14 +460,16 @@ internal fun WishEditDialogPreview(
     onDismiss: () -> Unit = {},
     onSave: (Wishlist) -> Unit = {},
 ) {
-    WishEditDialog(wish = wish, onDismiss = onDismiss, onSave = onSave)
+    IntercrossPreviewTheme {
+        WishEditDialog(wish = wish, onDismiss = onDismiss, onSave = onSave)
+    }
 }
 
 // ─── Previews ───────────────────────────────────────────────────────────────────
 
 @Preview(showBackground = true, name = "WishlistDetail - Populated")
 @Composable
-private fun WishlistDetailPopulatedPreview() {
+internal fun WishlistDetailPopulatedPreview() {
     IntercrossPreviewTheme {
         WishlistDetailScreen(
             femaleName = "Honeycrisp",
@@ -495,7 +497,7 @@ private fun WishlistDetailPopulatedPreview() {
 
 @Preview(showBackground = true, name = "WishlistDetail - Empty")
 @Composable
-private fun WishlistDetailEmptyPreview() {
+internal fun WishlistDetailEmptyPreview() {
     IntercrossPreviewTheme {
         WishlistDetailScreen(
             femaleName = "Honeycrisp",

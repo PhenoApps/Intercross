@@ -406,7 +406,7 @@ private fun ChartCard(title: String, content: @Composable () -> Unit) {
 
 @Preview(showBackground = true, name = "SummaryScreen - Populated")
 @Composable
-private fun SummaryScreenPopulatedPreview() {
+internal fun SummaryScreenPopulatedPreview() {
     IntercrossPreviewTheme {
         SummaryScreen(
             chartData = PreviewSampleData.populatedChartData,
@@ -421,7 +421,7 @@ private fun SummaryScreenPopulatedPreview() {
 
 @Preview(showBackground = true, name = "SummaryScreen - Empty")
 @Composable
-private fun SummaryScreenEmptyPreview() {
+internal fun SummaryScreenEmptyPreview() {
     IntercrossPreviewTheme {
         SummaryScreen(
             chartData = PreviewSampleData.emptyChartData,

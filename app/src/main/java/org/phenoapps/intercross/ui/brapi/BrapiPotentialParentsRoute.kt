@@ -228,7 +228,7 @@ internal fun BrapiPotentialParentsScreen(
 
 @Preview(showBackground = true, name = "BrapiPotentialParents - Populated")
 @Composable
-private fun BrapiPotentialParentsPopulatedPreview() {
+internal fun BrapiPotentialParentsPopulatedPreview() {
     IntercrossPreviewTheme {
         val args = Bundle().apply {
             putString("crossingProjectName", "Apple Breeding 2024")

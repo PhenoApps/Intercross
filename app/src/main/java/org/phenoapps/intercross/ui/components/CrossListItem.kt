@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalInspectionMode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,7 @@ import org.phenoapps.intercross.ui.preview.PreviewSampleData
 import org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
+import androidx.compose.runtime.remember
 
 /**
  * A reusable cross/event list item styled like a printed cross label.
@@ -171,6 +173,9 @@ private fun LabelField(label: String, value: String, modifier: Modifier = Modifi
 
 @Composable
 fun rememberQrBitmap(content: String, size: Int = 128): Bitmap? {
+    if (LocalInspectionMode.current) {
+        return remember(content, size) { createQrBitmap(content, size) }
+    }
     val qrBitmap = produceState<Bitmap?>(initialValue = null, content, size) {
         value = withContext(Dispatchers.Default) {
             createQrBitmap(content, size)

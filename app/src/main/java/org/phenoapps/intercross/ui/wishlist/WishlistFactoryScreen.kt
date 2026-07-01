@@ -476,7 +476,7 @@ internal fun WishSummaryStep(
 
 @Preview(showBackground = true, name = "ParentChoiceStep - Default")
 @Composable
-private fun ParentChoiceStepPreview() {
+internal fun ParentChoiceStepPreview() {
     IntercrossPreviewTheme {
         ParentChoiceStep(
             summary = "Choose female parent",
@@ -491,7 +491,7 @@ private fun ParentChoiceStepPreview() {
 
 @Preview(showBackground = true, name = "WishDraftRow - Valid")
 @Composable
-private fun WishDraftRowValidPreview() {
+internal fun WishDraftRowValidPreview() {
     IntercrossPreviewTheme {
         WishDraftRow(
             draft = WishDraft(type = "Cross", min = "5", max = "10"),
@@ -502,7 +502,7 @@ private fun WishDraftRowValidPreview() {
 
 @Preview(showBackground = true, name = "WishDraftRow - Min Error")
 @Composable
-private fun WishDraftRowMinErrorPreview() {
+internal fun WishDraftRowMinErrorPreview() {
     IntercrossPreviewTheme {
         WishDraftRow(
             draft = WishDraft(type = "Cross", min = "0", max = "10"),
@@ -513,7 +513,7 @@ private fun WishDraftRowMinErrorPreview() {
 
 @Preview(showBackground = true, name = "WishDraftRow - Max Error")
 @Composable
-private fun WishDraftRowMaxErrorPreview() {
+internal fun WishDraftRowMaxErrorPreview() {
     IntercrossPreviewTheme {
         WishDraftRow(
             draft = WishDraft(type = "Cross", min = "5", max = "3"),
@@ -524,7 +524,7 @@ private fun WishDraftRowMaxErrorPreview() {
 
 @Preview(showBackground = true, name = "WishValuesStep - Populated")
 @Composable
-private fun WishValuesStepPreview() {
+internal fun WishValuesStepPreview() {
     IntercrossPreviewTheme {
         WishValuesStepPreviewContent(
             female = WishParentOption("HC001", "Honeycrisp"),
@@ -623,7 +623,7 @@ internal fun WishValuesStepPreviewContent(
 
 @Preview(showBackground = true, name = "WishSummaryStep - Populated")
 @Composable
-private fun WishSummaryStepPreview() {
+internal fun WishSummaryStepPreview() {
     IntercrossPreviewTheme {
         val wishes = listOf(
             org.phenoapps.intercross.data.models.Wishlist("HC001", "GA001", "Honeycrisp", "Gala", "Cross", 5, 10),

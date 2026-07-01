@@ -249,7 +249,7 @@ fun PollenManagerScreen(
 
 @Preview(showBackground = true, name = "PollenManagerScreen - Populated")
 @Composable
-private fun PollenManagerScreenPopulatedPreview() {
+internal fun PollenManagerScreenPopulatedPreview() {
     val males = listOf(
         Parent("FJ003", 1).apply { name = "Fuji"; id = 3L },
         Parent("GL004", 1).apply { name = "Gala"; id = 4L },

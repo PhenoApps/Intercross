@@ -402,7 +402,7 @@ private fun MetadataEntryCard(
                     )
 
                     WishInfoBadge(label = stringResource(R.string.minimum), value = selectedWish.wishMin)
-                    WishInfoBadge(label = stringResource(R.string.progress), value = selectedWish.wishProgress)
+                    WishInfoBadge(label = stringResource(R.string.wish_progress), value = selectedWish.wishProgress)
                     WishInfoBadge(label = stringResource(R.string.maximum), value = selectedWish.wishMax)
                 }
             }
@@ -449,7 +449,7 @@ private fun WishInfoBadge(label: String, value: Int) {
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "$label:",
+                text = label,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
@@ -507,7 +507,7 @@ private fun MetadataSummaryCard(
 
 @Preview(showBackground = true, name = "EventDetail - Populated")
 @Composable
-private fun EventDetailScreenPopulatedPreview() {
+internal fun EventDetailScreenPopulatedPreview() {
     IntercrossPreviewTheme {
         EventDetailScreen(
             event = PreviewSampleData.events.first().copy(femaleObsUnitDbId = "HC001", maleObsUnitDbId = "FJ003"),
@@ -539,20 +539,71 @@ private fun EventDetailScreenPopulatedPreview() {
                     wishMin = 10,
                     wishMax = 20,
                     wishType = "Seeds",
-                    wishProgress = 5
+                    wishProgress = 10
                 )
             ),
             allEvents = PreviewSampleData.events,
-            showMetadataInputs = true,
+            showMetadataInputs = false,
             onShowMessage = {},
             topBarState = TopBarState(
                 titleRes = R.string.event_detail_label,
                 showBack = true,
                 actions = listOf(
-                    TopBarAction("print_event", R.string.print, iconRes = R.drawable.ic_cross_print),
+                    TopBarAction("toggle_metadata_edit", R.string.metaData, iconRes = R.drawable.ic_edit),
                     TopBarAction("delete_event", R.string.delete, iconRes = R.drawable.ic_menu_delete),
                 ),
             ),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "EventDetail - Metadata Collection")
+@Composable
+internal fun MetadataCollectionPreview() {
+    IntercrossPreviewTheme {
+        EventDetailScreen(
+            event = PreviewSampleData.events.first().copy(femaleObsUnitDbId = "HC001", maleObsUnitDbId = "FJ003"),
+            parents = EventsDao.ParentData(
+                momCode = "HC001",
+                momReadableName = "Honeycrisp",
+                dadCode = "FJ003",
+                dadReadableName = "Fuji",
+            ),
+            metadata = listOf(
+                EventsDao.CrossMetadataWithDefaults(
+                    eid = 1,
+                    property = "Seeds",
+                    value = 5,
+                    defaultValue = 0,
+                ),
+                EventsDao.CrossMetadataWithDefaults(
+                    eid = 1,
+                    property = "Fruits",
+                    value = 2,
+                    defaultValue = 0,
+                ),
+            ),
+            metaList = listOf(
+                Meta(property = "Seeds", defaultValue = 0, id = 1, icon = "🌱"),
+                Meta(property = "Fruits", defaultValue = 0, id = 2, icon = "🍎"),
+            ),
+            metaValues = emptyList(),
+            wishes = listOf(
+                WishlistView("HC001", "Honeycrisp", "FJ003", "Fuji", 0, 10, "Seeds", 5),
+                WishlistView("HC001", "Honeycrisp", "FJ003", "Fuji", 0, 5, "Fruits", 2)
+            ),
+            allEvents = PreviewSampleData.events,
+            onShowMessage = {},
+            topBarState = TopBarState(
+                titleRes = R.string.event_detail_label,
+                showBack = true,
+                actions = listOf(
+                    TopBarAction("toggle_metadata_edit", R.string.metaData, iconRes = R.drawable.ic_edit),
+                ),
+            ),
+            showMetadataInputs = true,
+            onSaveMetadata = {},
+            onNavigateToEvent = {},
         )
     }
 }

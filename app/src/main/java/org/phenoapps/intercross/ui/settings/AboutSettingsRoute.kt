@@ -283,7 +283,7 @@ private fun showChangelog(context: Context) {
 
 @Preview(showBackground = true, name = "About Settings")
 @Composable
-private fun AboutSettingsPreview() {
+internal fun AboutSettingsPreview() {
     org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
         AboutSettingsScreenContent(
             versionName = "1.0.0",

@@ -288,9 +288,9 @@ private fun SettingsSearchResultRow(
 
 // ─── Previews ───────────────────────────────────────────────────────────────────
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "Settings - Hub")
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "Settings Hub - Category List")
 @Composable
-private fun SettingsHubPreview() {
+internal fun SettingsHubPreview() {
     org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
         SettingsScreenContent(
             rows = listOf(
@@ -306,6 +306,22 @@ private fun SettingsHubPreview() {
             searchQuery = "",
             onSearchQueryChange = {},
             searchItemTitles = emptyList(),
+            onOpenPage = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "Settings Hub - Search")
+@Composable
+internal fun SettingsHubSearchPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        SettingsScreenContent(
+            rows = emptyList(),
+            searchQuery = "person",
+            onSearchQueryChange = {},
+            searchItemTitles = AllSettingsItems.take(3).map {
+                it to "Profile"
+            },
             onOpenPage = {},
         )
     }

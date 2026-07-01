@@ -223,7 +223,7 @@ internal fun BrapiExportSummaryScreen(
 
 @Preview(showBackground = true, name = "BrapiExportSummary - Populated")
 @Composable
-private fun BrapiExportSummaryPopulatedPreview() {
+internal fun BrapiExportSummaryPopulatedPreview() {
     IntercrossPreviewTheme {
         val args = Bundle().apply {
             putString("crossingProjectName", "Apple Breeding 2024")

@@ -548,7 +548,9 @@ internal fun CrossDatesCalendarDialogPreview(
     dates: Set<LocalDate>,
     onDismiss: () -> Unit = {},
 ) {
-    CrossDatesCalendarDialog(dates = dates, onDismiss = onDismiss)
+    IntercrossPreviewTheme {
+        CrossDatesCalendarDialog(dates = dates, onDismiss = onDismiss)
+    }
 }
 
 // ─── Previews ───────────────────────────────────────────────────────────────────
@@ -556,7 +558,7 @@ internal fun CrossDatesCalendarDialogPreview(
 @Preview(showBackground = true, name = "CrossTrackerScreen - Populated")
 @Preview(showBackground = true, name = "CrossTrackerScreen - Tablet", device = "spec:width=800dp,height=1280dp")
 @Composable
-private fun CrossTrackerScreenPopulatedPreview() {
+internal fun CrossTrackerScreenPopulatedPreview() {
     IntercrossPreviewTheme {
         CrossTrackerScreen(
             rows = PreviewSampleData.crossTrackerRowsWithComplete,
@@ -582,7 +584,7 @@ private fun CrossTrackerScreenPopulatedPreview() {
 
 @Preview(showBackground = true, name = "CrossTrackerScreen - Empty")
 @Composable
-private fun CrossTrackerScreenEmptyPreview() {
+internal fun CrossTrackerScreenEmptyPreview() {
     IntercrossPreviewTheme {
         CrossTrackerScreen(
             rows = emptyList(),

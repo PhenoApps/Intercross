@@ -435,12 +435,33 @@ private fun CrossBlockLegend(
 
 @Preview(showBackground = true, name = "CrossBlockScreen - Default")
 @Composable
-private fun CrossBlockScreenPreview() {
+internal fun CrossBlockScreenPreview() {
     IntercrossPreviewTheme {
         CrossBlockScreen(
             matrix = PreviewSampleData.crossBlockMatrix,
-            selectedWishType = "cross",
-            wishTypes = listOf("cross", "seeds", "fruits"),
+            selectedWishType = "seeds",
+            wishTypes = listOf("seeds", "flowers", "chips"),
+            onWishTypeChange = {},
+            onCellClick = {},
+            topBarState = TopBarState(
+                titleRes = R.string.cross_block_label,
+                showBack = true,
+                actions = listOf(
+                    TopBarAction("crossblock_add_wish", R.string.add_wishlist_item, iconRes = R.drawable.ic_add_black_24dp),
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "CrossBlockScreen - Complex")
+@Composable
+internal fun CrossBlockScreenComplexPreview() {
+    IntercrossPreviewTheme {
+        CrossBlockScreen(
+            matrix = PreviewSampleData.crossBlockMatrix,
+            selectedWishType = "chips",
+            wishTypes = listOf("chips", "beans"),
             onWishTypeChange = {},
             onCellClick = {},
             topBarState = TopBarState(

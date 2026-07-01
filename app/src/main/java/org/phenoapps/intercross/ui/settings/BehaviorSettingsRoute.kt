@@ -40,7 +40,7 @@ fun BehaviorSettingsRoute(
     val crossIdSettings = remember { CrossIdSettings.load(prefs) }
     var blankMale by rememberBooleanPreference(prefs, keyUtil.blankMaleKey, false)
     var crossOrder by rememberBooleanPreference(prefs, keyUtil.crossOrderKey, false)
-    var collectAdditionalInfo by rememberBooleanPreference(prefs, keyUtil.collectAdditionalInfoKey, false)
+    //var collectAdditionalInfo by rememberBooleanPreference(prefs, keyUtil.collectAdditionalInfoKey, false)
     var soundNotifications by rememberBooleanPreference(prefs, keyUtil.soundNotificationKey, false)
     var openCrossAfterCreate by rememberBooleanPreference(prefs, keyUtil.openCrossAfterCreateKey, false)
     var commutativeCrossing by rememberBooleanPreference(prefs, keyUtil.commutativeCrossingKey, false)
@@ -70,8 +70,6 @@ fun BehaviorSettingsRoute(
         },
         crossIdSummary = crossIdSummary,
         onOpenPattern = onOpenPattern,
-        collectAdditionalInfo = collectAdditionalInfo,
-        onCollectAdditionalInfoChange = { collectAdditionalInfo = it; prefs.edit { putBoolean(keyUtil.collectAdditionalInfoKey, it) } },
         onOpenMetadata = onOpenMetadata,
         soundNotifications = soundNotifications,
         onSoundNotificationsChange = { soundNotifications = it; prefs.edit { putBoolean(keyUtil.soundNotificationKey, it) } },
@@ -81,6 +79,31 @@ fun BehaviorSettingsRoute(
         onCommutativeCrossingChange = { commutativeCrossing = it; prefs.edit { putBoolean(keyUtil.commutativeCrossingKey, it) } },
         onBack = onBack,
     )
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "BehaviorSettings - Default")
+@Composable
+internal fun BehaviorSettingsPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        BehaviorSettingsScreenContent(
+            blankMale = false,
+            onBlankMaleChange = {},
+            crossOrder = false,
+            onCrossOrderChange = {},
+            barcodeFormats = setOf("QR_CODE", "CODE_128"),
+            barcodeFormatSummary = "QR_CODE, CODE_128",
+            onBarcodeFormatsChange = {},
+            crossIdSummary = "UUID",
+            onOpenPattern = {},
+            onOpenMetadata = {},
+            soundNotifications = false,
+            onSoundNotificationsChange = {},
+            openCrossAfterCreate = false,
+            onOpenCrossAfterCreateChange = {},
+            commutativeCrossing = false,
+            onCommutativeCrossingChange = {},
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,8 +118,6 @@ fun BehaviorSettingsScreenContent(
     onBarcodeFormatsChange: (Set<String>) -> Unit,
     crossIdSummary: String,
     onOpenPattern: () -> Unit,
-    collectAdditionalInfo: Boolean,
-    onCollectAdditionalInfoChange: (Boolean) -> Unit,
     onOpenMetadata: () -> Unit,
     soundNotifications: Boolean,
     onSoundNotificationsChange: (Boolean) -> Unit,
@@ -197,23 +218,12 @@ fun BehaviorSettingsScreenContent(
         }
         item { SettingsSectionHeader(R.string.prefs_behavior_workflow_category) }
         item {
-            SettingsSwitchRow(
-                titleRes = R.string.prefs_behavior_collect_additional_info_title,
-                summaryRes = R.string.prefs_behavior_collect_additional_info_summary,
-                iconRes = R.drawable.ic_setting_additional_info,
-                checked = collectAdditionalInfo,
-                onCheckedChange = onCollectAdditionalInfoChange,
+            SettingsActionRow(
+                titleRes = R.string.prefs_behavior_manage_metadata_title,
+                summaryRes = R.string.prefs_behavior_manage_metadata_summary,
+                iconRes = R.drawable.ic_update_black_24dp,
+                onClick = onOpenMetadata,
             )
-        }
-        if (collectAdditionalInfo) {
-            item {
-                SettingsActionRow(
-                    titleRes = R.string.prefs_behavior_manage_metadata_title,
-                    summaryRes = R.string.prefs_behavior_manage_metadata_summary,
-                    iconRes = R.drawable.ic_update_black_24dp,
-                    onClick = onOpenMetadata,
-                )
-            }
         }
         item {
             SettingsSwitchRow(

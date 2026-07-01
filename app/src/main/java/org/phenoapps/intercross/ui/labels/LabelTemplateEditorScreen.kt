@@ -937,9 +937,9 @@ fun LabelMediaTypePickerPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "LabelTemplateEditor - Default")
 @Composable
-fun LabelTemplateEditorScreenPreview() {
+internal fun LabelTemplateEditorScreenPreview() {
     val sampleConfig = LabelTemplateConfig(
         name = "Sample 2x1",
         rawZpl = """
@@ -975,9 +975,9 @@ fun LabelTemplateEditorScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "LabelTemplateEditor - Parent")
 @Composable
-fun LabelTemplateEditorParentPreview() {
+internal fun LabelTemplateEditorParentPreview() {
     val sampleConfig = LabelTemplateConfig(
         name = "Parent Label",
         rawZpl = """

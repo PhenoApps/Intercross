@@ -219,7 +219,7 @@ fun ParentCreatorScreen(
 
 @Preview(showBackground = true, name = "ParentCreatorScreen - Female")
 @Composable
-private fun ParentCreatorScreenFemalePreview() {
+internal fun ParentCreatorScreenFemalePreview() {
     IntercrossPreviewTheme {
         ParentCreatorScreen(
             mode = 0,
@@ -240,7 +240,7 @@ private fun ParentCreatorScreenFemalePreview() {
 
 @Preview(showBackground = true, name = "ParentCreatorScreen - Male")
 @Composable
-private fun ParentCreatorScreenMalePreview() {
+internal fun ParentCreatorScreenMalePreview() {
     IntercrossPreviewTheme {
         ParentCreatorScreen(
             mode = 1,
@@ -261,7 +261,7 @@ private fun ParentCreatorScreenMalePreview() {
 
 @Preview(showBackground = true, name = "ParentCreatorScreen - Male Bulk")
 @Composable
-private fun ParentCreatorScreenMaleBulkPreview() {
+internal fun ParentCreatorScreenMaleBulkPreview() {
     IntercrossPreviewTheme {
         ParentCreatorScreen(
             mode = 1,
@@ -282,7 +282,7 @@ private fun ParentCreatorScreenMaleBulkPreview() {
 
 @Preview(showBackground = true, name = "ParentCreatorScreen - Empty")
 @Composable
-private fun ParentCreatorScreenEmptyPreview() {
+internal fun ParentCreatorScreenEmptyPreview() {
     IntercrossPreviewTheme {
         ParentCreatorScreen(
             mode = 0,

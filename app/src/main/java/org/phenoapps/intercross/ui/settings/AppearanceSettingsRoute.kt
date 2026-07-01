@@ -61,6 +61,45 @@ fun AppearanceSettingsRoute(
     )
 }
 
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "AppearanceSettings - Default")
+@Composable
+internal fun AppearanceSettingsPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        AppearanceSettingsScreenContent(
+            themeEntries = listOf("Default", "Nature (Green)", "High Contrast"),
+            themeValues = listOf("Default", "Green", "HighContrast"),
+            currentThemeName = "Default",
+            onThemeSelected = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "AppearanceSettings - Green")
+@Composable
+internal fun AppearanceSettingsGreenPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        AppearanceSettingsScreenContent(
+            themeEntries = listOf("Default", "Nature (Green)", "High Contrast"),
+            themeValues = listOf("Default", "Green", "HighContrast"),
+            currentThemeName = "Nature (Green)",
+            onThemeSelected = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "AppearanceSettings - High Contrast")
+@Composable
+internal fun AppearanceSettingsHighContrastPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        AppearanceSettingsScreenContent(
+            themeEntries = listOf("Default", "Nature (Green)", "High Contrast"),
+            themeValues = listOf("Default", "Green", "HighContrast"),
+            currentThemeName = "HighContrast",
+            onThemeSelected = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppearanceSettingsScreenContent(

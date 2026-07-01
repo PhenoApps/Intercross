@@ -258,7 +258,7 @@ internal fun BrapiPlannedCrossesScreen(
 
 @Preview(showBackground = true, name = "BrapiPlannedCrosses - Populated")
 @Composable
-private fun BrapiPlannedCrossesPopulatedPreview() {
+internal fun BrapiPlannedCrossesPopulatedPreview() {
     IntercrossPreviewTheme {
         val args = Bundle().apply {
             putString("crossingProjectName", "Apple Breeding 2024")

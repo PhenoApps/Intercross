@@ -402,7 +402,7 @@ private const val DEFAULT_BRAPI_PROJECT_PAGE_SIZE = 1000
 
 @Preview(showBackground = true, name = "BrapiProjects - Populated")
 @Composable
-private fun BrapiProjectsPopulatedPreview() {
+internal fun BrapiProjectsPopulatedPreview() {
     IntercrossPreviewTheme {
         BrapiProjectsScreen(
             serverUrl = "https://test-server.brapi.org",
@@ -421,7 +421,7 @@ private fun BrapiProjectsPopulatedPreview() {
 
 @Preview(showBackground = true, name = "BrapiProjects - Loading")
 @Composable
-private fun BrapiProjectsLoadingPreview() {
+internal fun BrapiProjectsLoadingPreview() {
     IntercrossPreviewTheme {
         BrapiProjectsScreen(
             serverUrl = "https://test-server.brapi.org",
@@ -430,7 +430,7 @@ private fun BrapiProjectsLoadingPreview() {
             selectedProject = null,
             onSelectProject = {},
             page = 0,
-            totalPages = 1,
+            totalPages = 0,
             onPageChange = {},
             mode = BrapiMode.IMPORT_CROSSES,
             onAction = {}

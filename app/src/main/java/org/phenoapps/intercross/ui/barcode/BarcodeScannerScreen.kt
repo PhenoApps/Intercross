@@ -10,7 +10,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.Preview as CameraPreview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
@@ -21,7 +21,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -87,10 +92,14 @@ import com.google.mlkit.vision.common.InputImage
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.data.models.Event
 import org.phenoapps.intercross.data.models.Parent
+import org.phenoapps.intercross.ui.app.TopBarAction
 import org.phenoapps.intercross.ui.app.TopBarState
 import org.phenoapps.intercross.ui.components.CrossListItem
+import org.phenoapps.intercross.ui.preview.PreviewSampleData
 import org.phenoapps.intercross.ui.theme.AppTheme
+import org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme
 import java.util.concurrent.Executors
+import androidx.compose.ui.tooling.preview.Preview as ComposePreview
 
 enum class SequenceScanSlot {
     Female,
@@ -257,10 +266,37 @@ internal fun BarcodeScannerScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
-                            .border(2.dp, Color.Gray, RoundedCornerShape(8.dp)),
+                            .background(Color.Black),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Barcode Scanner Preview")
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_barcode_scan),
+                                contentDescription = null,
+                                modifier = Modifier.size(120.dp),
+                                tint = Color.White.copy(alpha = 0.7f)
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            // Simulated barcode stripes
+                            Row(
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .height(100.dp)
+                                    .background(Color.White)
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                val widths = listOf(4, 2, 8, 4, 2, 6, 2, 4, 8, 2, 4, 6, 2, 4)
+                                widths.forEachIndexed { index, w ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(w.dp)
+                                            .background(if (index % 2 == 0) Color.Black else Color.Transparent)
+                                    )
+                                }
+                            }
+                        }
                     }
                 } else {
                     AndroidView(
@@ -278,8 +314,8 @@ internal fun BarcodeScannerScreen(
                                 val provider = cameraProviderFuture.get()
                                 cameraProvider = provider
 
-                                val preview = Preview.Builder().build().also {
-                                    it.surfaceProvider = previewView.surfaceProvider
+                                val preview = CameraPreview.Builder().build().also {
+                                    it.setSurfaceProvider(previewView.surfaceProvider)
                                 }
 
                                 val imageAnalysis = ImageAnalysis.Builder()
@@ -615,7 +651,7 @@ private class MlKitBarcodeAnalyzer(
 // ─── Sequence Scan Indicator ────────────────────────────────────────────────────
 
 @Composable
-private fun SequenceScanIndicator(
+internal fun SequenceScanIndicator(
     femaleScanned: Boolean,
     maleScanned: Boolean,
     crossScanned: Boolean,
@@ -648,7 +684,7 @@ private fun SequenceScanIndicator(
         // "Cross saved" banner
         AnimatedVisibility(
             visible = showSavedBadge,
-            enter = fadeIn() + slideInVertically { it },
+            enter = fadeIn(),
             exit = fadeOut(),
         ) {
             Surface(
@@ -870,10 +906,10 @@ private fun String.normalizePrintedQrPayload(): String {
 
 // ─── Previews ───────────────────────────────────────────────────────────────────
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SequenceScanIndicator - Female Next")
+@ComposePreview(showBackground = true, name = "SequenceScanIndicator - Female Next")
 @Composable
-private fun SequenceScanIndicatorFemalePreview() {
-    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+internal fun SequenceScanIndicatorFemalePreview() {
+    IntercrossPreviewTheme {
         SequenceScanIndicator(
             femaleScanned = false,
             maleScanned = false,
@@ -889,10 +925,10 @@ private fun SequenceScanIndicatorFemalePreview() {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SequenceScanIndicator - Male Next")
+@ComposePreview(showBackground = true, name = "SequenceScanIndicator - Male Next")
 @Composable
-private fun SequenceScanIndicatorMalePreview() {
-    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+internal fun SequenceScanIndicatorMalePreview() {
+    IntercrossPreviewTheme {
         SequenceScanIndicator(
             femaleScanned = true,
             maleScanned = false,
@@ -908,10 +944,10 @@ private fun SequenceScanIndicatorMalePreview() {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SequenceScanIndicator - All Scanned")
+@ComposePreview(showBackground = true, name = "SequenceScanIndicator - All Scanned")
 @Composable
-private fun SequenceScanIndicatorCompletePreview() {
-    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+internal fun SequenceScanIndicatorCompletePreview() {
+    IntercrossPreviewTheme {
         SequenceScanIndicator(
             femaleScanned = true,
             maleScanned = true,
@@ -927,10 +963,10 @@ private fun SequenceScanIndicatorCompletePreview() {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SequenceScanIndicator - Cooldown Active")
+@ComposePreview(showBackground = true, name = "SequenceScanIndicator - Cooldown Active")
 @Composable
-private fun SequenceScanIndicatorCooldownPreview() {
-    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+internal fun SequenceScanIndicatorCooldownPreview() {
+    IntercrossPreviewTheme {
         SequenceScanIndicator(
             femaleScanned = false,
             maleScanned = false,
@@ -944,6 +980,82 @@ private fun SequenceScanIndicatorCooldownPreview() {
             cooldownActive = true,
             cooldownProgress = 0.6f,
             modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@ComposePreview(showBackground = true, name = "BarcodeScanner - Single Mode")
+@Composable
+internal fun BarcodeScannerSinglePreview() {
+    IntercrossPreviewTheme {
+        BarcodeScannerScreen(
+            mode = BARCODE_MODE_SINGLE,
+            events = emptyList(),
+            parents = emptyList(),
+            mlKitFormats = 0,
+            torchEnabled = false,
+            onSingleScan = {},
+            onOpenEvent = {},
+            onShowMessage = {},
+            topBarState = TopBarState(
+                titleRes = R.string.barcode_scan_label,
+                showBack = true,
+                actions = listOf(
+                    TopBarAction("toggle_flash", R.string.barcode_flash_on, R.drawable.ic_flash_on)
+                )
+            )
+        )
+    }
+}
+
+@ComposePreview(showBackground = true, name = "BarcodeScanner - Continuous Mode")
+@Composable
+internal fun BarcodeScannerContinuousPreview() {
+    IntercrossPreviewTheme {
+        BarcodeScannerScreen(
+            mode = BARCODE_MODE_CONTINUOUS,
+            events = emptyList(),
+            parents = emptyList(),
+            mlKitFormats = 0,
+            torchEnabled = false,
+            onSingleScan = {},
+            onOpenEvent = {},
+            onShowMessage = {},
+            sequenceFemaleScanned = true,
+            sequenceFemaleCode = "HC001",
+            sequenceNextSlot = SequenceScanSlot.Male,
+            topBarState = TopBarState(
+                titleRes = R.string.barcode_scan_label,
+                showBack = true,
+                actions = listOf(
+                    TopBarAction("toggle_flash", R.string.barcode_flash_on, R.drawable.ic_flash_on)
+                )
+            )
+        )
+    }
+}
+
+@ComposePreview(showBackground = true, name = "BarcodeScanner - Search Mode")
+@Composable
+internal fun BarcodeScannerSearchPreview() {
+    IntercrossPreviewTheme {
+        BarcodeScannerScreen(
+            mode = BARCODE_MODE_SEARCH,
+            events = PreviewSampleData.events,
+            parents = emptyList(),
+            mlKitFormats = 0,
+            torchEnabled = false,
+            onSingleScan = {},
+            onOpenEvent = {},
+            onShowMessage = {},
+            initialChildDialogEvents = PreviewSampleData.events,
+            topBarState = TopBarState(
+                titleRes = R.string.barcode_scan_label,
+                showBack = true,
+                actions = listOf(
+                    TopBarAction("toggle_flash", R.string.barcode_flash_on, R.drawable.ic_flash_on)
+                )
+            )
         )
     }
 }

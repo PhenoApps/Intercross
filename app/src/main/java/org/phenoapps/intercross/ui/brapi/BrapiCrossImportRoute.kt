@@ -223,7 +223,7 @@ internal fun BrapiCrossImportScreen(
 
 @Preview(showBackground = true, name = "BrapiCrossImport - Populated")
 @Composable
-private fun BrapiCrossImportPopulatedPreview() {
+internal fun BrapiCrossImportPopulatedPreview() {
     IntercrossPreviewTheme {
         val args = Bundle().apply {
             putString("crossingProjectName", "Apple Breeding 2024")

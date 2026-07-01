@@ -47,6 +47,17 @@ fun LayoutSettingsRoute(
     )
 }
 
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "LayoutSettings - Default")
+@Composable
+internal fun LayoutSettingsPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        LayoutSettingsScreenContent(
+            showPersonInput = true,
+            onShowPersonInputChange = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayoutSettingsScreenContent(

@@ -159,6 +159,41 @@ fun ProfileSettingsRoute(
     )
 }
 
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "ProfileSettings - Default")
+@Composable
+internal fun ProfileSettingsPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        ProfileSettingsScreenContent(
+            personSummary = "Jane",
+            personsListSummary = "Jane, Bob, Alice",
+            intervalSummary = "Every 24 hours",
+            intervalEntries = listOf("Never", "Every 12 hours", "Every 24 hours", "Always"),
+            intervalValues = listOf("0", "12", "24", "-1"),
+            verificationInterval = "24",
+            onSelectPerson = {},
+            onAddPerson = {},
+            onManagePersons = {},
+            onIntervalChange = {},
+            onReset = {},
+            showSelectDialog = false,
+            onSelectDialogDismiss = {},
+            onSelectDialogClear = {},
+            onSelectDialogSave = {},
+            selectedPerson = "Jane",
+            persons = listOf("Jane", "Bob", "Alice"),
+            showAddDialog = false,
+            onAddDialogDismiss = {},
+            onAddDialogAdd = { null },
+            showManageDialog = false,
+            onManageDialogDismiss = {},
+            onManageDialogRemove = {},
+            showResetDialog = false,
+            onResetDialogDismiss = {},
+            onResetDialogConfirm = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSettingsScreenContent(

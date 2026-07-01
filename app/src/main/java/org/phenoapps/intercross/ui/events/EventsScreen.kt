@@ -30,6 +30,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +77,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -412,46 +414,50 @@ internal fun EventsScreen(
     )
 
     if (showInlineScanner) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ModalBottomSheet(
-            onDismissRequest = {
-                showInlineScanner = false
-                scannerTargetField = null
-            },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentWindowInsets = { WindowInsets(0) },
+        var flashEnabled by remember(prefs, keyUtil.barcodeFlashKey) {
+            mutableStateOf(prefs.getBoolean(keyUtil.barcodeFlashKey, false))
+        }
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface
         ) {
-            Box(Modifier.fillMaxSize()) {
-                BarcodeScannerScreen(
-                    mode = BARCODE_MODE_SINGLE,
-                    events = events,
-                    parents = parents,
-                    mlKitFormats = remember(prefs) {
-                        org.phenoapps.intercross.util.BarcodeScannerSettings.selectedMlKitFormats(prefs, keyUtil.barcodeFormatsKey)
-                    },
-                    torchEnabled = remember(prefs) {
-                        prefs.getBoolean(keyUtil.barcodeFlashKey, false)
-                    },
-                    onSingleScan = { code ->
-                        applyScannedCode(code)
+            BarcodeScannerScreen(
+                mode = BARCODE_MODE_SINGLE,
+                events = events,
+                parents = parents,
+                mlKitFormats = remember(prefs) {
+                    org.phenoapps.intercross.util.BarcodeScannerSettings.selectedMlKitFormats(prefs, keyUtil.barcodeFormatsKey)
+                },
+                torchEnabled = flashEnabled,
+                onSingleScan = { code ->
+                    applyScannedCode(code)
+                    showInlineScanner = false
+                },
+                onOpenEvent = {
+                    onOpenEvent(it)
+                    showInlineScanner = false
+                },
+                onShowMessage = onShowMessage,
+                topBarState = TopBarState(
+                    titleRes = R.string.barcode_scan_label,
+                    showBack = true,
+                    onBack = {
                         showInlineScanner = false
+                        scannerTargetField = null
                     },
-                    onOpenEvent = {
-                        onOpenEvent(it)
-                        showInlineScanner = false
-                    },
-                    onShowMessage = onShowMessage,
-                    topBarState = TopBarState(
-                        titleRes = R.string.barcode_scan_label,
-                        showBack = true,
-                        onBack = {
-                            showInlineScanner = false
-                            scannerTargetField = null
-                        }
-                    )
+                    actions = listOf(
+                        TopBarAction(
+                            id = "toggle_flash",
+                            labelRes = if (flashEnabled) R.string.barcode_flash_off else R.string.barcode_flash_on,
+                            iconRes = if (flashEnabled) R.drawable.ic_flash_off else R.drawable.ic_flash_on,
+                            onClick = {
+                                flashEnabled = !flashEnabled
+                                prefs.edit { putBoolean(keyUtil.barcodeFlashKey, flashEnabled) }
+                            },
+                        ),
+                    ),
                 )
-            }
+            )
         }
     }
 }
@@ -745,14 +751,17 @@ internal fun EventsScreenContent(
 
 @Preview(showBackground = true, name = "EventsScreen - Populated")
 @Composable
-private fun EventsScreenPopulatedPreview() {
+internal fun EventsScreenPopulatedPreview() {
     IntercrossPreviewTheme {
         EventsScreenContent(
             topBarState = TopBarState(
-                title = "Events",
+                titleRes = R.string.events_fragment_label,
                 actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_archived_events, iconRes = R.drawable.ic_folder_lock),
                     TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
                     TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
                 ),
             ),
             bottomBarState = BottomBarState(
@@ -775,6 +784,285 @@ private fun EventsScreenPopulatedPreview() {
             onSave = {},
             onOpenEvent = {},
             onOpenScanner = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "EventsScreen - Empty")
+@Composable
+internal fun EventsScreenEmptyPreview() {
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                titleRes = R.string.events_fragment_label,
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_archived_events, iconRes = R.drawable.ic_folder_lock),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = emptyList(),
+            firstParent = "",
+            secondParent = "",
+            crossId = "",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "EventsScreen - Selected")
+@Composable
+internal fun EventsScreenSelectedPreview() {
+    val selectedIds = setOf(PreviewSampleData.events[0].id!!, PreviewSampleData.events[1].id!!)
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                title = "2 selected",
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_archived_events, iconRes = R.drawable.ic_folder_lock),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = PreviewSampleData.events,
+            selectedEventIds = selectedIds,
+            firstParent = "",
+            secondParent = "",
+            crossId = "",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "EventsScreen - Archived")
+@Composable
+internal fun EventsScreenArchivedPreview() {
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                title = "Archived Events",
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_active_events, iconRes = R.drawable.ic_visibility),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = PreviewSampleData.events.take(2),
+            showArchivedEvents = true,
+            firstParent = "",
+            secondParent = "",
+            crossId = "",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "EventsScreen - Archived Selected")
+@Composable
+internal fun EventsScreenArchivedSelectedPreview() {
+    val selectedIds = setOf(PreviewSampleData.events[0].id!!)
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                title = "1 selected",
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_active_events, iconRes = R.drawable.ic_visibility),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = PreviewSampleData.events.take(2),
+            showArchivedEvents = true,
+            selectedEventIds = selectedIds,
+            firstParent = "",
+            secondParent = "",
+            crossId = "",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "EventsScreen - Person Selection")
+@Composable
+internal fun EventsScreenPersonSelectionPreview() {
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                titleRes = R.string.events_fragment_label,
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_archived_events, iconRes = R.drawable.ic_folder_lock),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = PreviewSampleData.events,
+            firstParent = "Honeycrisp",
+            secondParent = "Fuji",
+            crossId = "Cross-1",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+            personDropdownContent = {
+                OutlinedTextField(
+                    value = "Jane",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.person)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "EventsScreen - Person Selection Expanded")
+@Composable
+internal fun EventsScreenPersonSelectionExpandedPreview() {
+    IntercrossPreviewTheme {
+        EventsScreenContent(
+            topBarState = TopBarState(
+                titleRes = R.string.events_fragment_label,
+                actions = listOf(
+                    TopBarAction("select_all", R.string.SelectAllRows, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("archive", R.string.view_archived_events, iconRes = R.drawable.ic_folder_lock),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("export", R.string.export, iconRes = R.drawable.ic_export),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "events",
+                onTabSelected = {},
+            ),
+            events = PreviewSampleData.events,
+            firstParent = "Honeycrisp",
+            secondParent = "Fuji",
+            crossId = "Cross-1",
+            firstLabel = "Female ID",
+            secondLabel = "Male ID",
+            focusFirst = remember { FocusRequester() },
+            focusSecond = remember { FocusRequester() },
+            focusCrossId = remember { FocusRequester() },
+            onFirstParentChange = {},
+            onSecondParentChange = {},
+            onCrossIdChange = {},
+            onClear = {},
+            onSave = {},
+            onOpenEvent = {},
+            onOpenScanner = {},
+            personDropdownContent = {
+                Box {
+                    OutlinedTextField(
+                        value = "Jane",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.person)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = true) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                    DropdownMenu(
+                        expanded = true,
+                        onDismissRequest = { },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Jane") },
+                            onClick = { },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("John") },
+                            onClick = { },
+                        )
+                    }
+                }
+            }
         )
     }
 }

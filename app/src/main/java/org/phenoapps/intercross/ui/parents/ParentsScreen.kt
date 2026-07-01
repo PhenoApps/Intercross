@@ -269,7 +269,7 @@ fun ParentsScreen(
 @Preview(showBackground = true, name = "ParentsScreen - Populated")
 @Preview(showBackground = true, name = "ParentsScreen - Tablet", device = "spec:width=800dp,height=1280dp")
 @Composable
-private fun ParentsScreenPopulatedPreview() {
+internal fun ParentsScreenPopulatedPreview() {
     IntercrossPreviewTheme {
         ParentsScreen(
             rows = PreviewSampleData.parentListRows,
@@ -282,7 +282,7 @@ private fun ParentsScreenPopulatedPreview() {
             onToggleSelection = {},
             onShowMessage = {},
             topBarState = TopBarState(
-                title = "Parents",
+                title = "",
                 actions = listOf(
                     TopBarAction("select_all", R.string.sort_by, iconRes = R.drawable.ic_select_all),
                     TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
@@ -299,7 +299,7 @@ private fun ParentsScreenPopulatedPreview() {
 
 @Preview(showBackground = true, name = "ParentsScreen - Selected")
 @Composable
-private fun ParentsScreenSelectedPreview() {
+internal fun ParentsScreenSelectedPreview() {
     IntercrossPreviewTheme {
         ParentsScreen(
             rows = PreviewSampleData.parentListRows,
@@ -313,6 +313,36 @@ private fun ParentsScreenSelectedPreview() {
             onShowMessage = {},
             topBarState = TopBarState(
                 title = "2 selected",
+                actions = listOf(
+                    TopBarAction("select_all", R.string.sort_by, iconRes = R.drawable.ic_select_all),
+                    TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),
+                    TopBarAction("sort", R.string.sort_by, iconRes = R.drawable.sort),
+                ),
+            ),
+            bottomBarState = BottomBarState(
+                selectedRoute = "parents",
+                onTabSelected = {},
+            ),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "ParentsScreen - Empty")
+@Composable
+internal fun ParentsScreenEmptyPreview() {
+    IntercrossPreviewTheme {
+        ParentsScreen(
+            rows = emptyList(),
+            tab = 0,
+            sortType = ParentSortType.NAME,
+            onTabChange = {},
+            onSortTypeChange = {},
+            onCreateParent = {},
+            onDeleteSelected = {},
+            onToggleSelection = {},
+            onShowMessage = {},
+            topBarState = TopBarState(
+                title = "",
                 actions = listOf(
                     TopBarAction("select_all", R.string.sort_by, iconRes = R.drawable.ic_select_all),
                     TopBarAction("import", R.string.import_file, iconRes = R.drawable.ic_nv_import_white),

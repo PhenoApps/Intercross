@@ -165,6 +165,64 @@ fun DatabaseSettingsRoute(
     )
 }
 
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "DatabaseSettings - Default")
+@Composable
+internal fun DatabaseSettingsPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        DatabaseSettingsScreenContent(
+            storageSummary = "Not configured",
+            onOpenStorage = {},
+            onImport = {},
+            onExportClick = {},
+            onReloadClick = {},
+            onResetClick = {},
+            showExportDialog = false,
+            onExportDismiss = {},
+            onExportConfirm = { _ -> },
+            showResetFirstDialog = false,
+            onResetFirstDismiss = {},
+            onResetFirstConfirm = {},
+            showResetSecondDialog = false,
+            onResetSecondDismiss = {},
+            onResetSecondConfirm = {},
+            showReloadDialog = false,
+            onReloadDismiss = {},
+            onReloadConfirm = {},
+            message = null,
+            onMessageDismiss = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "DatabaseSettings - Export Dialog")
+@Composable
+internal fun DatabaseExportDialogPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        DatabaseSettingsScreenContent(
+            storageSummary = "Documents/Intercross",
+            onOpenStorage = {},
+            onImport = {},
+            onExportClick = {},
+            onReloadClick = {},
+            onResetClick = {},
+            showExportDialog = true,
+            onExportDismiss = {},
+            onExportConfirm = { _ -> },
+            showResetFirstDialog = false,
+            onResetFirstDismiss = {},
+            onResetFirstConfirm = {},
+            showResetSecondDialog = false,
+            onResetSecondDismiss = {},
+            onResetSecondConfirm = {},
+            showReloadDialog = false,
+            onReloadDismiss = {},
+            onReloadConfirm = {},
+            message = null,
+            onMessageDismiss = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatabaseSettingsScreenContent(

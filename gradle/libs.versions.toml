@@ -5,8 +5,8 @@ minSdk = "23"
 targetSdk = "37"
 
 # App
-versionCode = "210"
-versionName = "2.1.0"
+versionCode = "300"
+versionName = "3.0.0"
 
 # Kotlin & Core
 kotlin = "2.2.10"

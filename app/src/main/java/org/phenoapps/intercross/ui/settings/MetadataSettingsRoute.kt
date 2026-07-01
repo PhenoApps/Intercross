@@ -113,6 +113,68 @@ fun MetadataSettingsRoute(
     )
 }
 
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "MetadataSettings - Populated")
+@Composable
+internal fun MetadataSettingsPopulatedPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        val meta1 = Meta("Seeds", 0).apply { id = 1L }
+        val meta2 = Meta("Fruit", null).apply { id = 2L }
+        MetadataSettingsScreenContent(
+            metadata = listOf(meta1, meta2),
+            onAddClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
+            showEditor = false,
+            editingMeta = null,
+            onEditorDismiss = {},
+            onEditorSave = { _, _, _ -> },
+            pendingDelete = null,
+            onDeleteDismiss = {},
+            onDeleteConfirm = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "MetadataSettings - Empty")
+@Composable
+internal fun MetadataSettingsEmptyPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        MetadataSettingsScreenContent(
+            metadata = emptyList(),
+            onAddClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
+            showEditor = false,
+            editingMeta = null,
+            onEditorDismiss = {},
+            onEditorSave = { _, _, _ -> },
+            pendingDelete = null,
+            onDeleteDismiss = {},
+            onDeleteConfirm = {},
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "MetadataSettings - Editor Dialog")
+@Composable
+internal fun MetadataSettingsEditorDialogPreview() {
+    org.phenoapps.intercross.ui.theme.IntercrossPreviewTheme {
+        MetadataSettingsScreenContent(
+            metadata = emptyList(),
+            onAddClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
+            showEditor = true,
+            editingMeta = Meta("Seeds", 5, "🌱"),
+            onEditorDismiss = {},
+            onEditorSave = { _, _, _ -> },
+            pendingDelete = null,
+            onDeleteDismiss = {},
+            onDeleteConfirm = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetadataSettingsScreenContent(
@@ -247,11 +309,13 @@ fun MetadataSettingsScreenContent(
                                 )
                             }
                         }
-                        Text(
-                            text = stringResource(R.string.metadata_default_format, meta.defaultValue?.toString() ?: stringResource(R.string.metadata_null_placeholder)),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        if (meta.defaultValue != null) {
+                            Text(
+                                text = stringResource(R.string.metadata_default_format, meta.defaultValue.toString()),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                     androidx.compose.material3.IconButton(
                         onClick = { onEditClick(meta) },

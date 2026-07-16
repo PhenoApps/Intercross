@@ -76,6 +76,7 @@ fun BrapiPotentialParentsRoute(
             .distinctBy { it.observationUnitDbId ?: it.observationUnitName }
     }
     var expandedParentIds by remember { mutableStateOf(emptySet<String>()) }
+    var selectedParentIds by remember { mutableStateOf(emptySet<String>()) }
     var isImporting by remember { mutableStateOf(false) }
     val noParentsMessage = stringResource(R.string.brapi_no_potential_parents_found)
     val importedParentsTemplate = stringResource(R.string.brapi_imported_parents, 0).replace("0", "%d")
@@ -92,11 +93,19 @@ fun BrapiPotentialParentsRoute(
             args = args,
             potentialParents = potentialParents,
             expandedParentIds = expandedParentIds,
+            selectedParentIds = selectedParentIds,
             onToggleExpanded = { stableId ->
                 expandedParentIds = if (stableId in expandedParentIds) {
                     expandedParentIds - stableId
                 } else {
                     expandedParentIds + stableId
+                }
+            },
+            onToggleSelected = { stableId ->
+                selectedParentIds = if (stableId in selectedParentIds) {
+                    selectedParentIds - stableId
+                } else {
+                    selectedParentIds + stableId
                 }
             },
             isImporting = isImporting,
@@ -108,7 +117,15 @@ fun BrapiPotentialParentsRoute(
                 isImporting = true
                 scope.launch {
                     val imported = withContext(Dispatchers.IO) {
-                        val parents = potentialParents
+                        val parentsToImport = if (selectedParentIds.isEmpty()) {
+                            potentialParents
+                        } else {
+                            potentialParents.filter { parent ->
+                                val id = parent.observationUnitDbId ?: parent.observationUnitName.orEmpty()
+                                id in selectedParentIds
+                            }
+                        }
+                        val parents = parentsToImport
                             .groupBy { it.observationUnitDbId ?: it.observationUnitName.orEmpty() }
                             .filterKeys { it.isNotBlank() }
                             .map { (codeId, items) ->
@@ -144,7 +161,9 @@ internal fun BrapiPotentialParentsScreen(
     args: Bundle,
     potentialParents: List<BrAPICrossParent>,
     expandedParentIds: Set<String>,
+    selectedParentIds: Set<String>,
     onToggleExpanded: (String) -> Unit,
+    onToggleSelected: (String) -> Unit,
     isImporting: Boolean,
     onImport: () -> Unit,
 ) {
@@ -178,14 +197,16 @@ internal fun BrapiPotentialParentsScreen(
         items(potentialParents, key = { it.observationUnitDbId ?: it.observationUnitName.orEmpty() }) { parent ->
             val stableId = parent.observationUnitDbId ?: parent.observationUnitName.orEmpty()
             val inferredSex = if (parent.parentType?.toString() == "MALE") 1 else 0
+            val isSelected = stableId in selectedParentIds
             
             Column {
                 ParentListItem(
                     name = parent.observationUnitName ?: stringResource(R.string.brapi_project_value_unavailable),
                     codeId = parent.observationUnitDbId ?: stringResource(R.string.brapi_project_id_unavailable),
                     sex = inferredSex,
+                    selected = isSelected,
                     modifier = Modifier.padding(vertical = 4.dp),
-                    onToggleSelection = { onToggleExpanded(stableId) }
+                    onToggleSelection = { onToggleSelected(stableId) }
                 )
                 
                 if (stableId in expandedParentIds) {
@@ -242,7 +263,9 @@ internal fun BrapiPotentialParentsPopulatedPreview() {
             args = args,
             potentialParents = PreviewSampleData.brapiPotentialParents,
             expandedParentIds = setOf("HC001"),
+            selectedParentIds = setOf("HC001", "HC002"),
             onToggleExpanded = {},
+            onToggleSelected = {},
             isImporting = false,
             onImport = {}
         )

@@ -240,7 +240,7 @@ private fun BrapiProjectCard(
         colors = CardDefaults.cardColors(
             containerColor = if (selected) AppTheme.colors.primaryTransparent.copy(alpha = 0.1f) else Color.White
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 3.dp else 3.dp),
+        elevation = CardDefaults.cardElevation(),
         border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, AppTheme.colors.primary) else null
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {

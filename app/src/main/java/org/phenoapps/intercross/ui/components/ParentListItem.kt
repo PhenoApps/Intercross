@@ -49,7 +49,7 @@ fun ParentListItem(
         colors = CardDefaults.cardColors(
             containerColor = if (selected) AppTheme.colors.primaryTransparent.copy(alpha = 0.1f) else Color.White
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 2.dp else 4.dp),
+        elevation = CardDefaults.cardElevation(),
         border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, AppTheme.colors.primary) else null
     ) {
         Row(

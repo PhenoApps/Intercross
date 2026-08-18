@@ -24,6 +24,7 @@ sealed class IntercrossRoute(val route: String) {
     data object PrintingSettings : IntercrossRoute("settings/printing")
     data object DatabaseSettings : IntercrossRoute("settings/database")
     data object BrapiSettings : IntercrossRoute("settings/brapi")
+    data object BrapiAdvancedSettings : IntercrossRoute("settings/brapi/advanced")
     data object PatternSettings : IntercrossRoute("settings/pattern")
     data object MetadataSettings : IntercrossRoute("settings/metadata")
     data object AboutSettings : IntercrossRoute("settings/about")

@@ -2,6 +2,7 @@ package org.phenoapps.intercross.brapi.service;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.arch.core.util.Function;
@@ -24,6 +25,8 @@ import org.brapi.v2.model.germ.BrAPIPlannedCross;
 import org.brapi.v2.model.germ.response.BrAPICrossesListResponse;
 import org.brapi.v2.model.germ.response.BrAPICrossingProjectsListResponse;
 import org.brapi.v2.model.germ.response.BrAPIPlannedCrossesListResponse;
+import org.phenoapps.brapi.account.BrapiAccountRepository;
+import org.phenoapps.brapi.account.BrapiPreferenceKeys;
 import org.phenoapps.intercross.util.KeyUtil;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class BrAPIServiceV2 implements BrAPIService {
         // Make timeout longer. Set it to 60 seconds for now
         BrAPIClient apiClient = new BrAPIClient(BrAPIService.getBrapiUrl(context), 60*1000*10);
 
-        String token = PreferenceManager.getDefaultSharedPreferences(context).getString(mKeyUtil.getBrapiToken(), "");
+        String token = getTokenFromRepository(context);
 
         try {
             apiClient.authenticate(t -> token);
@@ -61,6 +64,34 @@ public class BrAPIServiceV2 implements BrAPIService {
         this.germplasmApi = new GermplasmApi(apiClient);
         this.crossesApi = new CrossesApi(apiClient);
         this.observationUnitsApi = new ObservationUnitsApi(apiClient);
+    }
+
+    /**
+     * Retrieves the BrAPI access token, trying BrapiAccountRepository first
+     * and falling back to SharedPreferences if the repository is unavailable.
+     */
+    private static String getTokenFromRepository(Context context) {
+        try {
+            KeyUtil keyUtil = new KeyUtil(context);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            BrapiPreferenceKeys keys = new BrapiPreferenceKeys(
+                keyUtil.getBrapiEnabled(),
+                keyUtil.getBrapiUrl(),
+                keyUtil.getBrapiDisplayName(),
+                keyUtil.getBrapiToken(),
+                keyUtil.getBrapiId()
+            );
+            BrapiAccountRepository repository = new BrapiAccountRepository(context, prefs, keys);
+            String token = repository.peekToken();
+            if (token != null && !token.isEmpty()) {
+                return token;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get token from repository, falling back to SharedPreferences", e);
+        }
+        // Fallback to SharedPreferences
+        KeyUtil keyUtil = new KeyUtil(context);
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(keyUtil.getBrapiToken(), "");
     }
 
     private void updatePageInfo(BrapiPaginationManager paginationManager, BrAPIMetadata metadata){

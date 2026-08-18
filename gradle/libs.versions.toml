@@ -1,7 +1,9 @@
 [versions]
 # SDK
 compileSdk = "37"
+kotestRunnerJunit5 = "5.8.0"
 minSdk = "23"
+robolectric = "4.11"
 targetSdk = "37"
 
 # App
@@ -102,6 +104,8 @@ screenshot = "0.0.1-alpha15"
 
 [libraries]
 # Kotlin & Coroutines
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotestRunnerJunit5" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotestRunnerJunit5" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
@@ -191,6 +195,7 @@ espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-
 
 # Third-party
 phenolib = { group = "com.github.phenoapps", name = "phenolib", version.ref = "phenolib" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 serenegiant-common = { group = "com.serenegiant", name = "common", version.ref = "serenegiant" }
 brapi-java-client = { group = "org.brapi", name = "brapi-java-client", version.ref = "brapiClient" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonDatabind" }

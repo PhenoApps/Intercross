@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Intercross"
+include(":brapi-provider")
 include(":app")

@@ -15,6 +15,7 @@
     <string name="key_pref_brapi_token">&package;BRAPI_TOKEN</string>
     <string name="key_pref_brapi_id">&package;BRAPI_ID</string>
     <string name="key_pref_brapi_url">&package;BRAPI_BASE_URL</string>
+    <string name="key_pref_brapi_active_account">&package;BRAPI_ACTIVE_ACCOUNT_NAME</string>
     <string name="key_pref_brapi_oidc">&package;BRAPI_OIDC_URL</string>
     <string name="key_pref_brapi_oidc_flow">&package;BRAPI_OIDC_FLOW</string>
     <string name="key_pref_brapi_authorize">&package;BRAPI_AUTHORIZE</string>

@@ -28,6 +28,7 @@ class KeyUtil @Inject constructor(
     val brapiOidc by key(R.string.key_pref_brapi_oidc)
     val brapiFlow by key(R.string.key_pref_brapi_oidc_flow)
     val brapiUrl by key(R.string.key_pref_brapi_url)
+    val brapiActiveAccount by key(R.string.key_pref_brapi_active_account)
     val brapiToken by key(R.string.key_pref_brapi_token)
     val brapiId by key(R.string.key_pref_brapi_id)
     val brapiClient by key(R.string.key_pref_brapi_client)

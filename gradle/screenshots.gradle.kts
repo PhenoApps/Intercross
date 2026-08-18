@@ -197,9 +197,9 @@ configurations {
 
 // Fix: ensure merged manifest is available for screenshot test config generation
 // In AGP 8.5+, GenerateTestConfig requires the merged manifest property to be set.
-afterEvaluate {
-    tasks.filter { it.name.contains("ScreenshotTestConfig") }.forEach {
-        val screenshotTask = it
+tasks.withType<org.gradle.api.Task>().configureEach {
+    if (name.contains("ScreenshotTestConfig")) {
+        val screenshotTask = this
         val variantName = screenshotTask.name.removePrefix("generate").removeSuffix("ScreenshotTestConfig")
         val manifestTask = tasks.findByName("process${variantName}MainManifest")
             ?: tasks.findByName("process${variantName}Manifest")

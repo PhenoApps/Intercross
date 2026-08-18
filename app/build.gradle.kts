@@ -14,6 +14,10 @@ plugins {
     alias(libs.plugins.screenshot)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "org.phenoapps.intercross"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -84,10 +88,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlin {
-        jvmToolchain(21)
-    }
-
     lint {
         abortOnError = false
         disable += "MissingTranslation"
@@ -106,6 +106,9 @@ dependencies {
     // Local libs
     implementation(fileTree(mapOf("include" to listOf("*.jar", "*.aar"), "dir" to "libs")))
     implementation(libs.screenshot.validation.api)
+
+    // BrAPI Provider module
+    implementation(project(":brapi-provider"))
 
     // Room
     ksp(libs.androidx.room.compiler)
@@ -223,6 +226,9 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.robolectric)
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.core)
     testImplementation(libs.mockito.core)

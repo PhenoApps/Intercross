@@ -4,11 +4,14 @@ import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -18,34 +21,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Alignment
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.R
-import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.ParentsRepository
+import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.viewmodels.ParentsListViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.ui.barcode.BARCODE_MODE_SINGLE
 import org.phenoapps.intercross.ui.barcode.BARCODE_RESULT_KEY
 import org.phenoapps.intercross.ui.barcode.BARCODE_SEQUENCE_RESULT_KEY
@@ -66,6 +63,7 @@ import org.phenoapps.intercross.ui.pollenmanager.PollenManagerRoute
 import org.phenoapps.intercross.ui.settings.AboutSettingsRoute
 import org.phenoapps.intercross.ui.settings.AppearanceSettingsRoute
 import org.phenoapps.intercross.ui.settings.BehaviorSettingsRoute
+import org.phenoapps.intercross.ui.settings.BrapiAdvancedSettingsRoute
 import org.phenoapps.intercross.ui.settings.BrapiSettingsRoute
 import org.phenoapps.intercross.ui.settings.DatabaseSettingsRoute
 import org.phenoapps.intercross.ui.settings.LayoutSettingsRoute
@@ -76,6 +74,7 @@ import org.phenoapps.intercross.ui.settings.ProfileSettingsRoute
 import org.phenoapps.intercross.ui.settings.SettingsRoute
 import org.phenoapps.intercross.ui.summary.SummaryRoute
 import org.phenoapps.intercross.ui.wishlist.WishlistFactoryRoute
+import org.phenoapps.intercross.util.FileUtil
 
 @Composable
 fun IntercrossApp(actions: IntercrossAppActions) {
@@ -494,7 +493,20 @@ private fun IntercrossNavHost(
             DatabaseSettingsRoute(onBack = { navController.popBackStack() })
         }
         composable(IntercrossRoute.BrapiSettings.route) {
-            BrapiSettingsRoute(onShowMessage = onShowMessage, onBack = { navController.popBackStack() })
+            val scanResult by it.savedStateHandle
+                .getStateFlow<String?>(BARCODE_RESULT_KEY, null)
+                .collectAsStateWithLifecycle()
+            BrapiSettingsRoute(
+                onShowMessage = onShowMessage,
+                onBack = { navController.popBackStack() },
+                onNavigateToAdvancedSettings = { navController.navigate(IntercrossRoute.BrapiAdvancedSettings.route) },
+                onOpenScanner = { navController.navigate(IntercrossRoute.BarcodeScanner.create(BARCODE_MODE_SINGLE)) },
+                scanResult = scanResult,
+                onScanResultConsumed = { it.savedStateHandle[BARCODE_RESULT_KEY] = null },
+            )
+        }
+        composable(IntercrossRoute.BrapiAdvancedSettings.route) {
+            BrapiAdvancedSettingsRoute(onBack = { navController.popBackStack() })
         }
         composable(IntercrossRoute.MetadataSettings.route) {
             MetadataSettingsRoute(onBack = { navController.popBackStack() })

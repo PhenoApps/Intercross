@@ -5,23 +5,18 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="BrapiImportTextView">
-        <item name="android:background">@color/colorPrimaryDark</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">24sp</item>
+    <style name="BrapiImportTextView" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
-        <item name="android:layout">@layout/fragment_preferences</item>
     </style>
 
     <style name="LegendText">

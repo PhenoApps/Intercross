@@ -1,32 +1,21 @@
 package org.phenoapps.intercross.activities
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
-import com.bytehamster.lib.preferencesearch.SearchPreferenceFragment
-import com.bytehamster.lib.preferencesearch.SearchPreferenceResult
-import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +29,6 @@ import org.phenoapps.intercross.data.MetaValuesRepository
 import org.phenoapps.intercross.data.MetadataRepository
 import org.phenoapps.intercross.data.ParentsRepository
 import org.phenoapps.intercross.data.PollenGroupRepository
-import org.phenoapps.intercross.data.SettingsRepository
 import org.phenoapps.intercross.data.WishlistRepository
 import org.phenoapps.intercross.data.models.CrossType
 import org.phenoapps.intercross.data.models.Event
@@ -48,41 +36,36 @@ import org.phenoapps.intercross.data.models.Meta
 import org.phenoapps.intercross.data.models.MetadataValues
 import org.phenoapps.intercross.data.models.Parent
 import org.phenoapps.intercross.data.models.PollenGroup
-import org.phenoapps.intercross.data.models.Settings
 import org.phenoapps.intercross.data.models.Wishlist
 import org.phenoapps.intercross.data.viewmodels.EventListViewModel
 import org.phenoapps.intercross.data.viewmodels.MetaValuesViewModel
 import org.phenoapps.intercross.data.viewmodels.MetadataViewModel
 import org.phenoapps.intercross.data.viewmodels.ParentsListViewModel
 import org.phenoapps.intercross.data.viewmodels.PollenGroupListViewModel
-import org.phenoapps.intercross.data.viewmodels.SettingsViewModel
 import org.phenoapps.intercross.data.viewmodels.WishlistViewModel
 import org.phenoapps.intercross.data.viewmodels.factory.EventsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.MetaValuesViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.MetadataViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.ParentsListViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.PollenGroupListViewModelFactory
-import org.phenoapps.intercross.data.viewmodels.factory.SettingsViewModelFactory
 import org.phenoapps.intercross.data.viewmodels.factory.WishlistViewModelFactory
-import org.phenoapps.intercross.databinding.ActivityMainBinding
-import org.phenoapps.intercross.fragments.EventsFragmentDirections
 import org.phenoapps.intercross.fragments.ImportSampleDialogFragment
-import org.phenoapps.intercross.fragments.preferences.PreferencesFragment
+import org.phenoapps.intercross.ui.app.IntercrossApp
+import org.phenoapps.intercross.ui.app.IntercrossAppActions
+import org.phenoapps.intercross.ui.app.BrapiMode
 import org.phenoapps.intercross.util.DateUtil
-import org.phenoapps.intercross.util.Dialogs
 import org.phenoapps.intercross.util.ExportUtil
 import org.phenoapps.intercross.util.FileUtil
 import org.phenoapps.intercross.util.KeyUtil
-import org.phenoapps.intercross.util.SnackbarQueue
+import org.phenoapps.intercross.util.CrossIdSettings
 import org.phenoapps.intercross.util.VerifyPersonHelper
 import org.phenoapps.utils.BaseDocumentTreeUtil
 import java.io.File
 import javax.inject.Inject
 import androidx.core.content.edit
-import androidx.navigation.findNavController
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
+class MainActivity : AppCompatActivity() {
 
 //    private val mFirebaseAnalytics by lazy {
 //        FirebaseAnalytics.getInstance(this)
@@ -116,10 +99,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         MetaValuesViewModelFactory(MetaValuesRepository.getInstance(mDatabase.metaValuesDao()))
     }
 
-    private val settingsModel: SettingsViewModel by viewModels {
-        SettingsViewModelFactory(SettingsRepository.getInstance(mDatabase.settingsDao()))
-    }
-
     private val metadataViewModel: MetadataViewModel by viewModels {
         MetadataViewModelFactory(MetadataRepository.getInstance(mDatabase.metadataDao()))
     }
@@ -141,7 +120,9 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
             try {
 
-                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, mParents, mGroups, mMetadata, mMetaValues)
+                val parentIds = (mEvents.map { it.maleObsUnitDbId } + mEvents.map { it.femaleObsUnitDbId })
+                val filteredParents = mParents.filter { it.codeId in parentIds }
+                FileUtil(this).exportCrossesToFile(nonNullUri, mEvents, filteredParents, mGroups, mMetadata, mMetaValues)
 
             } catch (e: Exception) {
 
@@ -295,17 +276,7 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         IntercrossDatabase.getInstance(this)
     }
 
-    private lateinit var mSnackbar: SnackbarQueue
-
-    private lateinit var mBinding: ActivityMainBinding
-
-    private lateinit var mNavController: NavController
-
-    private var preferencesFragment: PreferencesFragment? = null
-
-    fun setPreferencesFragment(fragment: PreferencesFragment?) {
-        preferencesFragment = fragment
-    }
+    private var navigateToBrapiProjects: ((Int) -> Unit)? = null
 
     private fun writeStream(file: File, resourceId: Int) {
 
@@ -389,18 +360,17 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             val introIntent = Intent(this, AppIntroActivity::class.java)
             appIntroLauncher.launch(introIntent)
 
-            settingsModel.insert(
-                Settings().apply {
-                    isUUID = true
-                }
-            )
+            CrossIdSettings.save(mPref, CrossIdSettings(isUUID = true))
 
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    for (property in arrayOf(getString(R.string.metadata_fruits),
-                        getString(R.string.metadata_flowers), getString(R.string.metadata_seeds))) {
+                    for ((property, icon) in arrayOf(
+                        getString(R.string.metadata_fruits) to "🍎",
+                        getString(R.string.metadata_flowers) to "🌸",
+                        getString(R.string.metadata_seeds) to "🌱",
+                    )) {
                         metadataViewModel.insert(
-                            Meta(property)
+                            Meta(property, icon = icon)
                         )
                     }
                 }
@@ -431,12 +401,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        window.apply {
-            WindowCompat.getInsetsController(this, decorView).apply {
-                isAppearanceLightStatusBars = false
-            }
-        }
-
         verifyPersonHelper.updateAskedSinceOpened()
 
         firstRunSetup()
@@ -445,60 +409,24 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
 
         setupDirs()
 
-        mBinding = DataBindingUtil.setContentView(this@MainActivity,
-            R.layout.activity_main
-        )
-
-        setWindowInsetListener()
-
-        supportActionBar.apply {
-            title = ""
-            this?.let {
-                it.themedContext
-                setDisplayHomeAsUpEnabled(true)
-                setHomeButtonEnabled(true)
-            }
-        }
-
-        mSnackbar = SnackbarQueue()
-
-        mNavController = findNavController(R.id.nav_fragment)
-
-        onBackPressedDispatcher.addCallback(this, backCallback)
-
-        // toolbar for search screen
-        supportFragmentManager.addOnBackStackChangedListener {
-            val currentFragment = supportFragmentManager.findFragmentById(android.R.id.list_container)
-            if (currentFragment is SearchPreferenceFragment) {
-                setBackButtonToolbar()
-                supportActionBar?.title = getString(R.string.settings_label)
-                supportActionBar?.show()
-            }
-        }
-
         startObservers()
 
-        mBinding.mainTb.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        setContent {
+            org.phenoapps.intercross.ui.theme.AppTheme {
+                IntercrossApp(
+                    actions = IntercrossAppActions(
+                        launchImportLocal = { importedFileContent.launch("*/*") },
+                        launchExportLocal = {
+                            val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
+                            exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
+                        },
+                        onHomeBack = { backCallback.handleOnBackPressed() },
+                        onNavigateToBrapiProjects = { navigateToBrapiProjects = it },
+                        onNavigateToProfileSettings = { navigateToProfileSettings = it },
+                    ),
+                )
+            }
         }
-    }
-
-    fun setBackButtonToolbar() {
-        setSupportActionBar(mBinding.mainTb)
-
-        supportActionBar?.title = null
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.hide()
-    }
-
-    fun setToolbar() {
-        setSupportActionBar(mBinding.mainTb)
-
-        supportActionBar?.title = null
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayShowHomeEnabled(false)
-        supportActionBar?.show()
     }
 
     private fun startObservers() {
@@ -549,150 +477,31 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
         }
     }
 
-    private fun showExportDialog() {
-
-        val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
-
-        with(AlertDialog.Builder(this@MainActivity)) {
-
-            setSingleChoiceItems(arrayOf("CSV", "Database"), 0) { dialog, which ->
-
-                when (which) {
-
-                    0 -> exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
-
-                    // 1 -> exportDatabase.launch("intercross.zip")
-
-                }
-
-                dialog.dismiss()
-            }
-
-            setTitle(R.string.export)
-
-            show()
-        }
-    }
-
-    fun launchImport() {
-
-        //if (mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null) != null) {
-            //show a dialog asking user to import from local file or brapi
-            //TODO
-//            AlertDialog.Builder(this)
-//                .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
-//                    when (which) {
-//                        //import file from local directory
-//                        0 -> importedFileContent?.launch("*/*")
-//
-//                        //start brapi import fragment
-//                        1 -> mNavController.navigate(CrossCountFragmentDirections.globalActionToWishlistImport())
-//
-//                    }
-//
-//                    dialog.dismiss()
-//                }
-//                .show()
-        //} else {
-        importedFileContent.launch("*/*")
-        //}
-    }
-
-    fun startExport(fileName: String) {
-        exportUtil.exportCrosses(eventsModel, mEvents, mParents, mGroups, mMetadata, mMetaValues, fileName)
-    }
-
-    fun showExportDialog(onDismiss: () -> Unit) {
-
-        //TODO
-        //val tokenCheck = mAuthPref.getString(mKeyUtil.brapiKeys.brapiTokenKey, null)
-        val importCheck = mPref.getString(mKeyUtil.brapiHasBeenImported, null)
-        val defaultFileNamePrefix = getString(R.string.default_crosses_export_file_name)
-
-        if (importCheck != null) { //(tokenCheck != null || importCheck != null) {
-
-            AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_export_title)
-                .setSingleChoiceItems(arrayOf("Local", "BrAPI"), 0) { dialog, which ->
-                    when (which) {
-                        0 -> {
-                            exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
-                        }
-                        else -> {
-                            mNavController.navigate(R.id.global_action_to_brapi_export)
-                        }
-                    }
-
-                    dialog.dismiss()
-                }
-                .setOnDismissListener {
-                    onDismiss()
-                }
-                .show()
-
-            onDismiss()
-
-        } else {
-            exportCrossesFile.launch("${defaultFileNamePrefix}_${DateUtil().getTime()}.csv")
-        }
-    }
-
-    fun navigateToLastSummaryFragment() {
-
-        val lastSummaryFragment = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                .getString("last_visited_summary", "summary")
-
-        /***
-         * Prioritize navigation to summary fragment, otherwise pick the last chosen view using preferences
-         * The key "last_visited_summary" is updated at the start of each respective fragment.
-         */
-        when (lastSummaryFragment) {
-
-            "summary" -> {
-                if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-                else if(mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
-                else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
-            }
-            "crossblock" -> {
-                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossblock())
-                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-                else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
-            }
-            "wishlist" -> {
-                if (mWishlist.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToWishlistFragment())
-                else if (mEvents.isNotEmpty()) mNavController.navigate(EventsFragmentDirections.actionToCrossTrackerFragment())
-                else Dialogs.notify(AlertDialog.Builder(this@MainActivity),
-                        getString(R.string.summary_and_wishlist_empty))
-            }
-        }
-    }
-
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            val destId = mNavController.currentDestination?.id
-
-            if (destId == R.id.events_fragment) {
-                if (doubleBackToExitPressedOnce) { // exits the app
-                    finish()
-                    return
-                }
-
-                doubleBackToExitPressedOnce = true
-                Toast.makeText(this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
-
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { doubleBackToExitPressedOnce = false },
-                    2000
-                )
+            if (doubleBackToExitPressedOnce) {
+                finish()
                 return
             }
 
-            // for any other fragment, just pop the fragment
-            val popped = mNavController.popBackStack()
-            if (!popped) finish()
+            doubleBackToExitPressedOnce = true
+            Toast.makeText(
+                this@MainActivity,
+                getString(R.string.press_back_again_to_exit),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            Handler(Looper.getMainLooper()).postDelayed(
+                { doubleBackToExitPressedOnce = false },
+                2000
+            )
         }
+    }
+
+    private var navigateToProfileSettings: (() -> Unit)? = null
+
+    fun navigateToProfileSettings() {
+        navigateToProfileSettings?.invoke()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -702,12 +511,6 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onSearchResultClicked(result: SearchPreferenceResult) {
-        Handler().post { // handle in preferencesFragment
-            preferencesFragment?.onSearchResultClicked(result)
-        }
     }
 
    // private fun savePersonAndExperiment(person: String, experiment: String) {
@@ -723,83 +526,4 @@ class MainActivity : AppCompatActivity(), SearchPreferenceResultListener {
    //     return Pair(person, experiment)
    // }
 
-    private fun setWindowInsetListener() {
-        val leftScrim = mBinding.cameraScrimLeft
-        val rightScrim = mBinding.cameraScrimRight
-
-        ViewCompat.setOnApplyWindowInsetsListener(mBinding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemBars()
-            )
-
-            when (resources.configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> {
-                    when { // when the camera is on the left
-                        insets.left > 0 -> {
-                            leftScrim.visibility = View.VISIBLE
-                            leftScrim.layoutParams.width = insets.left
-                            leftScrim.requestLayout()
-
-                            rightScrim.visibility = View.GONE
-
-                            mBinding.root.setPadding(0, 0, insets.right, 0)
-                        }
-                        insets.right > 0 -> { // when the camera is on the right
-                            rightScrim.visibility = View.VISIBLE
-                            rightScrim.layoutParams.width = insets.right
-                            rightScrim.requestLayout()
-
-                            leftScrim.visibility = View.GONE
-                            mBinding.root.setPadding(insets.left, 0, 0, 0)
-                        }
-                    }
-                }
-                else -> { // portrait mode
-                    leftScrim.visibility = View.GONE
-                    rightScrim.visibility= View.GONE
-                    mBinding.root.setPadding(0, 0, 0, 0)
-                }
-            }
-
-            mBinding.mainTb.updatePadding(top = insets.top)
-
-            windowInsets
-        }
-    }
-
-    fun applyFragmentInsets(root: View, toolbar: Toolbar?) {
-        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or
-                        WindowInsetsCompat.Type.displayCutout()
-            )
-
-            toolbar?.updatePadding(top = insets.top)
-
-            windowInsets
-        }
-    }
-
-    /**
-     * use this for fragments without a bottom nav bar
-     */
-    fun applyBottomInsets(root: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsets ->
-            val systemInsets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or
-                        WindowInsetsCompat.Type.displayCutout()
-            )
-
-            val imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
-
-            // if keyboard is visible, use ime insets, otherwise use system insets
-            val bottomInsets =
-                if (imeInsets.bottom > 0) imeInsets.bottom
-                else systemInsets.bottom
-
-            root.updatePadding(bottom = bottomInsets)
-
-            windowInsets
-        }
-    }
 }

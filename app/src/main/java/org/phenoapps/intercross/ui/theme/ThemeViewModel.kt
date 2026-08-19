@@ -24,18 +24,35 @@ class ThemeViewModel @Inject constructor(
     private val _textType = MutableStateFlow(getTextType())
     val textType: StateFlow<AppTextType> = _textType.asStateFlow()
 
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == THEME_KEY) {
+            _themeType.value = getThemeType()
+        }
+    }
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        prefs.unregisterOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    fun setThemeType(type: AppThemeType) {
+        prefs.edit().putString(THEME_KEY, type.name).apply()
+    }
+
     private fun getThemeType(): AppThemeType {
-        // val themeIndex = prefs.getString(PreferenceKeys.THEME, "0")?.toInt() ?: 0
-        // return when (themeIndex) {
-        //     0 -> AppThemeType.Default
-        //     else -> AppThemeType.Default
-        // }
-        return AppThemeType.Default
+        val name = prefs.getString(THEME_KEY, AppThemeType.Default.name) ?: AppThemeType.Default.name
+        return AppThemeType.entries.find { it.name == name } ?: AppThemeType.Default
     }
 
     private fun getTextType(): AppTextType {
-        // val textIndex = prefs.getString(PreferenceKeys.TEXT_THEME, "1")?.toInt() ?: 1
-        // return AppTextType.entries.find { it.index == textIndex } ?: AppTextType.MEDIUM
         return AppTextType.MEDIUM
+    }
+
+    companion object {
+        const val THEME_KEY = "org.phenoapps.intercross.APP_THEME"
     }
 }

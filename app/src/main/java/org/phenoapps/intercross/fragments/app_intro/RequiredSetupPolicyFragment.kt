@@ -162,6 +162,13 @@ class RequiredSetupPolicyFragment : Fragment(), SlidePolicy {
 
     private fun requestPermissions() {
         var perms = Constants.permissions
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            perms += Manifest.permission.ACCESS_LOCAL_NETWORK
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.BAKLAVA) {
+            perms += Manifest.permission.NEARBY_WIFI_DEVICES
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             perms += arrayOf(
                 Manifest.permission.BLUETOOTH_SCAN,
@@ -232,6 +239,5 @@ class RequiredSetupPolicyFragment : Fragment(), SlidePolicy {
             fragment.slideBackgroundColor = slideBackgroundColor
             return fragment
         }
-
     }
 }

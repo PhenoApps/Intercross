@@ -31,6 +31,7 @@ data class SurfaceColors(
     val border: Color,
     val iconTint: Color,
     val iconFillTint: Color,
+    val topBarContentColor: Color,
 )
 
 

@@ -18,4 +18,8 @@
     <color name="progressLessThanTwoThird">#FF9800</color>
     <color name="progressLessThanOneThird">#F44336</color>
 
+    <color name="card_stroke">#FFE4DCCB</color>
+    <color name="card_meta_label">#FF8C877B</color>
+    <color name="card_meta_value">#FF1E1E1A</color>
+
 </resources>

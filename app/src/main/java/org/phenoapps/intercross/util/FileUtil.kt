@@ -82,6 +82,10 @@ class FileUtil @Inject constructor(
 
     private val crossDadHeader: String by lazy { ctx.getString(R.string.crosses_export_dad_header) }
 
+    private val crossMomNameHeader: String by lazy { ctx.getString(R.string.crosses_export_mom_name_header) }
+
+    private val crossDadNameHeader: String by lazy { ctx.getString(R.string.crosses_export_dad_name_header) }
+
     private val crossTimestampHeader: String by lazy { ctx.getString(R.string.crosses_export_date_header) }
 
     private val crossPersonHeader: String by lazy { ctx.getString(R.string.crosses_export_person_header) }
@@ -134,7 +138,7 @@ class FileUtil @Inject constructor(
 
         if (lines.isNotEmpty()) {
 
-            val headers = lines[0].split(",").map { it -> it.replace(" ", "") }
+            val headers = lines[0].split(",").map { it.replace(" ", "") }
 
             //ensure the headers size > 0
             if (headers.isNotEmpty()) {
@@ -206,7 +210,6 @@ class FileUtil @Inject constructor(
      * Where header1 and header2 are string texts defined in XML (to be translated if necessary)
      *
      */
-    //TODO Low-priority: switch to yield/iterator to reduce heap usage
     private fun loadParents(headers: List<String>,
                             lines: List<String>,
                             parents: ArrayList<Parent>) {
@@ -463,30 +466,57 @@ class FileUtil @Inject constructor(
 
                 if (crosses.isNotEmpty()) {
 
-                        val properties = if (metadata.isNotEmpty()) metadata.joinToString(",", ",") { it.property }
+                        // Check if parents have alternative names (name differs from codeId)
+                        val hasAlternativeNames = parents.any { it.name != it.codeId }
+
+                        // Check if metadata collection is enabled
+                        val metadataEnabled = PreferenceManager.getDefaultSharedPreferences(ctx)
+                            .getBoolean(ctx.getString(R.string.key_pref_behavior_collect_additional_info), false)
+
+                        // Build name headers if alternative names exist
+                        val nameHeaders = if (hasAlternativeNames) {
+                            ",$crossMomNameHeader,$crossDadNameHeader"
+                        } else ""
+
+                        // Only include metadata properties if metadata is enabled
+                        val properties = if (metadataEnabled && metadata.isNotEmpty()) metadata.joinToString(",", ",") { it.property }
                                          else ""
                         val propMap = metadata.map { it.id to it.property }
 
-                        //add metadata properties as headers to the export file
-                        outputStream.write((eventModelHeaderString + properties).toByteArray())
+                        // Build parent lookup map for name resolution
+                        val parentNameMap = parents.associate { it.codeId to it.name }
+
+                        //add headers to the export file
+                        outputStream.write((eventModelHeaderString + nameHeaders + properties).toByteArray())
 
                         outputStream.write(newLine)
 
                         crosses.forEach { cross ->
 
-                            //print either the actual saved values for each property or its default value
-                            val values = propMap.map { (id, property) ->
-                                metaValues.find { // consider using find instead of firstOrNull for clarity
-                                    it.eid == cross.id?.toInt() && it.metaId == id?.toInt()
-                                }?.value?.toString()
-                                    ?: metadata.find { it.property == property }?.defaultValue?.toString()
-                                    ?: "0"
-                            }
+                            //print either the actual saved values for each property or its default value (only if metadata enabled)
+                            val valueString = if (metadataEnabled && metadata.isNotEmpty()) {
+                                val values = propMap.map { (id, property) ->
+                                    metaValues.find {
+                                        it.eid == cross.id?.toInt() && it.metaId == id?.toInt()
+                                    }?.value?.toString()
+                                        ?: metadata.find { it.property == property }?.defaultValue?.toString()
+                                        ?: "0"
+                                }
+                                if (values.isNotEmpty()) values.joinToString(",", ",") { it }
+                                else ""
+                            } else ""
 
-                            val valueString = if (values.isNotEmpty()) values.joinToString(",", ",") { it }
-                                              else ""
+                            // Build name columns if alternative names exist
+                            val nameColumns = if (hasAlternativeNames) {
+                                val femaleName = parentNameMap[cross.femaleObsUnitDbId] ?: ""
+                                val maleName = if (groups.any { it.codeId == cross.maleObsUnitDbId }) {
+                                    groups.find { it.codeId == cross.maleObsUnitDbId }?.name ?: ""
+                                } else {
+                                    parentNameMap[cross.maleObsUnitDbId] ?: ""
+                                }
+                                ",$femaleName,$maleName"
+                            } else ""
 
-                            //val values = metaValues.filter { it.eid == cross.id?.toInt() }
                             if (groups.any { g -> g.codeId == cross.maleObsUnitDbId }) {
 
                                 var groupName = groups.find { g -> g.codeId == cross.maleObsUnitDbId }?.name
@@ -496,13 +526,13 @@ class FileUtil @Inject constructor(
                                         parents.find { c -> c.id == g.maleId }?.codeId
                                     }.joinToString(";", "{", "}")
 
-                                outputStream.write((cross.toPollenGroupString(males, groupName) + valueString).toByteArray())
+                                outputStream.write((cross.toPollenGroupString(males, groupName) + nameColumns + valueString).toByteArray())
 
                                 outputStream.write(newLine)
 
                             } else {
 
-                                outputStream.write((cross.toString() + valueString).toByteArray())
+                                outputStream.write((cross.toString() + nameColumns + valueString).toByteArray())
 
                                 outputStream.write(newLine)
 

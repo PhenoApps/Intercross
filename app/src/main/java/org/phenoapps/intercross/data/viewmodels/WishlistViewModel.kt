@@ -27,6 +27,8 @@ class WishlistViewModel internal constructor(private val repo: WishlistRepositor
 
     val commutativeCrossblock = repo.getCommutativeCrossblock()
 
+    fun getByParents(femaleId: String, maleId: String) = repo.getByParents(femaleId, maleId)
+
     fun deleteAll() {
 
         viewModelScope.launch {

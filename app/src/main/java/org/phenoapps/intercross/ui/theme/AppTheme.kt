@@ -12,7 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import org.phenoapps.intercross.ui.theme.colors.AppColors
+import org.phenoapps.intercross.ui.theme.colors.AutumnAppColors
 import org.phenoapps.intercross.ui.theme.colors.DefaultAppColors
+import org.phenoapps.intercross.ui.theme.colors.GreenAppColors
+import org.phenoapps.intercross.ui.theme.colors.HighContrastAppColors
+import org.phenoapps.intercross.ui.theme.colors.SkyAppColors
 import org.phenoapps.intercross.ui.theme.enums.AppThemeType
 import org.phenoapps.intercross.ui.theme.typography.CompactTypography
 import org.phenoapps.intercross.ui.theme.typography.ExpandedTypography
@@ -23,13 +27,12 @@ import org.phenoapps.intercross.ui.theme.typography.ThemeTypography
  * Provides theming for Composables
  * Usages:
  *      - wrap the Composable inside AppTheme
- *          eg. AppTheme {
+ *          e.g. AppTheme {
  *                  Box()
  *             }
  *      - use colors/text sizes
- *          eg. AppTheme.colors.primary, AppTheme.colors.wishlistProgress.min, AppTheme.typography.bodyStyle
+ *          e.g. AppTheme.colors.primary, AppTheme.colors.wishlistProgress.min, AppTheme.typography.bodyStyle
  *
- *  TODO: add darkTheme support
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -46,6 +49,10 @@ fun AppTheme(
     val colors = remember(themeType) {
         when(themeType) {
             AppThemeType.Default -> DefaultAppColors
+            AppThemeType.Green -> GreenAppColors
+            AppThemeType.HighContrast -> HighContrastAppColors
+            AppThemeType.Sky -> SkyAppColors
+            AppThemeType.Autumn -> AutumnAppColors
         }
     }
 

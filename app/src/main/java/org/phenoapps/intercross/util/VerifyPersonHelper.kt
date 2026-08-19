@@ -4,12 +4,10 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import dagger.hilt.android.qualifiers.ActivityContext
-import org.phenoapps.intercross.R
 import org.phenoapps.intercross.activities.MainActivity
-import org.phenoapps.intercross.fragments.EventsFragmentDirections
+import org.phenoapps.intercross.R
+import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class VerifyPersonHelper @Inject constructor(@ActivityContext private val context: Context) {
@@ -102,14 +100,12 @@ class VerifyPersonHelper @Inject constructor(@ActivityContext private val contex
             .setNeutralButton(neutral) { dialog: DialogInterface, _: Int ->
                 // modify settings (navigates to profile preferences)
                 dialog.dismiss()
-                (context as? MainActivity)?.findNavController(R.id.nav_fragment)
-                    ?.navigate(EventsFragmentDirections.actionFromEventsToPreferences(PERSONUPDATE = false, MODIFYPROFILE = true))
+                (context as? MainActivity)?.navigateToProfileSettings()
             }
             .setNegativeButton(negative) { dialog: DialogInterface, _: Int ->
                 // no (navigates to the person preference)
                 dialog.dismiss()
-                (context as? MainActivity)?.findNavController(R.id.nav_fragment)
-                    ?.navigate(EventsFragmentDirections.actionFromEventsToPreferences(PERSONUPDATE = true, MODIFYPROFILE = false))
+                (context as? MainActivity)?.navigateToProfileSettings()
             }
             .show()
     }

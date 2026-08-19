@@ -12,13 +12,8 @@ import kotlin.properties.ReadOnlyProperty
  * Converts keys.xml into string fields to be accessed within a context.
  */
 class KeyUtil @Inject constructor(
-    @ApplicationContext private val ctx: Context,
+    @param:ApplicationContext private val ctx: Context,
 ) {
-
-    //explicitly state phenolib utils
-    val brapiKeys by lazy {
-        org.phenoapps.utils.KeyUtil(ctx)
-    }
 
     private fun key(id: Int): ReadOnlyProperty<Any?, String> =
         ReadOnlyProperty { _, _ -> ctx.getString(id) }
@@ -27,13 +22,22 @@ class KeyUtil @Inject constructor(
     val loadSampleParents by key(R.string.key_load_sample_parents)
     val loadSampleWishlist by key(R.string.key_load_sample_wishlist)
 
-    //non preference keys
-    //boolean value to determine if brapi has been imported previously
-    val brapiHasBeenImported by key(R.string.key_brapi_has_been_imported)
-
     // brapi preferences
     val brapiEnabled by key(R.string.key_pref_brapi_enabled)
     val brapiDisplayName by key(R.string.key_pref_brapi_display_name)
+    val brapiOidc by key(R.string.key_pref_brapi_oidc)
+    val brapiFlow by key(R.string.key_pref_brapi_oidc_flow)
+    val brapiUrl by key(R.string.key_pref_brapi_url)
+    val brapiActiveAccount by key(R.string.key_pref_brapi_active_account)
+    val brapiToken by key(R.string.key_pref_brapi_token)
+    val brapiId by key(R.string.key_pref_brapi_id)
+    val brapiClient by key(R.string.key_pref_brapi_client)
+    val brapiScope by key(R.string.key_pref_brapi_scope)
+    val brapiExplicitOidcUrl by key(R.string.key_pref_brapi_explicit_oidc)
+    val brapiOidcUrl by key(R.string.key_pref_brapi_explicit_oidc)
+    val brapiOidcFlow by key(R.string.key_pref_brapi_oidc_flow)
+    val brapiOidcClientId by key(R.string.key_pref_brapi_client)
+    val brapiOidcScope by key(R.string.key_pref_brapi_scope)
 
     // behavior preferences
     val behaviorRoot by key(R.string.root_behavior)
@@ -46,11 +50,18 @@ class KeyUtil @Inject constructor(
     val soundNotificationKey by key(R.string.key_pref_behavior_sound_notifications)
     val openCrossAfterCreateKey by key(R.string.key_pref_behavior_open_cross_immediately)
     val commutativeCrossingKey by key(R.string.key_pref_behavior_commutative_crossing)
+    val barcodeFormatsKey by key(R.string.key_pref_behavior_barcode_formats)
+    val barcodeFlashKey by key(R.string.key_pref_behavior_barcode_flash)
 
     // person and experiment preferences
     val profileRootKey by key(R.string.root_profile)
     val profilePersonKey by key(R.string.key_pref_profile_person)
+    val profileAddPersonKey by key(R.string.key_pref_profile_add_person)
+    val profileManagePersonsKey by key(R.string.key_pref_profile_manage_persons)
+    val profileShowPersonInputKey by key(R.string.key_pref_profile_show_person_input)
     val profileResetKey by key(R.string.key_pref_profile_reset)
+    val profilePersonListKey by key(R.string.key_pref_profile_person_list)
+    val profileSelectedPersonKey by key(R.string.key_pref_profile_selected_person)
     val personFirstNameKey by key(R.string.key_pref_person_first_name)
     val personLastNameKey by key(R.string.key_pref_person_last_name)
     val experimentNameKey by key(R.string.key_pref_experiment_name)
@@ -64,6 +75,13 @@ class KeyUtil @Inject constructor(
     val printerConnectKey by key(R.string.key_pref_print_connect)
     val zplImportKey by key(R.string.key_pref_print_zpl_import)
     val zplCodeKey by key(R.string.key_pref_print_zpl_code)
+    val zplTemplateKey by key(R.string.key_pref_print_zpl_template)
+    val crossZplCodeKey by key(R.string.key_pref_print_cross_zpl_code)
+    val crossZplTemplateKey by key(R.string.key_pref_print_cross_zpl_template)
+    val parentZplCodeKey by key(R.string.key_pref_print_parent_zpl_code)
+    val parentZplTemplateKey by key(R.string.key_pref_print_parent_zpl_template)
+    val labelTemplatesKey by key(R.string.key_pref_print_label_templates)
+    val printerDeviceNameKey by key(R.string.key_pref_print_device_name)
 
     val databaseRoot by key(R.string.root_database)
     val dbStorageDefinerKey by key(R.string.key_pref_storage_definer)

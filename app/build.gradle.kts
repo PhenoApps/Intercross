@@ -1,0 +1,258 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.aboutlibraries)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.screenshot)
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+android {
+    namespace = "org.phenoapps.intercross"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    signingConfigs {
+        create("playStoreConfig") {
+            val keystorePropsFile = file("keystore.config")
+            if (keystorePropsFile.exists()) {
+                val keystoreProps = Properties().apply {
+                    load(FileInputStream(keystorePropsFile))
+                }
+                keyAlias = keystoreProps["keyAlias"] as String
+                keyPassword = keystoreProps["keyPassword"] as String
+                storePassword = keystoreProps["storePassword"] as String
+                storeFile = file("intercross.keystore.jks")
+            }
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
+        compose = true
+        resValues = true
+    }
+
+    defaultConfig {
+        applicationId = "org.phenoapps.intercross"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testNamespace = "org.phenoapps.intercross.test"
+        manifestPlaceholders["appAuthRedirectScheme"] = "intercross"
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
+
+        resValue("string", "brapi_account_type", "org.phenoapps.brapi.org.phenoapps.intercross")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            isDebuggable = false
+            isJniDebuggable = false
+            signingConfig = signingConfigs.getByName("playStoreConfig")
+            isPseudoLocalesEnabled = false
+            isShrinkResources = true
+        }
+
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            resValue("string", "brapi_account_type", "org.phenoapps.brapi.org.phenoapps.intercross.debug")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    lint {
+        abortOnError = false
+        disable += "MissingTranslation"
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+}
+
+dependencies {
+    // Local libs
+    implementation(fileTree(mapOf("include" to listOf("*.jar", "*.aar"), "dir" to "libs")))
+    implementation(libs.screenshot.validation.api)
+
+    // BrAPI Provider module
+    implementation(project(":brapi-provider"))
+
+    // Room
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+
+    // Desugar
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // AndroidX Core
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.collection.ktx)
+    implementation(libs.androidx.vectordrawable)
+    implementation(libs.androidx.legacy.support.core.utils)
+    implementation(libs.androidx.legacy.support.v13)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.common.java8)
+
+    // Navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.runtime.ktx)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.windowSizeClass)
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.lazytable)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+
+    // Google / Material
+    implementation(libs.google.material)
+    implementation(libs.google.gson)
+    implementation(libs.google.guava.listenablefuture)
+
+    // Networking
+    implementation(libs.okhttp3)
+    implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.okhttp2)
+    implementation(libs.gsonfire)
+
+    // Media
+    implementation(libs.exoplayer)
+
+    // UVC camera
+    implementation(libs.serenegiant.common)
+
+    // BrAPI
+    implementation(libs.brapi.java.client)
+
+    // Zebra / Jackson
+    implementation(libs.jackson.databind)
+
+    // QR / Barcode
+    implementation(libs.zxing.android.embedded) // QR code generation in CrossListItem
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+
+    // Coroutines
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.android)
+
+    // Third-party UI
+    implementation(libs.mpandroidchart)
+    implementation(libs.changelog)
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries)
+    implementation(libs.tableview)
+    implementation(libs.searchpreference)
+    // Don't update the next lib
+    implementation(libs.material.about.library)
+
+    // Auth
+    implementation(libs.appauth)
+
+    // Permissions
+    implementation(libs.easypermissions)
+
+    // AppIntro
+    implementation(libs.appintro)
+
+    // PhenoLib
+    implementation(libs.phenolib)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.robolectric)
+    implementation(libs.androidx.test.ext.junit)
+    implementation(libs.androidx.test.core)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.android)
+
+    // Espresso
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.espresso.contrib)
+    androidTestImplementation(libs.espresso.intents)
+    androidTestImplementation(libs.espresso.accessibility)
+    androidTestImplementation(libs.espresso.web)
+    androidTestImplementation(libs.espresso.idling.concurrent)
+    androidTestImplementation(libs.espresso.idling.resource)
+
+    // Navigation testing
+    androidTestImplementation(libs.androidx.navigation.testing)
+
+    // Screenshot Testing
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+}
+
+apply(from = "../gradle/screenshots.gradle.kts")

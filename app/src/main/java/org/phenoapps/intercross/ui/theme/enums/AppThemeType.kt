@@ -1,5 +1,9 @@
 package org.phenoapps.intercross.ui.theme.enums
 
-sealed class AppThemeType {
-    object Default : AppThemeType()
+enum class AppThemeType {
+    Default,
+    Green,
+    HighContrast,
+    Sky,
+    Autumn,
 }

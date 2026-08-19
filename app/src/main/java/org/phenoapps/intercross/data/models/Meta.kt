@@ -20,6 +20,9 @@ data class Meta(
         @ColumnInfo(name = "defaultValue")
         var defaultValue: Int? = null,
 
+        @ColumnInfo(name = "icon")
+        var icon: String? = null,
+
         @ColumnInfo(name = "mid")
         @PrimaryKey(autoGenerate = true)
         var id: Long? = null): BaseTable()

@@ -11,6 +11,8 @@ class EventsRepository
 
     fun selectAll() = eventsDao.selectAll()
 
+    fun selectArchived() = eventsDao.selectArchived()
+
     fun getParentCount() = eventsDao.getParentCount()
 
     fun getAllParents() = eventsDao.getAllParents()
@@ -40,6 +42,18 @@ class EventsRepository
 
             eventsDao.deleteById(eid)
 
+        }
+    }
+
+    suspend fun archiveByIds(ids: List<Long>) {
+        withContext(IO) {
+            eventsDao.archiveByIds(ids)
+        }
+    }
+
+    suspend fun unarchiveByIds(ids: List<Long>) {
+        withContext(IO) {
+            eventsDao.unarchiveByIds(ids)
         }
     }
 

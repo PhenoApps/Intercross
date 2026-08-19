@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.phenoapps.intercross.data.dao.BaseDao
 
-open class BaseRepository<T> constructor(private val dao: BaseDao<T>) {
+open class BaseRepository<T>(private val dao: BaseDao<T>) {
 
     suspend fun insert(vararg items: T) {
 

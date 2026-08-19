@@ -1,6 +1,8 @@
 package org.phenoapps.intercross.activities
 
 import android.app.PendingIntent
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -16,18 +18,19 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenResponse
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
-import net.openid.appauth.AuthorizationServiceConfiguration
+import org.phenoapps.brapi.account.BrapiTokenStoreResult
 import org.phenoapps.intercross.R
 import org.phenoapps.intercross.util.BrapiAccountHelper
 import org.phenoapps.intercross.util.InsetHandler
 import org.phenoapps.intercross.util.KeyUtil
 import org.phenoapps.intercross.util.OpenAuthConfigUtil
 import javax.inject.Inject
-import androidx.core.content.edit
-import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class BrapiAuthActivity : AppCompatActivity() {
@@ -236,6 +239,81 @@ class BrapiAuthActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Best available human-readable cause for an auth failure, or empty when nothing was reported.
+     *
+     * AppAuth puts the provider's own wording in errorDescription and the OAuth error code in
+     * error; both are absent for transport-level failures, where the exception message is all
+     * there is.
+     */
+    private fun describeAuthFailure(ex: Exception?): String {
+        if (ex == null) return ""
+
+        if (ex is AuthorizationException) {
+            val errorDesc: String? = ex.errorDescription
+            if (!errorDesc.isNullOrEmpty()) {
+                return errorDesc
+            }
+            val errorCode: String? = ex.error
+            if (!errorCode.isNullOrEmpty()) {
+                return errorCode
+            }
+            val cause = ex.cause
+            if (cause != null && cause.message != null) {
+                return cause.message!!
+            }
+        }
+
+        return ex.message ?: ""
+    }
+
+    private fun authError(ex: Exception?) {
+        // Clear our data from our deep link so the app doesn't think it is
+        // coming from a deep link if it is coming from deep link on pause and resume.
+
+        intent.data = null
+
+        Log.e("BrAPI", "Error starting BrAPI auth", ex)
+
+        val reason = describeAuthFailure(ex)
+        val message = if (reason.isEmpty()) {
+            getString(R.string.brapi_auth_error_starting)
+        } else {
+            getString(R.string.brapi_auth_error_starting_reason, reason)
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        setResult(RESULT_CANCELED)
+        finish()
+    }
+
+    private fun authSuccess(accessToken: String?, idToken: String?) {
+        if (accessToken == null) {
+            authError(null)
+            return
+        }
+        val serverUrl = launchServerUrl.ifEmpty { getString(R.string.brapi_base_url_default) }
+        val stored = accountHelper.storeToken(serverUrl, accessToken, idToken)
+
+        // Clear our data from our deep link so the app doesn't think it is
+        // coming from a deep link if it is coming from deep link on pause and resume.
+        intent.data = null
+
+        // The provider signed us in either way, but only STORED means the server now has an
+        // account of its own here. Saying "authorization successful" for the other outcomes would
+        // promise a server card that never appears.
+        val message = when (stored) {
+            BrapiTokenStoreResult.STORED -> R.string.brapi_auth_success
+            BrapiTokenStoreResult.ALREADY_SHARED -> R.string.brapi_auth_success_already_shared
+            BrapiTokenStoreResult.ACCOUNT_UNAVAILABLE -> R.string.brapi_auth_success_no_account
+        }
+
+        Log.d("BrAPI", "Auth successful, token stored: $stored")
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        setResult(RESULT_OK)
+        finish()
+    }
+
     private fun getAuthorizationService(): AuthorizationService {
         val builder = AppAuthConfiguration.Builder()
         builder.setConnectionBuilder(authUtil.getConnectionBuilder())
@@ -306,31 +384,6 @@ class BrapiAuthActivity : AppCompatActivity() {
             token = token.removePrefix("Bearer ")
         }
         authSuccess(token, null)
-    }
-
-    private fun authSuccess(accessToken: String, idToken: String?) {
-        val serverUrl = launchServerUrl.ifEmpty {
-            PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(keyUtil.brapiUrl, "") ?: ""
-        }
-        if (serverUrl.isNotEmpty()) {
-            accountHelper.storeToken(serverUrl, accessToken, idToken)
-            accountHelper.setActiveAccount(accountHelper.normalizeUrl(serverUrl))
-        }
-
-        intent?.data = null
-        Log.d(TAG, "Auth successful")
-        Toast.makeText(this, R.string.brapi_auth_success, Toast.LENGTH_LONG).show()
-        setResult(RESULT_OK)
-        finish()
-    }
-
-    private fun authError(ex: Exception?) {
-        intent?.data = null
-        Log.e(TAG, "Auth error", ex)
-        Toast.makeText(this, R.string.brapi_auth_failed, Toast.LENGTH_LONG).show()
-        setResult(RESULT_CANCELED)
-        finish()
     }
 
     private fun isImplicitFlow(flow: String): Boolean =

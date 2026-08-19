@@ -373,6 +373,8 @@
     <string name="brapi_revoke_auth">Log Out</string>
     <string name="brapi_auth_btn">Log In to Site</string>
     <string name="brapi_auth_success">BrAPI Authorization Successful</string>
+    <string name="brapi_auth_success_already_shared">Already connected to server from another app.</string>
+    <string name="brapi_auth_success_no_account">Authorization succeeded but server could not be added.</string>
     <string name="brapi_auth_deny">BrAPI Authorization Denied</string>
     <string name="brapi_auth_error_starting">Error Starting BrAPI Auth</string>
     <string name="brapi_no_account_configured">No BrAPI account configured. Please add a server first.</string>
@@ -383,9 +385,12 @@
     <string name="brapi_add_account_finish">Add Account</string>
     <string name="brapi_advanced_settings_title">Advanced Settings</string>
     <string name="brapi_advanced_settings_summary">Authorization, version, pagination, timeout</string>
+    <string name="brapi_auth_error_starting_reason">Error Starting BrAPI Auth: %1$s</string>
     <string name="brapi_auth_permission_deny">ERROR: You do not have the permissions necessary to perform this action</string>
     <string name="brapi_auth_needed_title">Login Needed</string>
     <string name="brapi_auth_needed">You need to be logged into the system you are attempting to sync data with in order to sync your data.\n\nWould you like to authenticate now?</string>
+    <string name="brapi_add_account_already_shared">This server is already provided by %1$s.</string>
+    <string name="brapi_shared_account_not_signed_in">This server is not signed in from the sharing app. Authorize within %1$s to use it.</string>
 
     <!-- BrAPI Import -->
     <string name="import_dialog_title_brapi_fields">BrAPI Field Import</string>

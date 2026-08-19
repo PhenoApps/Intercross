@@ -24,6 +24,7 @@ import org.phenoapps.brapi.ui.withConfig
 import org.phenoapps.brapi.ui.withUrlUpdate
 import org.phenoapps.intercross.R
 import androidx.compose.ui.res.stringResource
+import androidx.preference.PreferenceManager
 
 /**
  * Full-screen composable hosting the BrAPI stepper account form.
@@ -43,12 +44,14 @@ fun AddBrapiAccountStepper(
         oidcFlow: String,
         clientId: String,
         scope: String,
+        version: String,
     ) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val clientIdDefault = stringResource(R.string.brapi_oidc_clientid_default)
     val am = remember { AccountManager.get(context) }
+    val accountType = remember(context) { BrapiAccountConstants.accountTypeFor(context.packageName) }
 
     var uiState by remember {
         val initialState = if (initialAccount != null) {
@@ -63,9 +66,24 @@ fun AddBrapiAccountStepper(
                 currentStep = 2 // Jump to final step for editing
             )
         } else {
-            defaultBrapiAccountState(context, clientIdDefault)
+            defaultBrapiAccountState( clientIdDefault).copy(brapiVersion = "V2")
         }
         mutableStateOf(initialState)
+    }
+
+    /**
+     * Checks whether [url] is already provided by a sibling package.
+     */
+    fun isAlreadyShared(url: String): Boolean {
+        val normalized = url.trim().trimStart('/').let { if (it.startsWith("http://") || it.startsWith("https://")) it else "https://$it" }
+        return am.getAccountsByType(accountType)
+            .any { acc ->
+                val ownerPackage = am.getUserData(acc, BrapiAccountConstants.KEY_OWNER_PACKAGE)
+                val accUrl = am.getUserData(acc, BrapiAccountConstants.KEY_SERVER_URL)
+                ownerPackage != null && ownerPackage != context.packageName &&
+                    BrapiAccountConstants.isPackageAllowed(ownerPackage) &&
+                    (accUrl == url || accUrl == normalized || acc.name == url || acc.name == normalized)
+            }
     }
 
     // Handle incoming scan result
@@ -145,6 +163,30 @@ fun AddBrapiAccountStepper(
             ).show()
             return
         }
+
+        // Refuse to add a server already shared by a sibling package.
+        if (isAlreadyShared(url)) {
+            val ownerAccount = am.getAccountsByType(accountType)
+                .firstOrNull { acc ->
+                    val ownerPkg = am.getUserData(acc, BrapiAccountConstants.KEY_OWNER_PACKAGE)
+                    val accUrl = am.getUserData(acc, BrapiAccountConstants.KEY_SERVER_URL)
+                    ownerPkg != context.packageName &&
+                        BrapiAccountConstants.isPackageAllowed(ownerPkg) &&
+                        (accUrl == url)
+                }
+            val ownerName = ownerAccount?.let {
+                BrapiAccountConstants.displayNameForPackage(it.let { acc ->
+                    am.getUserData(acc, BrapiAccountConstants.KEY_OWNER_PACKAGE)
+                })
+            } ?: ""
+            Toast.makeText(
+                context,
+                context.getString(R.string.brapi_add_account_already_shared, ownerName),
+                Toast.LENGTH_LONG,
+            ).show()
+            return
+        }
+
         val displayName = uiState.displayName.trim().ifEmpty { url }
         onAuthorize(
             url,
@@ -153,13 +195,12 @@ fun AddBrapiAccountStepper(
             uiState.oidcFlow,
             uiState.oidcClientId.trim(),
             uiState.oidcScope.trim(),
+            uiState.brapiVersion,
         )
     }
 
     BrapiStepperAccountForm(
         uiState = uiState,
-        titleRes = if (initialAccount != null) BrapiR.string.pheno_brapi_edit_account_title
-                   else BrapiR.string.pheno_brapi_add_account_title,
         onUrlChange = { uiState = uiState.withUrlUpdate(it) },
         onDisplayNameChange = { uiState = uiState.copy(displayName = it) },
         onOidcUrlChange = { url, isUserEdit ->

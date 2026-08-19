@@ -44,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,7 +54,6 @@ import org.phenoapps.brapi.provider.R
 @Composable
 fun BrapiStepperAccountForm(
     uiState: BrapiAccountUiState,
-    titleRes: Int = R.string.pheno_brapi_add_account_title,
     onUrlChange: (String) -> Unit,
     onDisplayNameChange: (String) -> Unit,
     onOidcUrlChange: (url: String, isUserEdit: Boolean) -> Unit,
@@ -70,8 +68,8 @@ fun BrapiStepperAccountForm(
     onCancel: () -> Unit,
     onAuthorize: () -> Unit,
 ) {
-    val oidcFlowOptions = stringArrayResource(R.array.pheno_brapi_oidc_flow_options)
-    val versionOptions = stringArrayResource(R.array.pheno_brapi_version_options)
+    val oidcFlowOptions = rememberOidcFlowOptions()
+    val versionOptions = rememberBrapiVersionOptions()
     val currentStep = uiState.currentStep
 
     BoxWithConstraints(
@@ -94,7 +92,7 @@ fun BrapiStepperAccountForm(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = stringResource(titleRes),
+                    text = stringResource(R.string.pheno_brapi_add_account_title),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 24.dp, top = 16.dp, end = 24.dp, bottom = 8.dp),
                 )
@@ -241,8 +239,8 @@ private fun UrlStep(
 @Composable
 internal fun DetailsStep(
     uiState: BrapiAccountUiState,
-    versionOptions: Array<String>,
-    oidcFlowOptions: Array<String>,
+    versionOptions: List<PickerOption>,
+    oidcFlowOptions: List<PickerOption>,
     onDisplayNameChange: (String) -> Unit,
     onBrapiVersionChange: (String) -> Unit,
     onOidcFlowChange: (String) -> Unit,

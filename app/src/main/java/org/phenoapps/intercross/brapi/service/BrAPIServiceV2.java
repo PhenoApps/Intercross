@@ -79,7 +79,12 @@ public class BrAPIServiceV2 implements BrAPIService {
                 keyUtil.getBrapiUrl(),
                 keyUtil.getBrapiDisplayName(),
                 keyUtil.getBrapiToken(),
-                keyUtil.getBrapiId()
+                keyUtil.getBrapiId(),
+                "v2",
+                keyUtil.getBrapiOidcUrl(),
+                keyUtil.getBrapiOidcFlow(),
+                keyUtil.getBrapiOidcClientId(),
+                keyUtil.getBrapiOidcScope()
             );
             BrapiAccountRepository repository = new BrapiAccountRepository(context, prefs, keys);
             String token = repository.peekToken();

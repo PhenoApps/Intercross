@@ -117,5 +117,24 @@
                     android:scheme="intercross" />
             </intent-filter>
         </activity>
+
+        <!-- BrAPI AccountManager authenticator service -->
+        <service
+            android:name=".util.BrapiAuthenticatorService"
+            android:exported="true"
+            android:permission="android.permission.AUTHENTICATE_ACCOUNTS">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/brapi_authenticator" />
+        </service>
+
+        <activity
+            android:name=".activities.BrapiAddAccountActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|locale"
+            android:exported="false"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>

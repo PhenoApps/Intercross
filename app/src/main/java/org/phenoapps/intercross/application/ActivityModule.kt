@@ -30,7 +30,11 @@ object ActivityModule {
             baseUrl = keyUtil.brapiUrl,
             displayName = keyUtil.brapiDisplayName,
             accessToken = keyUtil.brapiToken,
-            idToken = keyUtil.brapiId
+            idToken = keyUtil.brapiId,
+            oidcUrl = keyUtil.brapiOidcUrl,
+            oidcFlow = keyUtil.brapiOidcFlow,
+            oidcClientId = keyUtil.brapiOidcClientId,
+            oidcScope = keyUtil.brapiOidcScope,
         )
     }
 

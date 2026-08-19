@@ -34,6 +34,10 @@ class KeyUtil @Inject constructor(
     val brapiClient by key(R.string.key_pref_brapi_client)
     val brapiScope by key(R.string.key_pref_brapi_scope)
     val brapiExplicitOidcUrl by key(R.string.key_pref_brapi_explicit_oidc)
+    val brapiOidcUrl by key(R.string.key_pref_brapi_explicit_oidc)
+    val brapiOidcFlow by key(R.string.key_pref_brapi_oidc_flow)
+    val brapiOidcClientId by key(R.string.key_pref_brapi_client)
+    val brapiOidcScope by key(R.string.key_pref_brapi_scope)
 
     // behavior preferences
     val behaviorRoot by key(R.string.root_behavior)

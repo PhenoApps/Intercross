@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pheno_brapi_add_account">Add Account</string>
-    <string name="pheno_brapi_account_label">BrAPI</string>
+    <string name="pheno_brapi_account_label">Intercross BrAPI</string>
     <string name="pheno_brapi_shared_servers">Shared Servers</string>
     <string name="pheno_brapi_section_shared_accounts">Shared Accounts</string>
     <string name="pheno_brapi_shared_account_from">Created in %s</string>

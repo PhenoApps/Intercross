@@ -40,6 +40,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = true
     }
 
     defaultConfig {
@@ -51,11 +52,13 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testNamespace = "org.phenoapps.intercross.test"
-        manifestPlaceholders["appAuthRedirectScheme"] = "fieldbook"
+        manifestPlaceholders["appAuthRedirectScheme"] = "intercross"
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+
+        resValue("string", "brapi_account_type", "org.phenoapps.brapi.org.phenoapps.intercross")
     }
 
     buildTypes {
@@ -80,6 +83,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            resValue("string", "brapi_account_type", "org.phenoapps.brapi.org.phenoapps.intercross.debug")
         }
     }
 

@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BrapiAccountHelper @Inject constructor(
+open class BrapiAccountHelper @Inject constructor(
     @ApplicationContext context: Context,
     preferences: SharedPreferences,
     keyUtil: KeyUtil
@@ -22,5 +22,10 @@ class BrapiAccountHelper @Inject constructor(
         displayName = keyUtil.brapiDisplayName,
         accessToken = keyUtil.brapiToken,
         idToken = keyUtil.brapiId,
+        brapiVersion = "brapi_version",
+        oidcUrl = keyUtil.brapiOidcUrl,
+        oidcFlow = keyUtil.brapiOidcFlow,
+        oidcClientId = keyUtil.brapiOidcClientId,
+        oidcScope = keyUtil.brapiOidcScope,
     ),
 )

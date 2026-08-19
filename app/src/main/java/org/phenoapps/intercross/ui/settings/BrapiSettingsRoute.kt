@@ -82,7 +82,6 @@ fun BrapiSettingsRoute(
     val oidcUrl = prefs.getString(keyUtil.brapiOidc, brapiOidcUrlDefault).orEmpty()
 
     // Account list state
-    val am = remember { AccountManager.get(context) }
     var accounts by remember { mutableStateOf(brapiAccountRepository.getAllAccounts()) }
     // Counter to force recomposition of cards when token state changes
     var tokenStateVersion by remember { mutableStateOf(0) }
@@ -140,8 +139,9 @@ fun BrapiSettingsRoute(
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val accountName = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
             val accountType = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE)
-                ?: BrapiAccountConstants.ACCOUNT_TYPE
-            if (accountName != null && accountType == BrapiAccountConstants.ACCOUNT_TYPE) {
+                ?: brapiAccountRepository.accountType
+            val repoAccountType = brapiAccountRepository.accountType
+            if (accountName != null && BrapiAccountConstants.isPerAppAccountType(accountType)) {
                 val selected = Account(accountName, accountType)
                 val accountToUse = pending ?: selected
                 if (pending != null && (pending.name != selected.name || pending.type != selected.type)) return@rememberLauncherForActivityResult
@@ -149,7 +149,7 @@ fun BrapiSettingsRoute(
                 if (brapiAccountRepository.canAccessAccount(accountToUse)) {
                     brapiAccountRepository.grantSelectedAccount(accountToUse)
                     if (brapiAccountRepository.canUseToken(accountToUse)) {
-                        val url = am.getUserData(accountToUse, BrapiAccountConstants.KEY_SERVER_URL) ?: accountToUse.name
+                        val url = brapiAccountRepository.accountInfoOrEmpty(accountToUse).serverUrl
                         brapiAccountRepository.setActiveAccount(url)
                         refreshAccounts()
                     }
@@ -160,7 +160,7 @@ fun BrapiSettingsRoute(
 
     fun launchAuth(serverUrl: String, allowHttp: Boolean = false) {
         pendingHttpWarningUrl = serverUrl
-        // Read per-account OIDC config from AccountManager
+        // Read per-account OIDC config from repository
         val account = brapiAccountRepository.getAccountByUrl(serverUrl)
 
         if (account != null && !brapiAccountRepository.canUseToken(account)) {
@@ -169,21 +169,12 @@ fun BrapiSettingsRoute(
             return
         }
 
-        val accountOidcUrl = account?.let {
-            am.getUserData(it, BrapiAccountConstants.KEY_OIDC_URL)
-        }?.takeIf { it.isNotEmpty() } ?: oidcUrl
-        val accountOidcFlow = account?.let {
-            am.getUserData(it, BrapiAccountConstants.KEY_OIDC_FLOW)
-        } ?: ""
-        val accountOidcClientId = account?.let {
-            am.getUserData(it, BrapiAccountConstants.KEY_OIDC_CLIENT_ID)
-        } ?: ""
-        val accountOidcScope = account?.let {
-            am.getUserData(it, BrapiAccountConstants.KEY_OIDC_SCOPE)
-        } ?: ""
-        val accountBrapiVersion = account?.let {
-            am.getUserData(it, BrapiAccountConstants.KEY_BRAPI_VERSION)
-        } ?: ""
+        val info = account?.let { brapiAccountRepository.accountInfoOrEmpty(it) }
+        val accountOidcUrl = info?.oidcUrl?.takeIf { it.isNotEmpty() } ?: oidcUrl
+        val accountOidcFlow = info?.oidcFlow ?: ""
+        val accountOidcClientId = info?.oidcClientId ?: ""
+        val accountOidcScope = info?.oidcScope ?: ""
+        val accountBrapiVersion = info?.brapiVersion ?: ""
 
         // Validate URL schemes before launching
         val baseIsHttp = serverUrl.startsWith("http://")
@@ -236,7 +227,7 @@ fun BrapiSettingsRoute(
     }
 
     fun checkServerCompatibility(account: Account) {
-        val url = am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name
+        val url = brapiAccountRepository.accountInfoOrEmpty(account).serverUrl
         scope.launch {
             val message = withContext(Dispatchers.IO) {
                 runCatching {
@@ -257,22 +248,15 @@ fun BrapiSettingsRoute(
     }
 
     fun shareAccountSettings(account: Account) {
-        val serverUrl = am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name
-        val displayName = am.getUserData(account, BrapiAccountConstants.KEY_DISPLAY_NAME) ?: account.name
-        val oidcUrl = am.getUserData(account, BrapiAccountConstants.KEY_OIDC_URL) ?: ""
-        val oidcFlow = am.getUserData(account, BrapiAccountConstants.KEY_OIDC_FLOW) ?: ""
-        val clientId = am.getUserData(account, BrapiAccountConstants.KEY_OIDC_CLIENT_ID) ?: ""
-        val oidcScope = am.getUserData(account, BrapiAccountConstants.KEY_OIDC_SCOPE) ?: ""
-        val version = am.getUserData(account, BrapiAccountConstants.KEY_BRAPI_VERSION) ?: ""
-
+        val info = brapiAccountRepository.accountInfoOrEmpty(account)
         val jsonConfig = JSONObject().apply {
-            put("url", serverUrl)
-            put("name", displayName)
-            put("version", version)
-            put("authFlow", oidcFlow)
-            put("oidcUrl", oidcUrl)
-            put("clientId", clientId)
-            put("scope", oidcScope)
+            put("url", info.serverUrl)
+            put("name", info.label)
+            put("version", info.brapiVersion)
+            put("authFlow", info.oidcFlow)
+            put("oidcUrl", info.oidcUrl)
+            put("clientId", info.oidcClientId)
+            put("scope", info.oidcScope)
             put("pageSize", prefs.getString("BRAPI_PAGE_SIZE", "50"))
             put("serverTimeoutMilli", prefs.getString("BRAPI_TIMEOUT", "120"))
         }.toString()
@@ -319,10 +303,10 @@ fun BrapiSettingsRoute(
         if (brapiEnabled) {
             val (owned, shared) = accounts.partition { brapiAccountRepository.isOwnAccount(it) }
             val activeAccount = accounts.find {
-                (am.getUserData(it, BrapiAccountConstants.KEY_SERVER_URL) ?: it.name) == activeUrl
+                brapiAccountRepository.accountInfoOrEmpty(it).serverUrl == activeUrl
             }
             val availableOwned = owned.filter {
-                (am.getUserData(it, BrapiAccountConstants.KEY_SERVER_URL) ?: it.name) != activeUrl
+                brapiAccountRepository.accountInfoOrEmpty(it).serverUrl != activeUrl
             }
 
             // BrAPI Actions (Add Account, Shared Servers, Advanced)
@@ -358,10 +342,11 @@ fun BrapiSettingsRoute(
             if (activeAccount != null) {
                 item { SettingsSectionHeader(R.string.brapi_active_server_category) }
                 item {
-                    val serverUrl = am.getUserData(activeAccount, BrapiAccountConstants.KEY_SERVER_URL) ?: activeAccount.name
-                    val displayName = am.getUserData(activeAccount, BrapiAccountConstants.KEY_DISPLAY_NAME) ?: activeAccount.name
+                    val info = brapiAccountRepository.accountInfoOrEmpty(activeAccount)
+                    val serverUrl = info.serverUrl
+                    val displayName = info.label
                     @Suppress("UNUSED_EXPRESSION") tokenStateVersion
-                    val hasToken = !brapiAccountRepository.peekTokenForAccount(activeAccount).isNullOrEmpty()
+                    val hasToken = info.hasToken
                     val isExpanded = expandedAccountUrl == serverUrl
                     BrapiServerCard(
                         displayName = displayName,
@@ -379,7 +364,7 @@ fun BrapiSettingsRoute(
                             } else {
                                 brapiAccountRepository.setActiveAccount(serverUrl)
                                 refreshAccounts()
-                                if (!hasToken) {
+                                if (!info.hasToken) {
                                     launchAuth(serverUrl)
                                 }
                             }
@@ -410,10 +395,11 @@ fun BrapiSettingsRoute(
                 item { SettingsSectionHeader(R.string.brapi_available_servers_category) }
                 items(availableOwned.size) { index ->
                     val account = availableOwned[index]
-                    val serverUrl = am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name
-                    val displayName = am.getUserData(account, BrapiAccountConstants.KEY_DISPLAY_NAME) ?: account.name
+                    val info = brapiAccountRepository.accountInfoOrEmpty(account)
+                    val serverUrl = info.serverUrl
+                    val displayName = info.label
                     @Suppress("UNUSED_EXPRESSION") tokenStateVersion
-                    val hasToken = !brapiAccountRepository.peekTokenForAccount(account).isNullOrEmpty()
+                    val hasToken = info.hasToken
                     val isExpanded = expandedAccountUrl == serverUrl
                     BrapiServerCard(
                         displayName = displayName,
@@ -431,7 +417,7 @@ fun BrapiSettingsRoute(
                             } else {
                                 brapiAccountRepository.setActiveAccount(serverUrl)
                                 refreshAccounts()
-                                if (!hasToken) {
+                                if (!info.hasToken) {
                                     launchAuth(serverUrl)
                                 }
                             }
@@ -463,16 +449,17 @@ fun BrapiSettingsRoute(
 
                 items(shared.size) { index ->
                     val account = shared[index]
-                    val serverUrl = am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name
-                    val displayName = am.getUserData(account, BrapiAccountConstants.KEY_DISPLAY_NAME) ?: account.name
-                    val ownerPkg = am.getUserData(account, BrapiAccountConstants.KEY_OWNER_PACKAGE) ?: ""
+                    val info = brapiAccountRepository.accountInfoOrEmpty(account)
+                    val serverUrl = info.serverUrl
+                    val displayName = info.label
+                    val ownerPkg = info.ownerPackage
                     val ownerLabel = stringResource(
                         org.phenoapps.brapi.provider.R.string.pheno_brapi_shared_account_from,
                         BrapiAccountConstants.displayNameForPackage(ownerPkg),
                     )
-                    val isActive = (am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name) == activeUrl
+                    val isActive = info.serverUrl == activeUrl
                     @Suppress("UNUSED_EXPRESSION") tokenStateVersion
-                    val hasToken = !brapiAccountRepository.peekTokenForAccount(account).isNullOrEmpty()
+                    val hasToken = info.hasToken
                     val isExpanded = expandedAccountUrl == serverUrl
                     BrapiServerCard(
                         displayName = displayName,
@@ -490,9 +477,22 @@ fun BrapiSettingsRoute(
                                 accountChooserLauncher.launch(brapiAccountRepository.buildChooseAccountIntent(account))
                             } else {
                                 brapiAccountRepository.setActiveAccount(serverUrl)
-                                refreshAccounts()
-                                if (!hasToken) {
-                                    launchAuth(serverUrl)
+                                if (brapiAccountRepository.isOwnAccount(account)) {
+                                    refreshAccounts()
+                                } else {
+                                    // Shared account: borrow the token so this app can use it.
+                                    // Without this the server looks signed out no matter how many
+                                    // times it is enabled — the token lives in the owner app.
+                                    (context as? Activity)?.let { activity ->
+                                        brapiAccountRepository.borrowToken(account, activity) { token ->
+                                            if (token == null) {
+                                                // Owner hasn't signed in; can't use this server.
+                                            }
+                                            refreshAccounts()
+                                        }
+                                    } ?: run {
+                                        refreshAccounts()
+                                    }
                                 }
                             }
                         },
@@ -507,7 +507,7 @@ fun BrapiSettingsRoute(
                         onCheckCompatibility = { checkServerCompatibility(account) },
                         onShareSettings = { shareAccountSettings(account) },
                         onEdit = null, // Can't edit foreign accounts
-                        onRemove = { accountToDelete = account },
+                        onRemove = null, // Can't remove foreign accounts
                         onRequestSwitchServer = {
                             brapiAccountRepository.setActiveAccount(serverUrl)
                             refreshAccounts()
@@ -521,15 +521,14 @@ fun BrapiSettingsRoute(
 
     // Delete confirmation dialog
     accountToDelete?.let { account ->
-        val deleteDisplayName = am.getUserData(account, BrapiAccountConstants.KEY_DISPLAY_NAME) ?: account.name
-        val deleteServerUrl = am.getUserData(account, BrapiAccountConstants.KEY_SERVER_URL) ?: account.name
+        val info = brapiAccountRepository.accountInfoOrEmpty(account)
         AlertDialog(
             onDismissRequest = { accountToDelete = null },
             title = { Text(stringResource(R.string.dialog_confirm_delete_account_title)) },
-            text = { Text("Remove $deleteDisplayName?") },
+            text = { Text("Remove ${info.label}?") },
             confirmButton = {
                 TextButton(onClick = {
-                    brapiAccountRepository.removeAccount(deleteServerUrl)
+                    brapiAccountRepository.removeAccount(info.serverUrl)
                     refreshAccounts()
                     accountToDelete = null
                 }) { Text(stringResource(R.string.dialog_ok)) }
@@ -618,7 +617,7 @@ fun BrapiSettingsRoute(
             },
             scanResult = scanResult,
             onScanResultConsumed = onScanResultConsumed,
-            onAuthorize = { url, displayName, oidc, flow, clientId, oidcScope ->
+            onAuthorize = { url, displayName, oidc, flow, clientId, oidcScope, version ->
                 // Add the account via repository
                 brapiAccountRepository.addAccountConfig(
                     serverUrl = url,
@@ -627,6 +626,7 @@ fun BrapiSettingsRoute(
                     oidcFlow = flow,
                     oidcClientId = clientId,
                     oidcScope = oidcScope,
+                    brapiVersion = version,
                 )
                 brapiAccountRepository.setActiveAccount(url)
                 prefs.edit {

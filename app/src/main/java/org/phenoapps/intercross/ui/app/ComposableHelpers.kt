@@ -42,6 +42,11 @@ fun rememberBrapiAccountRepository(): BrapiAccountRepository {
                 displayName = keyUtil.brapiDisplayName,
                 accessToken = keyUtil.brapiToken,
                 idToken = keyUtil.brapiId,
+                brapiVersion = "brapi_version",
+                oidcUrl = keyUtil.brapiOidcUrl,
+                oidcFlow = keyUtil.brapiOidcFlow,
+                oidcClientId = keyUtil.brapiOidcClientId,
+                oidcScope = keyUtil.brapiOidcScope,
             )
         )
     }
